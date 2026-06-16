@@ -1,0 +1,7 @@
+{
+  "name": "solo-wrestler",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
