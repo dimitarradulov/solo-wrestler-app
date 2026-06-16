@@ -1,0 +1,7 @@
+{
+  "name": "Solo Wrestler",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

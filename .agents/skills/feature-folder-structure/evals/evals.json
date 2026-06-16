@@ -1,0 +1,23 @@
+{
+  "skill_name": "feature-folder-structure",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add the Today and Curriculum screens for the Solo Wrestler MVP. Use Ionic Angular standalone routes and keep the folder structure feature-based.",
+      "expected_output": "Creates or proposes files under src/app/features/training/pages/today and src/app/features/training/pages/curriculum, keeps app root limited to shell/routing, and uses lazy standalone routes.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Where should I put a workout progress store, curriculum data, and a generic stat tile component in this app?",
+      "expected_output": "Places workout progress and curriculum concepts under the training feature or core storage depending on responsibility, and only places the generic presentational stat tile in shared.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Refactor the existing Ionic Angular app so the active workout drill card, timer controls, and in-app YouTube modal are organized cleanly without over-migrating unrelated files.",
+      "expected_output": "Keeps drill-card and timer UI near src/app/features/training/pages/active-workout when page-private, puts reusable timer/video infrastructure under core when app-wide, and avoids unrelated broad restructuring.",
+      "files": []
+    }
+  ]
+}
