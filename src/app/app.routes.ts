@@ -12,13 +12,6 @@ export const routes: Routes = [
   ...firstLaunchRoutes,
   ...workoutRoutes,
   {
-    path: 'completed-workout-detail',
-    loadComponent: () =>
-      import('./features/training/pages/completed-workout-detail/completed-workout-detail').then(
-        (m) => m.CompletedWorkoutDetailPage,
-      ),
-  },
-  {
     path: 'tabs',
     loadComponent: () =>
       import('./core/app-shell/tabs/tabs').then((m) => m.TabsPage),

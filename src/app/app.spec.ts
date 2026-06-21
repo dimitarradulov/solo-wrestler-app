@@ -14,46 +14,51 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const router = TestBed.inject(Router);
 
-    fixture.detectChanges();
+    const normalizeText = (value: string | null | undefined) =>
+      (value ?? '').replace(/\s+/g, ' ').trim();
 
-    const renderedText = () =>
-      (fixture.nativeElement.textContent ?? '').replace(/\s+/g, ' ').trim();
-
-    const clickButton = async (label: string) => {
-      const button = Array.from(
-        fixture.nativeElement.querySelectorAll('ion-button') as NodeListOf<HTMLElement>,
-      ).find((element) =>
-        (element.textContent ?? '').replace(/\s+/g, ' ').includes(label),
-      ) as HTMLElement | undefined;
-
-      expect(button).not.toBeUndefined();
-
-      button!.dispatchEvent(
-        new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }),
-      );
-
+    const stabilize = async () => {
       fixture.detectChanges();
       await fixture.whenStable();
     };
 
-    const clickTab = async (tab: string) => {
-      const tabButton = fixture.nativeElement.querySelector(
-        `ion-tab-button[tab="${tab}"]`,
-      ) as HTMLElement | null;
+    const renderedText = () => normalizeText(fixture.nativeElement.textContent);
 
-      expect(tabButton).not.toBeNull();
+    const findButton = (label: string) =>
+      Array.from(
+        fixture.nativeElement.querySelectorAll(
+          'ion-button',
+        ) as NodeListOf<HTMLElement>,
+      ).find((element) => normalizeText(element.textContent).includes(label));
 
-      tabButton!.dispatchEvent(
+    const hasButtonWithText = (label: string) => findButton(label) !== undefined;
+
+    const clickElement = async (element: HTMLElement | null | undefined) => {
+      expect(element).toBeTruthy();
+
+      if (!element) {
+        return;
+      }
+
+      element.dispatchEvent(
         new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }),
       );
 
-      fixture.detectChanges();
-      await fixture.whenStable();
+      await stabilize();
+    };
+
+    const clickButton = async (label: string) => clickElement(findButton(label));
+
+    const clickTab = async (tab: string) => {
+      await clickElement(
+        fixture.nativeElement.querySelector(
+          `ion-tab-button[tab="${tab}"]`,
+        ) as HTMLElement | null,
+      );
     };
 
     await router.navigateByUrl('/');
-    fixture.detectChanges();
-    await fixture.whenStable();
+    await stabilize();
 
     expect(router.url).toBe('/intro');
     expect(renderedText()).toContain('Intro screen');
@@ -88,15 +93,6 @@ describe('AppComponent', () => {
     expect(renderedText()).toContain('Current');
     expect(renderedText()).toContain('Completed');
     expect(renderedText()).toContain('Locked');
-
-    const hasButtonWithText = (label: string) =>
-      Array.from(
-        fixture.nativeElement.querySelectorAll(
-          'ion-button',
-        ) as NodeListOf<HTMLElement>,
-      ).some((button) =>
-        (button.textContent ?? '').replace(/\s+/g, ' ').includes(label),
-      );
 
     expect(hasButtonWithText('Current workout')).toBe(true);
     expect(hasButtonWithText('Completed workout')).toBe(false);

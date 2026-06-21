@@ -15,4 +15,11 @@ export const workoutRoutes: Routes = [
         (m) => m.WorkoutCompletionPage,
       ),
   },
+  {
+    path: 'completed-workout-detail',
+    loadComponent: () =>
+      import('./pages/completed-workout-detail/completed-workout-detail').then(
+        (m) => m.CompletedWorkoutDetailPage,
+      ),
+  },
 ];
