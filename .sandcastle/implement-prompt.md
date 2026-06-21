@@ -37,7 +37,7 @@ Pick the highest-priority open issue that is not blocked by another open issue.
 
 ## Mandatory Skills
 
-Before implementing anything, you MUST read and follow both project skills:
+Before implementing anything, first read the `AGENTS.md` file and you MUST load and follow both project skills:
 
 1. `tdd` at `.agents/skills/tdd/SKILL.md`
 2. `ionic-angular` at `.agents/skills/ionic-angular/SKILL.md`
