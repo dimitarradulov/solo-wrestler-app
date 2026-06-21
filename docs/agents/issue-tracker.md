@@ -11,7 +11,7 @@ Issues and PRDs for this repo live as GitHub issues. Use the `gh` CLI for all op
 - **Apply / remove labels**: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
 - **Close**: `gh issue close <number> --comment "..."`
 
-This repo currently has no Git remote configured. Once a GitHub remote is added, `gh` can infer the repository automatically when run inside this clone. Until then, pass the repository explicitly with `--repo OWNER/REPO` when needed.
+Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
 
 ## When a skill says "publish to the issue tracker"
 
