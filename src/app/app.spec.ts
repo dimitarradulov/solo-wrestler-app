@@ -69,6 +69,19 @@ describe('AppComponent', () => {
     expect(renderedText()).toContain('Today screen');
     expect(fixture.nativeElement.querySelector('ion-tab-bar')).not.toBeNull();
 
+    await clickButton('Start Workout');
+    expect(router.url).toBe('/active-workout');
+    expect(renderedText()).toContain('Active Workout screen');
+
+    await clickButton('Complete Workout');
+    expect(router.url).toBe('/workout-completion');
+    expect(renderedText()).toContain('Workout Completion screen');
+
+    await clickButton('Back to Today');
+    expect(router.url).toBe('/tabs/today');
+    expect(renderedText()).toContain('Today screen');
+    expect(fixture.nativeElement.querySelector('ion-tab-bar')).not.toBeNull();
+
     await clickTab('curriculum');
     expect(router.url).toBe('/tabs/curriculum');
     expect(renderedText()).toContain('Curriculum screen');

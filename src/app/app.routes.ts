@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { firstLaunchRoutes } from './core/first-launch/first-launch.routes';
 import { trainingRoutes } from './features/training/training.routes';
+import { workoutRoutes } from './features/training/workout.routes';
 
 export const routes: Routes = [
   {
@@ -9,6 +10,7 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   ...firstLaunchRoutes,
+  ...workoutRoutes,
   {
     path: 'tabs',
     loadComponent: () =>

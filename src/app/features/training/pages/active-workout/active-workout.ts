@@ -3,9 +3,9 @@ import { RouterLink } from '@angular/router';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
 
 @Component({
-  selector: 'app-today',
-  templateUrl: 'today.html',
+  selector: 'app-active-workout',
+  templateUrl: 'active-workout.html',
   standalone: true,
   imports: [IonButton, IonContent, RouterLink],
 })
-export class TodayPage {}
+export class ActiveWorkoutPage {}
