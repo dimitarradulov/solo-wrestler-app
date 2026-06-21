@@ -86,7 +86,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     const implement = await sandbox.run({
       name: "implementer",
       maxIterations: 1,
-      agent: sandcastle.codex("gpt-5.4", { effort: "medium" }),
+      agent: sandcastle.codex("gpt-5.4-mini", { effort: "xhigh" }),
       promptFile: "./.sandcastle/implement-prompt.md",
     });
 
@@ -110,7 +110,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     await sandbox.run({
       name: "reviewer",
       maxIterations: 1,
-      agent: sandcastle.codex("gpt-5.5", { effort: "high" }),
+      agent: sandcastle.codex("gpt-5.4", { effort: "high" }),
       promptFile: "./.sandcastle/review-prompt.md",
       promptArgs: {
         BRANCH: branch,

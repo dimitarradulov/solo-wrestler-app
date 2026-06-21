@@ -12,6 +12,10 @@ Use the mapping above to determine issue eligibility. Only issues with the track
 
 The list above has already been filtered to issues ready for work and is the sole source of truth for what work exists. Do not run your own unfiltered query to find more issues — if the list is empty, there is nothing to do.
 
+## PRD issues
+
+Issues with "PRD" in the title are Product Requirements Documents, not implementation slices. Do not pick them as work items. The PRD is the single source of truth for a feature and remains open until all of its implementation slices have been completed and verified.
+
 ## Recent RALPH commits (last 10)
 
 !`git log --oneline --grep="RALPH" -10`
@@ -52,12 +56,14 @@ Those skills own the TDD workflow and Ionic Angular conventions. Do not restate 
    - List key decisions made
    - List files changed
    - Note any blockers for the next iteration
-6. **Close** — close the issue with `gh issue close <ID> --comment "Completed by Sandcastle"` explaining what was done.
+6. **Merge to main** — if the work was done in a git worktree, merge the changes into the main branch before closing the issue.
+7. **Close** — close the issue with `gh issue close <ID> --comment "Completed by Sandcastle"` explaining what was done.
 
 ## Rules
 
 - Work on **one issue per iteration**. Do not attempt multiple issues in a single iteration.
 - Do not close an issue until you have committed the fix and verified tests pass.
+- Changes made in a git worktree must be merged into the main branch before the issue is closed.
 - Do not leave commented-out code or TODO comments in committed code.
 - If you are blocked (missing context, failing tests you cannot fix, external dependency), leave a comment on the issue and move on — do not close it.
 

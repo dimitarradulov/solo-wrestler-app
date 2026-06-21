@@ -49,6 +49,7 @@ If you find improvements to make:
 1. Make the changes directly on this branch
 2. Run tests and type checking to ensure nothing is broken
 3. Commit describing the refinements
+4. Merge worktree changes into the main branch if the reviewed branch was developed in a git worktree
 
 If the code is already clean and well-structured, do nothing.
 
