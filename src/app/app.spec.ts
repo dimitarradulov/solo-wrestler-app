@@ -5,7 +5,7 @@ import { AppComponent } from './app';
 import { routes } from './app.routes';
 
 describe('AppComponent', () => {
-  it('navigates between the primary tabs through rendered tab buttons', async () => {
+  it('navigates from intro through the primary tab shell', async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [provideIonicAngular({}), provideRouter(routes)],
@@ -18,6 +18,23 @@ describe('AppComponent', () => {
 
     const renderedText = () =>
       (fixture.nativeElement.textContent ?? '').replace(/\s+/g, ' ').trim();
+
+    const clickButton = async (label: string) => {
+      const button = Array.from(
+        fixture.nativeElement.querySelectorAll('ion-button') as NodeListOf<HTMLElement>,
+      ).find((element) =>
+        (element.textContent ?? '').replace(/\s+/g, ' ').includes(label),
+      ) as HTMLElement | undefined;
+
+      expect(button).not.toBeUndefined();
+
+      button!.dispatchEvent(
+        new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }),
+      );
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+    };
 
     const clickTab = async (tab: string) => {
       const tabButton = fixture.nativeElement.querySelector(
@@ -38,8 +55,19 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
+    expect(router.url).toBe('/intro');
+    expect(renderedText()).toContain('Intro screen');
+    expect(fixture.nativeElement.querySelector('ion-tab-bar')).toBeNull();
+
+    await clickButton('Continue');
+    expect(router.url).toBe('/safety-disclaimer');
+    expect(renderedText()).toContain('Safety Disclaimer screen');
+    expect(fixture.nativeElement.querySelector('ion-tab-bar')).toBeNull();
+
+    await clickButton('I Understand');
     expect(router.url).toBe('/tabs/today');
     expect(renderedText()).toContain('Today screen');
+    expect(fixture.nativeElement.querySelector('ion-tab-bar')).not.toBeNull();
 
     await clickTab('curriculum');
     expect(router.url).toBe('/tabs/curriculum');
@@ -52,8 +80,5 @@ describe('AppComponent', () => {
     await clickTab('about');
     expect(router.url).toBe('/tabs/about');
     expect(renderedText()).toContain('About screen');
-
-    await clickTab('today');
-    expect(router.url).toBe('/tabs/today');
   });
 });

@@ -1,12 +1,14 @@
 import { Routes } from '@angular/router';
+import { firstLaunchRoutes } from './core/first-launch/first-launch.routes';
 import { trainingRoutes } from './features/training/training.routes';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'tabs/today',
+    redirectTo: 'intro',
     pathMatch: 'full',
   },
+  ...firstLaunchRoutes,
   {
     path: 'tabs',
     loadComponent: () =>
@@ -27,6 +29,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'tabs/today',
+    redirectTo: 'intro',
   },
 ];
