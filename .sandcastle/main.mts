@@ -57,7 +57,14 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
   // This gives both agents a real, named branch that persists across phases.
   const sandbox = await sandcastle.createSandbox({
     branch,
-    sandbox: docker(),
+    sandbox: docker({
+      mounts: [
+        {
+          hostPath: "~/.codex",
+          sandboxPath: "/home/agent/.codex",
+        },
+      ],
+    }),
     hooks,
     copyToWorktree,
   });
@@ -79,7 +86,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     const implement = await sandbox.run({
       name: "implementer",
       maxIterations: 1,
-      agent: sandcastle.codex("gpt-5.4"),
+      agent: sandcastle.codex("gpt-5.4", { effort: "medium" }),
       promptFile: "./.sandcastle/implement-prompt.md",
     });
 
@@ -103,7 +110,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     await sandbox.run({
       name: "reviewer",
       maxIterations: 1,
-      agent: sandcastle.codex("gpt-5.4"),
+      agent: sandcastle.codex("gpt-5.5", { effort: "high" }),
       promptFile: "./.sandcastle/review-prompt.md",
       promptArgs: {
         BRANCH: branch,

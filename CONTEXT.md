@@ -4,6 +4,10 @@ Solo Wrestler is a personal solo wrestling curriculum app. Its language describe
 
 ## Language
 
+**Today**:
+The main screen that shows the user's current place in the curriculum and what to train next.
+_Avoid_: Home, dashboard
+
 **Completed**:
 A drill or workout the user has finished.
 _Avoid_: Done, cleared

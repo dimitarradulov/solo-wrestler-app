@@ -8,13 +8,14 @@ Always consult `docs/PRD.md` and `docs/DESIGN.md` before making implementation o
 
 ## Build, Test, and Development Commands
 
-- `npm start` runs the Angular dev server for local browser development.
-- `npm run build` creates a production Angular build in `www/`.
-- `npm run watch` rebuilds continuously with the development configuration.
+- `ionic serve` runs the Ionic development server with live reload in the browser.
+- `ionic build` creates the web build in `www/`.
+- `ionic build --watch` rebuilds the web app continuously.
+- `ionic capacitor sync` builds the web app, copies it into both native projects, and updates native dependencies and plugins. Pass `android` or `ios` to sync only one platform.
+- `npx cap run android` or `npx cap run ios` syncs, builds, and deploys the native app to a selected device or emulator.
+- `npx cap open android` or `npx cap open ios` opens the native project in Android Studio or Xcode.
 - `npm test` runs the Jasmine/Karma unit test suite.
 - `npm run lint` checks TypeScript and Angular templates with ESLint.
-
-Use `npx cap sync` after web builds when native Capacitor projects need updated web assets or plugin changes.
 
 ## Testing Guidelines
 
