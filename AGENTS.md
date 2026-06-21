@@ -14,12 +14,14 @@ Always consult `docs/PRD.md` and `docs/DESIGN.md` before making implementation o
 - `ionic capacitor sync` builds the web app, copies it into both native projects, and updates native dependencies and plugins. Pass `android` or `ios` to sync only one platform.
 - `npx cap run android` or `npx cap run ios` syncs, builds, and deploys the native app to a selected device or emulator.
 - `npx cap open android` or `npx cap open ios` opens the native project in Android Studio or Xcode.
-- `npm test` runs the Jasmine/Karma unit test suite.
+- `npm test` runs the Vitest unit test suite through Angular's unit-test builder.
 - `npm run lint` checks TypeScript and Angular templates with ESLint.
 
 ## Testing Guidelines
 
-Unit tests use Jasmine with Karma. Place specs beside the code under test using the `*.spec.ts` suffix, as in `home.page.spec.ts`. Run `npm test` before submitting behavior changes, and use the CI-style Angular test configuration when adding automation: `npx ng test --configuration ci`.
+Unit tests use Vitest with jsdom through Angular's experimental unit-test builder. Place specs beside the code under test using the `*.spec.ts` suffix, as in `home.page.spec.ts`. Use Vitest APIs for spies, mocks, and timers. Run `npm test` before submitting behavior changes, and use the CI-style Angular test configuration when adding automation: `npx ng test --configuration ci`.
+
+Angular 20.3 requires Node.js 20.19+ or 22.12+. Prefer an LTS release; the test and application builders are not reliable with the unsupported Node.js 25 runtime.
 
 ## Commit & Pull Request Guidelines
 
