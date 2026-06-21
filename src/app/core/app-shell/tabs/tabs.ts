@@ -1,16 +1,32 @@
 import { Component } from '@angular/core';
 import {
+  IonIcon,
   IonLabel,
-  IonRouterOutlet,
   IonTabBar,
   IonTabButton,
   IonTabs,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import {
+  barbellOutline,
+  informationCircleOutline,
+  statsChartOutline,
+  todayOutline,
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-tabs',
   templateUrl: 'tabs.html',
   standalone: true,
-  imports: [IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonLabel],
+  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
 })
-export class TabsPage {}
+export class TabsPage {
+  constructor() {
+    addIcons({
+      barbellOutline,
+      informationCircleOutline,
+      statsChartOutline,
+      todayOutline,
+    });
+  }
+}
