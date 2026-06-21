@@ -115,5 +115,11 @@ describe('AppComponent', () => {
     await clickTab('about');
     expect(router.url).toBe('/tabs/about');
     expect(renderedText()).toContain('About screen');
+
+    await router.navigateByUrl('/not-a-real-route');
+    await stabilize();
+
+    expect(router.url).toBe('/intro');
+    expect(renderedText()).toContain('Intro screen');
   });
 });
