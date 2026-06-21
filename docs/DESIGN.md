@@ -60,6 +60,9 @@ BRAND SIGNATURES
   └── Scoreboard Blue:  #0066FF  (Secondary structural anchor / Navigation highlights)
 ```
 
+### 2.3 Action Color Semantics
+Scoreboard Blue is the default primary action color for repeated controls such as Start, Resume, Mark Complete, and Save. Wrestling Red is reserved for current/unlocked curriculum emphasis, attention states, and high-intensity accents.
+
 ### 2.2 Semantic State Engine
 Color rules dictating interactive workflow parameters across cards, navigation matrices, and indicators:
 
@@ -153,6 +156,12 @@ When duration or round configurations are activated, the card interface minimize
 
 ## 4. Visual Layout & Micro-Interactions
 
+### 4.0 Implementation Units
+Design tokens use `rem` for typography and spacing so text and layout respect user scaling. Fixed geometry such as borders, dividers, and radii uses `px`. Do not use `pt` or `mm` in implementation.
+
+### 4.0.1 Responsive Target
+Mobile portrait is the primary layout target for the MVP. Larger screens use centered, constrained layouts rather than separate desktop navigation or dashboard patterns.
+
 ### 4.1 Border Radii & Structural Geometry
 *   Main Application Drill Cards: `12px`
 *   Input Components, Buttons, Action Sheets, and Status Chips: `8px`
@@ -167,3 +176,6 @@ Layout configurations use an exact `8pt` multiplier logic mapping layer definiti
 ### 4.3 Screen-Transition Physics (CSS Transition Hooks)
 *   **Drill Complete Transition:** When a drill transitions to a completed state, the component morphs its state properties over an absolute window of `200ms` using a linear ease function (`transition: background-color 200ms ease, border-color 200ms ease`).
 *   **Timer Phase Snap Changes:** The switch between Work state colors (`#FFB703`) and Rest state colors (`#0066FF`) triggers with a zero-duration hard frame refresh cut (`0ms`), ensuring instant athletic clarity on the mat space.
+
+### 4.4 Accessibility Baseline
+Interactive elements use visible focus rings derived from Scoreboard Blue and sized for reliable touch interaction. Non-essential transitions are disabled when the user has reduced motion enabled. Status components must pair color with text or iconography so curriculum and timer state does not depend on color alone.

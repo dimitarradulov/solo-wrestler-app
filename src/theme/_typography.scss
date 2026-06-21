@@ -1,0 +1,72 @@
+@mixin sw-typography {
+  h1,
+  h2,
+  h3,
+  .sw-heading {
+    color: var(--sw-color-text-high);
+    font-family: var(--sw-font-display);
+    line-height: var(--sw-leading-tight);
+    margin: 0;
+  }
+
+  h1,
+  .sw-heading--hero {
+    font-size: var(--sw-text-h1);
+    font-weight: 800;
+    letter-spacing: var(--sw-tracking-h1);
+    text-transform: uppercase;
+  }
+
+  h2,
+  .sw-heading--section {
+    font-size: var(--sw-text-h2);
+    font-weight: 700;
+    letter-spacing: var(--sw-tracking-h2);
+    text-transform: uppercase;
+  }
+
+  h3,
+  .sw-heading--component {
+    font-size: var(--sw-text-h3);
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .sw-text-lead {
+    color: var(--sw-color-text-medium);
+    font-size: var(--sw-text-subtitle);
+    font-weight: 500;
+    line-height: var(--sw-leading-body);
+  }
+
+  .sw-text-body {
+    color: var(--sw-color-text-medium);
+    font-size: var(--sw-text-body);
+    line-height: var(--sw-leading-body);
+  }
+
+  .sw-text-muted {
+    color: var(--sw-color-text-muted);
+  }
+
+  .sw-text-prescription {
+    color: var(--sw-color-text-muted);
+    font-size: var(--sw-text-prescription);
+    font-weight: 700;
+  }
+
+  .sw-text-cue {
+    color: var(--sw-color-text-high);
+    font-size: var(--sw-text-subtitle);
+    font-weight: 600;
+    line-height: var(--sw-leading-body);
+  }
+
+  .sw-text-active {
+    font-family: var(--sw-font-display);
+    font-style: italic;
+  }
+}
