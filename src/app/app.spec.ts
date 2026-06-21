@@ -105,6 +105,16 @@ describe('AppComponent', () => {
     await clickTab('progress');
     expect(router.url).toBe('/tabs/progress');
     expect(renderedText()).toContain('Progress screen');
+    expect(renderedText()).toContain('Completed workout');
+    expect(hasButtonWithText('Completed workout')).toBe(true);
+
+    await clickButton('Completed workout');
+    expect(router.url).toBe('/completed-workout-detail');
+    expect(renderedText()).toContain('Completed Workout Detail screen');
+
+    await clickButton('Back to Progress');
+    expect(router.url).toBe('/tabs/progress');
+    expect(renderedText()).toContain('Progress screen');
 
     await clickTab('about');
     expect(router.url).toBe('/tabs/about');
