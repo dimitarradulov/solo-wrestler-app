@@ -85,6 +85,22 @@ describe('AppComponent', () => {
     await clickTab('curriculum');
     expect(router.url).toBe('/tabs/curriculum');
     expect(renderedText()).toContain('Curriculum screen');
+    expect(renderedText()).toContain('Current');
+    expect(renderedText()).toContain('Completed');
+    expect(renderedText()).toContain('Locked');
+
+    const hasButtonWithText = (label: string) =>
+      Array.from(
+        fixture.nativeElement.querySelectorAll(
+          'ion-button',
+        ) as NodeListOf<HTMLElement>,
+      ).some((button) =>
+        (button.textContent ?? '').replace(/\s+/g, ' ').includes(label),
+      );
+
+    expect(hasButtonWithText('Current workout')).toBe(true);
+    expect(hasButtonWithText('Completed workout')).toBe(false);
+    expect(hasButtonWithText('Locked workout')).toBe(false);
 
     await clickTab('progress');
     expect(router.url).toBe('/tabs/progress');
