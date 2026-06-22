@@ -2,11 +2,48 @@ import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { routes } from '../../../../app.routes';
+import { ONBOARDING_COMPLETE_KEY } from '../../onboarding-completion-store';
 import { SafetyDisclaimerPage } from './safety-disclaimer';
 
 describe('SafetyDisclaimerPage', () => {
   const normalizeText = (value: string | null | undefined) =>
     (value ?? '').replace(/\s+/g, ' ').trim();
+  const createStorage = (): Storage => {
+    const values = new Map<string, string>();
+
+    return {
+      get length() {
+        return values.size;
+      },
+      clear: () => values.clear(),
+      getItem: (key: string) => values.get(key) ?? null,
+      key: (index: number) => Array.from(values.keys())[index] ?? null,
+      removeItem: (key: string) => {
+        values.delete(key);
+      },
+      setItem: (key: string, value: string) => {
+        values.set(key, value);
+      },
+    };
+  };
+
+  let storage: Storage;
+  const originalLocalStorage = window.localStorage;
+
+  beforeEach(() => {
+    storage = createStorage();
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      value: storage,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      value: originalLocalStorage,
+    });
+  });
 
   const setup = async () => {
     await TestBed.configureTestingModule({
@@ -75,5 +112,6 @@ describe('SafetyDisclaimerPage', () => {
     await fixture.whenStable();
 
     expect(router.url).toBe('/tabs/today');
+    expect(storage.getItem(ONBOARDING_COMPLETE_KEY)).toBe('true');
   });
 });
