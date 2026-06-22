@@ -5,6 +5,7 @@ import { IonButton, IonContent } from '@ionic/angular/standalone';
 @Component({
   selector: 'app-intro',
   templateUrl: 'intro.html',
+  styleUrl: 'intro.scss',
   standalone: true,
   imports: [IonButton, IonContent, RouterLink],
 })

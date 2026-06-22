@@ -1,0 +1,68 @@
+.intro-content {
+  --background: var(--sw-color-canvas);
+}
+
+.intro-scroll {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  text-align: center;
+  padding-top: max(var(--sw-space-4), var(--ion-safe-area-top));
+  padding-right: var(--sw-space-4);
+  padding-bottom: var(--sw-space-4);
+  padding-left: var(--sw-space-4);
+}
+
+.intro-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sw-space-4);
+  margin-bottom: var(--sw-space-5);
+}
+
+.intro-illustration {
+  width: 55%;
+  max-width: 240px;
+  height: auto;
+}
+
+.intro-title {
+  text-align: center;
+}
+
+.intro-title__solo {
+  color: var(--sw-color-accent-red);
+}
+
+.intro-title__wrestler {
+  color: var(--sw-color-action-primary);
+}
+
+.intro-tagline {
+  color: var(--sw-color-text-medium);
+  font-family: var(--sw-font-body);
+  font-size: var(--sw-text-subtitle);
+  font-weight: 600;
+  line-height: var(--sw-leading-body);
+  margin: 0 0 var(--sw-space-3);
+  max-width: var(--sw-content-max-width);
+}
+
+.intro-description {
+  color: var(--sw-color-text-medium);
+  font-family: var(--sw-font-body);
+  font-size: var(--sw-text-body);
+  line-height: var(--sw-leading-body);
+  margin: 0;
+  max-width: var(--sw-content-max-width);
+}
+
+.intro-continue {
+  margin-top: auto;
+  margin-inline: 0;
+  margin-bottom: max(var(--sw-space-4), var(--ion-safe-area-bottom));
+  align-self: stretch;
+}

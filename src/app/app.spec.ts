@@ -61,7 +61,13 @@ describe('AppComponent', () => {
     await stabilize();
 
     expect(router.url).toBe('/intro');
-    expect(renderedText()).toContain('Intro screen');
+    expect(renderedText()).toContain('Solo Wrestler');
+    expect(renderedText()).toContain(
+      'Follow a real wrestling curriculum, adapted for solo training.',
+    );
+    expect(renderedText()).toContain(
+      'Build wrestling fundamentals step by step using a curriculum based on USA Wrestling and adapted for solo practice, self-defense, and BJJ preparation.',
+    );
     expect(fixture.nativeElement.querySelector('ion-tab-bar')).toBeNull();
 
     await clickButton('Continue');
@@ -142,6 +148,6 @@ describe('AppComponent', () => {
     await stabilize();
 
     expect(router.url).toBe('/intro');
-    expect(renderedText()).toContain('Intro screen');
+    expect(renderedText()).toContain('Solo Wrestler');
   });
 });

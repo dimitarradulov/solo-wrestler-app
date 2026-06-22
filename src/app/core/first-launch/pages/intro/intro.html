@@ -1,7 +1,31 @@
-<ion-content class="ion-padding">
-  <h1>Intro screen</h1>
+<ion-content class="intro-content">
+  <div class="intro-scroll">
+    <div class="intro-brand">
+      <img class="intro-illustration" src="assets/icon-only.png" alt="" />
 
-  <ion-button routerLink="/safety-disclaimer" routerDirection="forward">
-    Continue
-  </ion-button>
+      <h1 class="intro-title">
+        <span class="intro-title__solo">Solo</span>&ngsp;
+        <span class="intro-title__wrestler">Wrestler</span>
+      </h1>
+    </div>
+
+    <p class="intro-tagline">
+      Follow a real wrestling curriculum, adapted for solo training.
+    </p>
+
+    <p class="intro-description">
+      Build wrestling fundamentals step by step using a curriculum based on USA
+      Wrestling and adapted for solo practice, self-defense, and BJJ
+      preparation.
+    </p>
+
+    <ion-button
+      class="intro-continue"
+      expand="block"
+      routerLink="/safety-disclaimer"
+      routerDirection="forward"
+    >
+      Continue
+    </ion-button>
+  </div>
 </ion-content>

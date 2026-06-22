@@ -148,6 +148,10 @@ Follow a real wrestling curriculum, adapted for solo training.
 
 Build wrestling fundamentals step by step using a curriculum based on USA Wrestling and adapted for solo practice, self-defense, and BJJ preparation.
 
+Button:
+
+**Continue**
+
 ### Safety Disclaimer Copy
 
 Train only on a safe mat surface. Do not dive head-first. Keep your head up and protect your neck. This app is for general training guidance, not professional coaching or medical advice.
