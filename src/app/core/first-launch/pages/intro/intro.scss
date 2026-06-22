@@ -1,18 +1,14 @@
+@use '../../page-shell' as firstLaunchPage;
+
 .intro-content {
-  --background: var(--sw-color-canvas);
+  @include firstLaunchPage.content();
 }
 
 .intro-scroll {
-  display: flex;
-  flex-direction: column;
+  @include firstLaunchPage.scrollLayout();
   justify-content: center;
   align-items: center;
-  min-height: 100%;
   text-align: center;
-  padding-top: max(var(--sw-space-4), var(--ion-safe-area-top));
-  padding-right: var(--sw-space-4);
-  padding-bottom: var(--sw-space-4);
-  padding-left: var(--sw-space-4);
 }
 
 .intro-brand {
