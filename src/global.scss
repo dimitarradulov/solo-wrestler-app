@@ -1,6 +1,5 @@
 @use "./theme/typography";
 @use "./theme/base";
-@use "./theme/components";
 
 /*
  * App Global CSS
@@ -31,4 +30,3 @@
 
 @include typography.sw-typography;
 @include base.sw-base;
-@include components.sw-components;
