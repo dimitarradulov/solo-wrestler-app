@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
+import { appShellRoutes } from './core/app-shell/app-shell.routes';
 import { firstLaunchRoutes } from './core/first-launch/first-launch.routes';
-import { trainingRoutes } from './features/training/training.routes';
 import { workoutRoutes } from './features/training/workout.routes';
 
 export const routes: Routes = [
@@ -11,24 +11,7 @@ export const routes: Routes = [
   },
   ...firstLaunchRoutes,
   ...workoutRoutes,
-  {
-    path: 'tabs',
-    loadComponent: () =>
-      import('./core/app-shell/tabs/tabs').then((m) => m.TabsPage),
-    children: [
-      {
-        path: '',
-        redirectTo: 'today',
-        pathMatch: 'full',
-      },
-      ...trainingRoutes,
-      {
-        path: 'about',
-        loadComponent: () =>
-          import('./features/about/pages/about/about').then((m) => m.AboutPage),
-      },
-    ],
-  },
+  ...appShellRoutes,
   {
     path: '**',
     redirectTo: 'intro',
