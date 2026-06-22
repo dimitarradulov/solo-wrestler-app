@@ -23,16 +23,6 @@ Unit tests use Vitest with jsdom through Angular's experimental unit-test builde
 
 Angular 20.3 requires Node.js 20.19+ or 22.12+. Prefer an LTS release; the test and application builders are not reliable with the unsupported Node.js 25 runtime.
 
-## Commit & Pull Request Guidelines
-
-Use concise imperative commit messages such as `Add workout timer page` or `Fix home page test setup`. Keep commits focused on one logical change.
-
-Pull requests should include a short summary, test results, linked issues when applicable, and screenshots or screen recordings for visible UI changes. Mention any Capacitor platform impact, especially changes requiring `npx cap sync`, Android Studio, or Xcode follow-up.
-
-## Security & Configuration Tips
-
-Do not commit secrets or local signing credentials. Keep environment-specific values in `src/environments/` or platform configuration files designed for that purpose, and document required local setup in the PR when it affects other contributors.
-
 ## 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
@@ -73,17 +63,3 @@ When your changes create orphans:
 - Don't remove pre-existing dead code unless asked.
 
 The test: Every changed line should trace directly to the user's request.
-
-## Agent skills
-
-### Issue tracker
-
-Issues and PRDs are tracked in GitHub Issues using the `gh` CLI. See `docs/agents/issue-tracker.md`.
-
-### Triage labels
-
-Triage labels use the default five-role vocabulary. See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-This repo uses a single-context domain documentation layout. See `docs/agents/domain.md`.
