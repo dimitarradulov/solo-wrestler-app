@@ -1,0 +1,51 @@
+:host {
+  display: block;
+  margin-top: var(--sw-space-5);
+}
+
+.curriculum-phase__header {
+  margin-bottom: var(--sw-space-4);
+}
+
+.curriculum-phase__meta {
+  color: var(--sw-color-text-muted);
+  font-family: var(--sw-font-body);
+  font-size: var(--sw-text-body);
+  margin-top: var(--sw-space-2);
+}
+
+.curriculum-grid {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  gap: var(--sw-space-3);
+}
+
+.curriculum-grid__header {
+  display: contents;
+}
+
+.curriculum-grid__header span {
+  color: var(--sw-color-text-muted);
+  font-family: var(--sw-font-body);
+  font-size: var(--sw-text-body);
+  font-weight: 600;
+  letter-spacing: var(--sw-tracking-action);
+  padding: 0 var(--sw-space-3);
+  text-transform: uppercase;
+}
+
+.curriculum-grid__row {
+  display: contents;
+}
+
+.curriculum-week {
+  align-items: center;
+  color: var(--sw-color-text-medium);
+  display: flex;
+  font-family: var(--sw-font-display);
+  font-size: var(--sw-text-body);
+  font-weight: 600;
+  letter-spacing: var(--sw-tracking-action);
+  padding: 0 var(--sw-space-3);
+  text-transform: uppercase;
+}

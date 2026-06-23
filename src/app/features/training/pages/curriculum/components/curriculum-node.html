@@ -1,0 +1,24 @@
+@if (isCurrent()) {
+  <a
+    class="curriculum-node curriculum-node--current"
+    [routerLink]="link()"
+    [attr.aria-label]="ariaLabel() ?? null">
+    <span class="curriculum-node__title">{{ title() }}</span>
+    <span class="curriculum-node__status">
+      {{ displayStatusText() }}
+      <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+    </span>
+  </a>
+} @else {
+  <div
+    class="curriculum-node curriculum-node--{{ status() }}"
+    [attr.aria-label]="ariaLabel() ?? null">
+    <ion-icon
+      class="curriculum-node__icon"
+      [name]="iconName()"
+      aria-hidden="true">
+    </ion-icon>
+    <span class="curriculum-node__title">{{ title() }}</span>
+    <span class="curriculum-node__status">{{ displayStatusText() }}</span>
+  </div>
+}

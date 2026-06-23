@@ -1,29 +1,19 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { IonContent, IonIcon } from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
 
-type CurriculumNodeStatus = 'completed' | 'current' | 'locked';
-
-interface DummyWorkout {
-  label: string;
-  title: string;
-  status: CurriculumNodeStatus;
-}
-
-interface DummyWeek {
-  number: number;
-  workouts: DummyWorkout[];
-}
+import { CurriculumNodeComponent } from './components/curriculum-node';
+import { CurriculumPhaseComponent } from './components/curriculum-phase';
+import { CurriculumWeek } from './curriculum.model';
 
 @Component({
   selector: 'app-curriculum',
   templateUrl: 'curriculum.html',
   styleUrls: ['curriculum.scss'],
   standalone: true,
-  imports: [IonContent, IonIcon, RouterLink],
+  imports: [IonContent, CurriculumPhaseComponent, CurriculumNodeComponent],
 })
 export class CurriculumPage {
-  weeks: DummyWeek[] = [
+  weeks: CurriculumWeek[] = [
     {
       number: 1,
       workouts: [

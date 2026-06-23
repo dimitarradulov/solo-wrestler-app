@@ -1,66 +1,16 @@
 <ion-content class="curriculum-content ion-padding">
   <h1>Curriculum</h1>
 
-  <section class="curriculum-phase" aria-labelledby="phase-1-heading">
-    <header class="curriculum-phase__header">
-      <h2 id="phase-1-heading">Phase 1: Foundations</h2>
-      <p class="curriculum-phase__meta">
-        6 weeks · 2 workouts/week · 12 total workouts
-      </p>
-    </header>
+  <app-curriculum-phase
+    headingId="phase-1-heading"
+    title="Phase 1: Foundations"
+    meta="6 weeks · 2 workouts/week · 12 total workouts"
+    [weeks]="weeks" />
 
-    <div class="curriculum-grid" aria-label="Phase 1 curriculum">
-      <div class="curriculum-grid__header">
-        <span>Week</span>
-        <span>Workout A</span>
-        <span>Workout B</span>
-      </div>
-
-      @for (week of weeks; track week.number) {
-        <div class="curriculum-grid__row">
-          <div class="curriculum-week">
-            Week {{ week.number }}
-          </div>
-
-          @for (workout of week.workouts; track $index) {
-            @if (workout.status === 'current') {
-              <a
-                class="curriculum-node curriculum-node--current"
-                routerLink="/active-workout"
-                [attr.aria-label]="'Start ' + workout.label + ', ' + workout.title">
-                <span class="curriculum-node__title">{{ workout.title }}</span>
-                <span class="curriculum-node__status">
-                  Start
-                  <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
-                </span>
-              </a>
-            } @else {
-              <div
-                class="curriculum-node curriculum-node--{{ workout.status }}"
-                [attr.aria-label]="workout.label + ', ' + workout.status">
-                <ion-icon
-                  class="curriculum-node__icon"
-                  [name]="workout.status === 'completed' ? 'checkmark' : 'lock-closed'"
-                  aria-hidden="true">
-                </ion-icon>
-                <span class="curriculum-node__title">{{ workout.title }}</span>
-                <span class="curriculum-node__status">
-                  {{ workout.status === 'completed' ? 'Done' : 'Locked' }}
-                </span>
-              </div>
-            }
-          }
-        </div>
-      }
-    </div>
-  </section>
-
-  <section class="curriculum-phase curriculum-phase--future" aria-label="Future phases">
-    <div class="curriculum-node curriculum-node--locked">
-      <ion-icon class="curriculum-node__icon" name="lock-closed" aria-hidden="true"></ion-icon>
-      <span class="curriculum-node__title">Phase 2</span>
-      <span class="curriculum-node__status">Coming Soon</span>
-    </div>
+  <section class="curriculum-future-phase" aria-label="Future phases">
+    <app-curriculum-node
+      title="Phase 2"
+      status="locked"
+      statusText="Coming Soon" />
   </section>
 </ion-content>
-

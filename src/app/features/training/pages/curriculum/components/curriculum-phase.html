@@ -1,0 +1,29 @@
+<section class="curriculum-phase" [attr.aria-labelledby]="headingId()">
+  <header class="curriculum-phase__header">
+    <h2 [id]="headingId()">{{ title() }}</h2>
+    <p class="curriculum-phase__meta">{{ meta() }}</p>
+  </header>
+
+  <div class="curriculum-grid" [attr.aria-label]="title() + ' curriculum'">
+    <div class="curriculum-grid__header">
+      <span>Week</span>
+      <span>Workout A</span>
+      <span>Workout B</span>
+    </div>
+
+    @for (week of weeks(); track week.number) {
+      <div class="curriculum-grid__row">
+        <div class="curriculum-week">
+          Week {{ week.number }}
+        </div>
+
+        @for (workout of week.workouts; track $index) {
+          <app-curriculum-node
+            [title]="workout.title"
+            [status]="workout.status"
+            [label]="workout.label" />
+        }
+      </div>
+    }
+  </div>
+</section>
