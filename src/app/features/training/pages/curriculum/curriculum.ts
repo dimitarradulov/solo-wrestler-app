@@ -17,43 +17,43 @@ export class CurriculumPage {
     {
       number: 1,
       workouts: [
-        { label: 'Workout A', title: 'Lorem Workout A', status: 'completed' },
-        { label: 'Workout B', title: 'Lorem Workout B', status: 'completed' },
+        { label: 'Workout A', title: 'Mechanics', status: 'completed' },
+        { label: 'Workout B', title: 'Application', status: 'completed' },
       ],
     },
     {
       number: 2,
       workouts: [
-        { label: 'Workout A', title: 'Lorem Workout A', status: 'current' },
-        { label: 'Workout B', title: 'Lorem Workout B', status: 'locked' },
+        { label: 'Workout A', title: 'Mechanics', status: 'current' },
+        { label: 'Workout B', title: 'Application', status: 'locked' },
       ],
     },
     {
       number: 3,
       workouts: [
-        { label: 'Workout A', title: 'Lorem Workout A', status: 'locked' },
-        { label: 'Workout B', title: 'Lorem Workout B', status: 'locked' },
+        { label: 'Workout A', title: 'Mechanics', status: 'locked' },
+        { label: 'Workout B', title: 'Application', status: 'locked' },
       ],
     },
     {
       number: 4,
       workouts: [
-        { label: 'Workout A', title: 'Lorem Workout A', status: 'locked' },
-        { label: 'Workout B', title: 'Lorem Workout B', status: 'locked' },
+        { label: 'Workout A', title: 'Mechanics', status: 'locked' },
+        { label: 'Workout B', title: 'Application', status: 'locked' },
       ],
     },
     {
       number: 5,
       workouts: [
-        { label: 'Workout A', title: 'Lorem Workout A', status: 'locked' },
-        { label: 'Workout B', title: 'Lorem Workout B', status: 'locked' },
+        { label: 'Workout A', title: 'Mechanics', status: 'locked' },
+        { label: 'Workout B', title: 'Application', status: 'locked' },
       ],
     },
     {
       number: 6,
       workouts: [
-        { label: 'Workout A', title: 'Lorem Workout A', status: 'locked' },
-        { label: 'Workout B', title: 'Lorem Workout B', status: 'locked' },
+        { label: 'Workout A', title: 'Mechanics', status: 'locked' },
+        { label: 'Workout B', title: 'Application', status: 'locked' },
       ],
     },
   ];
