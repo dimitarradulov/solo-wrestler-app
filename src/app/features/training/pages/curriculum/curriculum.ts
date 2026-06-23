@@ -17,14 +17,14 @@ export class CurriculumPage {
     {
       number: 1,
       workouts: [
-        { label: 'Workout A', title: 'Mechanics', status: 'completed' },
-        { label: 'Workout B', title: 'Application', status: 'completed' },
+        { label: 'Workout A', title: 'Mechanics', status: 'current' },
+        { label: 'Workout B', title: 'Application', status: 'locked' },
       ],
     },
     {
       number: 2,
       workouts: [
-        { label: 'Workout A', title: 'Mechanics', status: 'current' },
+        { label: 'Workout A', title: 'Mechanics', status: 'locked' },
         { label: 'Workout B', title: 'Application', status: 'locked' },
       ],
     },
