@@ -7,11 +7,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint",
-    "sandcastle": "npx tsx .sandcastle/main.mts"
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
