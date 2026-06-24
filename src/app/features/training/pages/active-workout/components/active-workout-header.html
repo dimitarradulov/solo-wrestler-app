@@ -1,0 +1,23 @@
+<header class="hdr">
+  @if (phaseTitle(); as phase) {
+    <p class="phase">{{ phase }}</p>
+  }
+
+  <p class="label">Week {{ workout().weekNumber }} · {{ workout().label }}</p>
+  <h1>{{ workout().title }}</h1>
+  <p class="focus">{{ workoutTemplate().focus }}</p>
+
+  <dl class="meta" aria-label="Workout details">
+    <div>
+      <dt>Duration</dt>
+      <dd>{{ estimatedMinutes() }}</dd>
+    </div>
+  </dl>
+
+  @if (progressionFocus(); as focus) {
+    <p class="prog">
+      <strong>Progression focus</strong>
+      {{ focus }}
+    </p>
+  }
+</header>

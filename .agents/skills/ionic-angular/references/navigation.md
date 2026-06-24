@@ -9,21 +9,21 @@ Angular Router integration with Ionic components for page navigation, tabs, and 
 Define routes in `src/app/app.routes.ts`:
 
 ```typescript
-import { Routes } from '@angular/router';
+import { Routes } from "@angular/router";
 
 export const routes: Routes = [
   {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full',
+    path: "",
+    redirectTo: "home",
+    pathMatch: "full",
   },
   {
-    path: 'home',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
+    path: "home",
+    loadComponent: () => import("./home/home.page").then((m) => m.HomePage),
   },
   {
-    path: 'detail/:id',
-    loadComponent: () => import('./detail/detail.page').then((m) => m.DetailPage),
+    path: "detail/:id",
+    loadComponent: () => import("./detail/detail.page").then((m) => m.DetailPage),
   },
 ];
 ```
@@ -31,10 +31,10 @@ export const routes: Routes = [
 Register in `src/app/app.config.ts`:
 
 ```typescript
-import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { provideIonicAngular } from '@ionic/angular/standalone';
-import { routes } from './app.routes';
+import { ApplicationConfig } from "@angular/core";
+import { provideRouter } from "@angular/router";
+import { provideIonicAngular } from "@ionic/angular/standalone";
+import { routes } from "./app.routes";
 
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes), provideIonicAngular({})],
@@ -46,22 +46,22 @@ export const appConfig: ApplicationConfig = {
 Define routes in `src/app/app-routing.module.ts`:
 
 ```typescript
-import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 
 const routes: Routes = [
   {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full',
+    path: "",
+    redirectTo: "home",
+    pathMatch: "full",
   },
   {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then((m) => m.HomePageModule),
+    path: "home",
+    loadChildren: () => import("./home/home.module").then((m) => m.HomePageModule),
   },
   {
-    path: 'detail/:id',
-    loadChildren: () => import('./detail/detail.module').then((m) => m.DetailPageModule),
+    path: "detail/:id",
+    loadChildren: () => import("./detail/detail.module").then((m) => m.DetailPageModule),
   },
 ];
 
@@ -85,12 +85,12 @@ The root component (`src/app/app.component.html`) must contain `<ion-router-outl
 For standalone apps, import `IonApp` and `IonRouterOutlet` in `app.component.ts`:
 
 ```typescript
-import { Component } from '@angular/core';
-import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { Component } from "@angular/core";
+import { IonApp, IonRouterOutlet } from "@ionic/angular/standalone";
 
 @Component({
-  selector: 'app-root',
-  template: '<ion-app><ion-router-outlet></ion-router-outlet></ion-app>',
+  selector: "app-root",
+  template: "<ion-app><ion-router-outlet></ion-router-outlet></ion-app>",
   standalone: true,
   imports: [IonApp, IonRouterOutlet],
 })
@@ -110,6 +110,7 @@ Use `routerLink` on Ionic buttons and items:
 ```
 
 The `routerDirection` attribute controls the page transition animation:
+
 - `"forward"` — slide-in-from-right animation.
 - `"back"` — slide-in-from-left animation.
 - `"root"` — no animation (instant swap).
@@ -132,10 +133,12 @@ import { IonButton } from '@ionic/angular/standalone';
 Inject `NavController` from `@ionic/angular` for animated navigation, or `Router` from `@angular/router` for standard navigation:
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { Component, inject } from "@angular/core";
+import { NavController } from "@ionic/angular";
 
-@Component({ /* ... */ })
+@Component({
+  /* ... */
+})
 export class HomePage {
   private navCtrl = inject(NavController);
 
@@ -148,12 +151,13 @@ export class HomePage {
   }
 
   goToRoot() {
-    this.navCtrl.navigateRoot('/home');
+    this.navCtrl.navigateRoot("/home");
   }
 }
 ```
 
 `NavController` methods:
+
 - `navigateForward(url)` — push with forward animation.
 - `navigateBack(url)` — navigate with back animation.
 - `navigateRoot(url)` — set root page (no animation).
@@ -164,16 +168,18 @@ For standalone, import `NavController` from `@ionic/angular/standalone`.
 ## Reading Route Parameters
 
 ```typescript
-import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, inject } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 
-@Component({ /* ... */ })
+@Component({
+  /* ... */
+})
 export class DetailPage implements OnInit {
   private route = inject(ActivatedRoute);
   itemId: string | null = null;
 
   ngOnInit() {
-    this.itemId = this.route.snapshot.paramMap.get('id');
+    this.itemId = this.route.snapshot.paramMap.get("id");
   }
 }
 ```
@@ -187,28 +193,28 @@ Define a parent route for tabs with child routes per tab. Each tab has its own `
 ```typescript
 const routes: Routes = [
   {
-    path: 'tabs',
-    loadComponent: () => import('./tabs/tabs.page').then((m) => m.TabsPage),
+    path: "tabs",
+    loadComponent: () => import("./tabs/tabs.page").then((m) => m.TabsPage),
     children: [
       {
-        path: 'home',
-        loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
+        path: "home",
+        loadComponent: () => import("./home/home.page").then((m) => m.HomePage),
       },
       {
-        path: 'settings',
-        loadComponent: () => import('./settings/settings.page').then((m) => m.SettingsPage),
+        path: "settings",
+        loadComponent: () => import("./settings/settings.page").then((m) => m.SettingsPage),
       },
       {
-        path: '',
-        redirectTo: 'home',
-        pathMatch: 'full',
+        path: "",
+        redirectTo: "home",
+        pathMatch: "full",
       },
     ],
   },
   {
-    path: '',
-    redirectTo: 'tabs/home',
-    pathMatch: 'full',
+    path: "",
+    redirectTo: "tabs/home",
+    pathMatch: "full",
   },
 ];
 ```
@@ -247,21 +253,21 @@ The `tab` attribute on `<ion-tab-button>` must match the child route `path`.
 ```typescript
 const routes: Routes = [
   {
-    path: '',
-    loadComponent: () => import('./menu/menu.page').then((m) => m.MenuPage),
+    path: "",
+    loadComponent: () => import("./menu/menu.page").then((m) => m.MenuPage),
     children: [
       {
-        path: 'home',
-        loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
+        path: "home",
+        loadComponent: () => import("./home/home.page").then((m) => m.HomePage),
       },
       {
-        path: 'profile',
-        loadComponent: () => import('./profile/profile.page').then((m) => m.ProfilePage),
+        path: "profile",
+        loadComponent: () => import("./profile/profile.page").then((m) => m.ProfilePage),
       },
       {
-        path: '',
-        redirectTo: 'home',
-        pathMatch: 'full',
+        path: "",
+        redirectTo: "home",
+        pathMatch: "full",
       },
     ],
   },
@@ -307,9 +313,9 @@ Wrap each menu item in `<ion-menu-toggle>` so the menu closes after selection. S
 Angular route guards work normally with Ionic routes. Use functional guards (Angular 15.2+):
 
 ```typescript
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { inject } from "@angular/core";
+import { CanActivateFn, Router } from "@angular/router";
+import { AuthService } from "../services/auth.service";
 
 export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -318,7 +324,7 @@ export const authGuard: CanActivateFn = () => {
   if (authService.isAuthenticated()) {
     return true;
   }
-  return router.createUrlTree(['/login']);
+  return router.createUrlTree(["/login"]);
 };
 ```
 
@@ -337,11 +343,13 @@ Apply the guard to a route:
 Open modals using `ModalController`:
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { EditModalComponent } from '../edit-modal/edit-modal.component';
+import { Component, inject } from "@angular/core";
+import { ModalController } from "@ionic/angular";
+import { EditModalComponent } from "../edit-modal/edit-modal.component";
 
-@Component({ /* ... */ })
+@Component({
+  /* ... */
+})
 export class DetailPage {
   private modalCtrl = inject(ModalController);
 
@@ -355,7 +363,7 @@ export class DetailPage {
     await modal.present();
 
     const { data, role } = await modal.onDidDismiss();
-    if (role === 'confirm') {
+    if (role === "confirm") {
       // Handle confirmed data
     }
   }
@@ -365,20 +373,22 @@ export class DetailPage {
 Dismiss from inside the modal:
 
 ```typescript
-import { Component, Input, inject } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, Input, inject } from "@angular/core";
+import { ModalController } from "@ionic/angular";
 
-@Component({ /* ... */ })
+@Component({
+  /* ... */
+})
 export class EditModalComponent {
   @Input() itemId!: number;
   private modalCtrl = inject(ModalController);
 
   confirm() {
-    this.modalCtrl.dismiss({ saved: true }, 'confirm');
+    this.modalCtrl.dismiss({ saved: true }, "confirm");
   }
 
   cancel() {
-    this.modalCtrl.dismiss(null, 'cancel');
+    this.modalCtrl.dismiss(null, "cancel");
   }
 }
 ```

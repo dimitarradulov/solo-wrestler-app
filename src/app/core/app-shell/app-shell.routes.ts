@@ -3,8 +3,7 @@ import { Routes } from '@angular/router';
 export const appShellRoutes: Routes = [
   {
     path: 'tabs',
-    loadComponent: () =>
-      import('./tabs/tabs').then((m) => m.TabsPage),
+    loadComponent: () => import('./tabs/tabs').then((m) => m.TabsPage),
     children: [
       {
         path: '',

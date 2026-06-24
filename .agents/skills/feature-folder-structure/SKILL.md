@@ -197,9 +197,8 @@ When creating a feature routes file, export `Routes` from that folder:
 ```ts
 export const trainingRoutes: Routes = [
   {
-    path: 'today',
-    loadComponent: () =>
-      import('./pages/today/today').then((m) => m.Today),
+    path: "today",
+    loadComponent: () => import("./pages/today/today").then((m) => m.Today),
   },
 ];
 ```

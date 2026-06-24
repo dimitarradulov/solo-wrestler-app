@@ -41,6 +41,7 @@ Auto-detect the following by reading project files — do **not** ask the user f
 Read `references/project-structure.md` for the standard Ionic Angular directory layout.
 
 Key points:
+
 - **Standalone projects** have `app.config.ts`, `app.routes.ts`, and standalone page components.
 - **NgModule projects** have `app.module.ts`, `app-routing.module.ts`, and per-page `*.module.ts` files.
 - Ionic config lives in `ionic.config.json`.
@@ -53,21 +54,22 @@ Read `references/standalone-vs-ngmodules.md` for detailed differences.
 
 Summary:
 
-| Aspect            | Standalone                                      | NgModule                                    |
-| ----------------- | ----------------------------------------------- | ------------------------------------------- |
-| Bootstrap         | `bootstrapApplication` in `main.ts`             | `platformBrowserDynamic().bootstrapModule`   |
-| Ionic setup       | `provideIonicAngular({})` in `app.config.ts`    | `IonicModule.forRoot()` in `app.module.ts`  |
-| Component imports | Import each Ionic component per file             | `IonicModule` provides all globally         |
-| Import source     | `@ionic/angular/standalone`                      | `@ionic/angular`                            |
-| Lazy loading      | `loadComponent` in routes                        | `loadChildren` in routes                    |
-| Icon registration | `addIcons()` from `ionicons` required            | Automatic                                   |
-| Tree-shaking      | Yes                                              | No                                          |
+| Aspect            | Standalone                                   | NgModule                                   |
+| ----------------- | -------------------------------------------- | ------------------------------------------ |
+| Bootstrap         | `bootstrapApplication` in `main.ts`          | `platformBrowserDynamic().bootstrapModule` |
+| Ionic setup       | `provideIonicAngular({})` in `app.config.ts` | `IonicModule.forRoot()` in `app.module.ts` |
+| Component imports | Import each Ionic component per file         | `IonicModule` provides all globally        |
+| Import source     | `@ionic/angular/standalone`                  | `@ionic/angular`                           |
+| Lazy loading      | `loadComponent` in routes                    | `loadChildren` in routes                   |
+| Icon registration | `addIcons()` from `ionicons` required        | Automatic                                  |
+| Tree-shaking      | Yes                                          | No                                         |
 
 ### Step 4: Set Up Navigation
 
 Read `references/navigation.md` for full navigation patterns.
 
 Topics covered:
+
 - **Route configuration** — defining routes with lazy loading for both architectures.
 - **Root component layout** — `<ion-app>` with `<ion-router-outlet>`.
 - **Template navigation** — `routerLink` with `routerDirection` for transition animations.
@@ -84,6 +86,7 @@ Topics covered:
 Read `references/lifecycle.md` for Ionic page lifecycle hook details.
 
 Key rules:
+
 - `ngOnInit` fires **once** (first creation). Use for one-time setup.
 - `ionViewWillEnter` fires on **every** page visit. Use for refreshing data.
 - `ionViewDidEnter` fires after the transition animation. Use for heavy work that would block animations.
@@ -96,6 +99,7 @@ Key rules:
 Read `references/forms.md` for form patterns with Ionic components.
 
 Topics covered:
+
 - **Reactive forms** — `FormBuilder`, `FormGroup`, `Validators` with Ionic input components.
 - **Template-driven forms** — `[(ngModel)]` with `FormsModule`.
 - **Ionic form components** — `ion-input`, `ion-textarea`, `ion-select`, `ion-checkbox`, `ion-toggle`, `ion-radio-group`, `ion-range`, `ion-datetime`.
@@ -107,6 +111,7 @@ Topics covered:
 Read `references/services-and-state.md` for service and state management patterns.
 
 Topics covered:
+
 - **Injectable services** — `@Injectable({ providedIn: 'root' })`.
 - **HTTP data fetching** — `HttpClient` setup for standalone and NgModule, CRUD service pattern.
 - **Reactive state** — `BehaviorSubject` for shared observable state.
@@ -120,6 +125,7 @@ Topics covered:
 Read `references/performance.md` for performance optimization techniques.
 
 Topics covered:
+
 - **Lazy loading** — `loadComponent` (standalone) and `loadChildren` (NgModule).
 - **trackBy / track** — efficient list rendering with `*ngFor` and `@for`.
 - **Virtual scrolling** — Angular CDK `cdk-virtual-scroll-viewport` for large lists.
@@ -132,6 +138,7 @@ Topics covered:
 Read `references/testing.md` for testing patterns.
 
 Topics covered:
+
 - **Unit testing pages** — `TestBed` setup for standalone and NgModule pages.
 - **Testing services** — basic services and HTTP services with `HttpTestingController`.
 - **Mocking dependencies** — `jasmine.createSpyObj` for service and controller mocks.

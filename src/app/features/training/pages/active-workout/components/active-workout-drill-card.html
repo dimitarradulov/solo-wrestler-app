@@ -1,0 +1,102 @@
+<div class="top">
+  <span class="num">{{ drillIndex() + 1 }}</span>
+  <span
+    class="state"
+    [class.state--completed]="state() === 'completed'"
+    [class.state--current]="state() === 'current'"
+  >
+    {{ drillIndex() | activeWorkoutDrillStateLabel }}
+  </span>
+  <span class="type"> {{ drill().type | activeWorkoutDrillTypeLabel }} </span>
+</div>
+
+<div class="head">
+  <div>
+    <h2>{{ drill().title }}</h2>
+    @if (drill() | activeWorkoutDrillMeta; as drillMeta) {
+      <p class="rx">{{ drillMeta }}</p>
+    }
+  </div>
+  @if (state() === "completed") {
+    <ion-icon
+      class="done-icon"
+      name="checkmark-circle-outline"
+      aria-label="Completed drill"
+    ></ion-icon>
+  }
+</div>
+
+<div class="tech">
+  <span style="display: block">Core technique</span>
+  <strong>{{ drill() | activeWorkoutCoreTechnique }}</strong>
+</div>
+
+<div class="cue">
+  <span>Cue</span>
+  <p>{{ drill().cue }}</p>
+</div>
+
+@if (drill().details?.length) {
+  <ul class="details">
+    @for (detail of drill().details; track detail) {
+      <li>{{ detail }}</li>
+    }
+  </ul>
+}
+@if (drill().optionInstruction) {
+  <p class="option-intro">{{ drill().optionInstruction }}</p>
+}
+@if (drill().options?.length) {
+  <ul class="options">
+    @for (option of drill().options; track option) {
+      <li>{{ option }}</li>
+    }
+  </ul>
+}
+@if (drill() | activeWorkoutHasTimerPreview) {
+  <section
+    class="timer"
+    [class.timer--rounds]="drill().type === 'rounds'"
+    aria-label="Timer preview"
+  >
+    <div class="timer-head">
+      <span>{{ drill() | activeWorkoutTimerLabel }}</span>
+      <strong>{{ drill() | activeWorkoutTimerClock }}</strong>
+    </div>
+    <div class="controls">
+      <span>
+        <ion-icon name="pause-outline" aria-hidden="true"></ion-icon>
+        Pause
+      </span>
+      <span>
+        <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+        Reset
+      </span>
+    </div>
+    @if (drill().roundsConfig; as roundsConfig) {
+      <p>
+        <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+        Rest {{ roundsConfig.restBetweenRoundsSeconds | activeWorkoutClock }}
+      </p>
+    }
+  </section>
+}
+
+<div class="actions">
+  <span class="rest">
+    {{ drill() | activeWorkoutRestText: defaultRestSeconds() }}
+  </span>
+  @if (drill().videoUrl) {
+    <span class="video">
+      <ion-icon name="videocam-outline" aria-hidden="true"></ion-icon>
+      Watch
+    </span>
+  }
+  <span class="action">
+    <ion-icon
+      [name]="drill() | activeWorkoutDrillActionIcon"
+      aria-hidden="true"
+    ></ion-icon>
+    {{ drill() | activeWorkoutDrillActionLabel }}
+  </span>
+</div>

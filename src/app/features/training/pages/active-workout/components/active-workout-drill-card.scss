@@ -1,0 +1,162 @@
+:host {
+  display: contents;
+}
+
+.state--completed,
+.done-icon {
+  color: var(--sw-color-status-completed);
+}
+
+.state--current {
+  color: var(--sw-color-accent-red);
+}
+
+.top,
+.head,
+.actions,
+.timer-head,
+.controls,
+.timer p,
+.video,
+.action {
+  align-items: center;
+  display: flex;
+  gap: var(--sw-space-2);
+}
+
+.top,
+.tech span,
+.cue span,
+.timer span {
+  color: var(--sw-color-text-muted);
+  font-size: var(--sw-text-body);
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.head,
+.timer-head {
+  justify-content: space-between;
+}
+
+.cue p,
+.option-intro,
+.details,
+.options,
+.timer p {
+  color: var(--sw-color-text-medium);
+  line-height: var(--sw-leading-body);
+}
+
+.tech,
+.cue,
+.timer {
+  background: var(--sw-color-surface-recessed);
+  border: var(--sw-border-width) solid var(--sw-color-border);
+  border-radius: var(--sw-radius-control);
+  padding: var(--sw-space-3);
+}
+
+.cue {
+  border-left: 4px solid var(--sw-color-accent-red);
+}
+
+.num {
+  background: var(--sw-color-surface-recessed);
+  border-radius: 999px;
+  display: inline-grid;
+  height: 2rem;
+  place-items: center;
+  width: 2rem;
+}
+
+.type,
+.rest {
+  margin-left: auto;
+}
+
+.head h2 {
+  font-size: var(--sw-text-h2);
+  letter-spacing: 0;
+  line-height: var(--sw-leading-tight);
+  margin: 0;
+}
+
+.head ion-icon {
+  font-size: 1.5rem;
+}
+
+.rx,
+.timer strong {
+  color: var(--sw-color-status-work);
+  font-weight: 700;
+}
+
+.rx,
+.cue p,
+.timer p {
+  margin: var(--sw-space-1) 0 0;
+}
+
+.details,
+.options {
+  margin: 0;
+  padding-left: var(--sw-space-5);
+}
+
+.timer {
+  border-color: rgb(255 183 3 / 42%);
+  display: grid;
+  gap: var(--sw-space-3);
+}
+
+.timer--rounds {
+  border-color: rgb(0 102 255 / 45%);
+}
+
+.timer strong {
+  font-size: var(--sw-text-timer);
+  line-height: 1;
+}
+
+.timer--rounds strong {
+  color: var(--sw-color-status-rest);
+}
+
+.controls span,
+.video,
+.action {
+  border-radius: var(--sw-radius-control);
+  min-height: var(--sw-touch-target-min);
+  padding: 0 var(--sw-space-3);
+}
+
+.controls span {
+  background: var(--sw-color-surface);
+}
+
+.actions {
+  flex-wrap: wrap;
+}
+
+.video {
+  background: var(--sw-color-status-rest-surface);
+  color: var(--sw-color-action-primary);
+}
+
+.action {
+  background: var(--sw-color-action-primary);
+  color: var(--sw-color-text-high);
+}
+
+@media (max-width: 32rem) {
+  .timer strong {
+    font-size: 2.5rem;
+  }
+
+  .timer-head {
+    align-items: start;
+    flex-direction: column;
+  }
+}

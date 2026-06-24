@@ -56,7 +56,8 @@
     --sw-tracking-h2: 0.04em;
     --sw-tracking-action: 0.05em;
 
-    --sw-motion-complete: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+    --sw-motion-complete:
+      background-color 200ms ease, border-color 200ms ease, color 200ms ease;
     --sw-content-max-width: 35rem;
     --sw-touch-target-min: 2.75rem;
   }

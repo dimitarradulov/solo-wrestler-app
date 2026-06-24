@@ -133,11 +133,7 @@ describe('ActiveWorkoutPage', () => {
         normalizeText(item.querySelector('dt')?.textContent),
         normalizeText(item.querySelector('dd')?.textContent),
       ]),
-    ).toEqual([
-      ['Duration', '25-30 min'],
-      ['Equipment', 'Mat + Dummy'],
-      ['Default rest', '2 min'],
-    ]);
+    ).toEqual([['Duration', '25-30 min']]);
   });
 
   it('renders drill cards in workout order', async () => {
@@ -161,31 +157,21 @@ describe('ActiveWorkoutPage', () => {
     const cards = fixture.nativeElement.querySelectorAll('.card');
 
     expect(
-      normalizeText(
-        cards[0].querySelector('.tech span')?.textContent,
-      ),
+      normalizeText(cards[0].querySelector('.tech span')?.textContent),
     ).toBe('Core technique');
     expect(
-      normalizeText(
-        cards[0].querySelector('.tech strong')?.textContent,
-      ),
+      normalizeText(cards[0].querySelector('.tech strong')?.textContent),
     ).toBe('Level change drill');
     expect(
-      normalizeText(
-        cards[1].querySelector('.tech strong')?.textContent,
-      ),
+      normalizeText(cards[1].querySelector('.tech strong')?.textContent),
     ).toBe('Stance and motion');
     expect(
-      normalizeText(
-        cards[0].querySelector('.cue span')?.textContent,
-      ),
+      normalizeText(cards[0].querySelector('.cue span')?.textContent),
     ).toBe('Cue');
-    expect(
-      normalizeText(cards[0].querySelector('.cue p')?.textContent),
-    ).toBe('Drop your hips and stay tall.');
-    expect(
-      fixture.nativeElement.querySelectorAll('.video'),
-    ).toHaveLength(3);
+    expect(normalizeText(cards[0].querySelector('.cue p')?.textContent)).toBe(
+      'Drop your hips and stay tall.',
+    );
+    expect(fixture.nativeElement.querySelectorAll('.video')).toHaveLength(3);
   });
 
   it('uses type-specific action labels and timer previews', async () => {
@@ -198,18 +184,14 @@ describe('ActiveWorkoutPage', () => {
       normalizeText(cards[1].querySelector('.timer span')?.textContent),
     ).toBe('Work timer');
     expect(
-      normalizeText(
-        cards[1].querySelector('.timer strong')?.textContent,
-      ),
+      normalizeText(cards[1].querySelector('.timer strong')?.textContent),
     ).toBe('3:00');
     expect(normalizeText(cards[2].textContent)).toContain('Start');
     expect(
       normalizeText(cards[2].querySelector('.timer span')?.textContent),
     ).toBe('Round 1 of 3');
     expect(
-      normalizeText(
-        cards[2].querySelector('.timer strong')?.textContent,
-      ),
+      normalizeText(cards[2].querySelector('.timer strong')?.textContent),
     ).toBe('1:00');
     expect(normalizeText(cards[2].textContent)).toContain('Rest 0:30');
   });

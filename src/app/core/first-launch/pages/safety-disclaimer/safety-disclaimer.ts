@@ -16,7 +16,7 @@ import { OnboardingCompletionStore } from '../../onboarding-completion-store';
 export class SafetyDisclaimerPage {
   private readonly navController = inject(NavController);
   private readonly onboardingCompletionStore = inject(
-    OnboardingCompletionStore
+    OnboardingCompletionStore,
   );
 
   acknowledgeDisclaimer(): void {

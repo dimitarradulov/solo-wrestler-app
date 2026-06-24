@@ -18,22 +18,9 @@ import {
 } from 'ionicons/icons';
 import { appWorkoutConfig } from '../curriculum/data/curriculum.data';
 import { CurriculumStore } from '../curriculum/curriculum.store';
-import { ActiveWorkoutClockPipe } from './pipes/active-workout-clock.pipe';
-import { ActiveWorkoutCoreTechniquePipe } from './pipes/active-workout-core-technique.pipe';
-import { ActiveWorkoutCurrentDrillTitlePipe } from './pipes/active-workout-current-drill-title.pipe';
-import { ActiveWorkoutDrillActionIconPipe } from './pipes/active-workout-drill-action-icon.pipe';
-import { ActiveWorkoutDrillActionLabelPipe } from './pipes/active-workout-drill-action-label.pipe';
-import { ActiveWorkoutDrillMetaPipe } from './pipes/active-workout-drill-meta.pipe';
-import { ActiveWorkoutDrillProgressPipe } from './pipes/active-workout-drill-progress.pipe';
-import { ActiveWorkoutDrillStateLabelPipe } from './pipes/active-workout-drill-state-label.pipe';
-import { ActiveWorkoutDrillStatePipe } from './pipes/active-workout-drill-state.pipe';
-import { ActiveWorkoutDrillTypeLabelPipe } from './pipes/active-workout-drill-type-label.pipe';
-import { ActiveWorkoutEquipmentPipe } from './pipes/active-workout-equipment.pipe';
-import { ActiveWorkoutHasTimerPreviewPipe } from './pipes/active-workout-has-timer-preview.pipe';
-import { ActiveWorkoutRestTextPipe } from './pipes/active-workout-rest-text.pipe';
-import { ActiveWorkoutRestPipe } from './pipes/active-workout-rest.pipe';
-import { ActiveWorkoutTimerClockPipe } from './pipes/active-workout-timer-clock.pipe';
-import { ActiveWorkoutTimerLabelPipe } from './pipes/active-workout-timer-label.pipe';
+import { ActiveWorkoutDrillListComponent } from './components/active-workout-drill-list';
+import { ActiveWorkoutHeaderComponent } from './components/active-workout-header';
+import { ActiveWorkoutProgressStripComponent } from './components/active-workout-progress-strip';
 
 @Component({
   selector: 'app-active-workout',
@@ -45,22 +32,9 @@ import { ActiveWorkoutTimerLabelPipe } from './pipes/active-workout-timer-label.
     IonContent,
     IonIcon,
     RouterLink,
-    ActiveWorkoutClockPipe,
-    ActiveWorkoutCoreTechniquePipe,
-    ActiveWorkoutCurrentDrillTitlePipe,
-    ActiveWorkoutDrillActionIconPipe,
-    ActiveWorkoutDrillActionLabelPipe,
-    ActiveWorkoutDrillMetaPipe,
-    ActiveWorkoutDrillProgressPipe,
-    ActiveWorkoutDrillStateLabelPipe,
-    ActiveWorkoutDrillStatePipe,
-    ActiveWorkoutDrillTypeLabelPipe,
-    ActiveWorkoutEquipmentPipe,
-    ActiveWorkoutHasTimerPreviewPipe,
-    ActiveWorkoutRestPipe,
-    ActiveWorkoutRestTextPipe,
-    ActiveWorkoutTimerClockPipe,
-    ActiveWorkoutTimerLabelPipe,
+    ActiveWorkoutDrillListComponent,
+    ActiveWorkoutHeaderComponent,
+    ActiveWorkoutProgressStripComponent,
   ],
 })
 export class ActiveWorkoutPage {
@@ -98,10 +72,11 @@ export class ActiveWorkoutPage {
 
     return (
       currentPhase.weeks.find(
-        (week) => week.number === currentWorkout.weekNumber
+        (week) => week.number === currentWorkout.weekNumber,
       )?.progressionFocus ?? null
     );
   });
+  readonly phaseTitle = computed(() => this.currentPhase()?.title ?? null);
 
   constructor() {
     addIcons({

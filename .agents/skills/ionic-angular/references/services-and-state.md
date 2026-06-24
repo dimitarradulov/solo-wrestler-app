@@ -7,10 +7,10 @@ Patterns for managing state and business logic in Ionic Angular applications usi
 Services in Ionic Angular follow standard Angular patterns. Use `@Injectable({ providedIn: 'root' })` for singleton services available app-wide:
 
 ```typescript
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class DataService {
   private items: Item[] = [];
@@ -32,11 +32,11 @@ export class DataService {
 **Standalone apps** — provide `HttpClient` in `app.config.ts`:
 
 ```typescript
-import { ApplicationConfig } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
-import { provideRouter } from '@angular/router';
-import { provideIonicAngular } from '@ionic/angular/standalone';
-import { routes } from './app.routes';
+import { ApplicationConfig } from "@angular/core";
+import { provideHttpClient } from "@angular/common/http";
+import { provideRouter } from "@angular/router";
+import { provideIonicAngular } from "@ionic/angular/standalone";
+import { routes } from "./app.routes";
 
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes), provideIonicAngular({}), provideHttpClient()],
@@ -46,7 +46,7 @@ export const appConfig: ApplicationConfig = {
 **NgModule apps** — import `HttpClientModule` in `app.module.ts`:
 
 ```typescript
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
   imports: [BrowserModule, HttpClientModule, IonicModule.forRoot(), AppRoutingModule],
@@ -58,9 +58,9 @@ export class AppModule {}
 ### Service with HTTP
 
 ```typescript
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable, inject } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
 
 export interface Item {
   id: number;
@@ -68,11 +68,11 @@ export interface Item {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class ItemService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://api.example.com/items';
+  private apiUrl = "https://api.example.com/items";
 
   getAll(): Observable<Item[]> {
     return this.http.get<Item[]>(this.apiUrl);
@@ -82,7 +82,7 @@ export class ItemService {
     return this.http.get<Item>(`${this.apiUrl}/${id}`);
   }
 
-  create(item: Omit<Item, 'id'>): Observable<Item> {
+  create(item: Omit<Item, "id">): Observable<Item> {
     return this.http.post<Item>(this.apiUrl, item);
   }
 
@@ -99,11 +99,13 @@ export class ItemService {
 ### Using the Service in a Page
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { ViewWillEnter } from '@ionic/angular';
-import { ItemService, Item } from '../services/item.service';
+import { Component, inject } from "@angular/core";
+import { ViewWillEnter } from "@ionic/angular";
+import { ItemService, Item } from "../services/item.service";
 
-@Component({ /* ... */ })
+@Component({
+  /* ... */
+})
 export class ItemListPage implements ViewWillEnter {
   private itemService = inject(ItemService);
   items: Item[] = [];
@@ -123,7 +125,7 @@ export class ItemListPage implements ViewWillEnter {
         this.loading = false;
       },
       error: (err) => {
-        this.error = 'Failed to load items.';
+        this.error = "Failed to load items.";
         this.loading = false;
       },
     });
@@ -138,8 +140,8 @@ Use `ionViewWillEnter` instead of `ngOnInit` to refresh data on every page visit
 For shared state that multiple components need to observe:
 
 ```typescript
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject, Observable } from "rxjs";
 
 export interface UserProfile {
   name: string;
@@ -147,7 +149,7 @@ export interface UserProfile {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class UserService {
   private userSubject = new BehaviorSubject<UserProfile | null>(null);
@@ -173,12 +175,12 @@ export class UserService {
 Consume in a component:
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
-import { UserService } from '../services/user.service';
+import { Component, inject } from "@angular/core";
+import { AsyncPipe } from "@angular/common";
+import { UserService } from "../services/user.service";
 
 @Component({
-  selector: 'app-header',
+  selector: "app-header",
   template: `
     @if (userService.user$ | async; as user) {
       <p>Welcome, {{ user.name }}</p>
@@ -197,7 +199,7 @@ export class HeaderComponent {
 For Angular 16+, use signals for reactive state as a simpler alternative to RxJS:
 
 ```typescript
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed } from "@angular/core";
 
 export interface CartItem {
   id: number;
@@ -207,20 +209,16 @@ export interface CartItem {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class CartService {
   private items = signal<CartItem[]>([]);
 
   readonly cartItems = this.items.asReadonly();
-  readonly totalPrice = computed(() =>
-    this.items().reduce((sum, item) => sum + item.price * item.quantity, 0)
-  );
-  readonly itemCount = computed(() =>
-    this.items().reduce((sum, item) => sum + item.quantity, 0)
-  );
+  readonly totalPrice = computed(() => this.items().reduce((sum, item) => sum + item.price * item.quantity, 0));
+  readonly itemCount = computed(() => this.items().reduce((sum, item) => sum + item.quantity, 0));
 
-  addItem(item: Omit<CartItem, 'quantity'>): void {
+  addItem(item: Omit<CartItem, "quantity">): void {
     this.items.update((items) => {
       const existing = items.find((i) => i.id === item.id);
       if (existing) {
@@ -239,11 +237,11 @@ export class CartService {
 Consume in a component:
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { CartService } from '../services/cart.service';
+import { Component, inject } from "@angular/core";
+import { CartService } from "../services/cart.service";
 
 @Component({
-  selector: 'app-cart',
+  selector: "app-cart",
   template: `
     <p>Items: {{ cartService.itemCount() }}</p>
     <p>Total: {{ cartService.totalPrice() | currency }}</p>
@@ -260,18 +258,20 @@ export class CartComponent {
 Show loading indicators while fetching data:
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { LoadingController } from '@ionic/angular';
-import { ItemService } from '../services/item.service';
+import { Component, inject } from "@angular/core";
+import { LoadingController } from "@ionic/angular";
+import { ItemService } from "../services/item.service";
 
-@Component({ /* ... */ })
+@Component({
+  /* ... */
+})
 export class ItemListPage {
   private loadingCtrl = inject(LoadingController);
   private itemService = inject(ItemService);
 
   async loadItems() {
     const loading = await this.loadingCtrl.create({
-      message: 'Loading items...',
+      message: "Loading items...",
     });
     await loading.present();
 
@@ -294,10 +294,12 @@ For standalone, import `LoadingController` from `@ionic/angular/standalone`.
 ## Error Handling with Toast
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { Component, inject } from "@angular/core";
+import { ToastController } from "@ionic/angular";
 
-@Component({ /* ... */ })
+@Component({
+  /* ... */
+})
 export class BasePage {
   private toastCtrl = inject(ToastController);
 
@@ -305,8 +307,8 @@ export class BasePage {
     const toast = await this.toastCtrl.create({
       message,
       duration: 3000,
-      color: 'danger',
-      position: 'bottom',
+      color: "danger",
+      position: "bottom",
     });
     await toast.present();
   }
@@ -315,8 +317,8 @@ export class BasePage {
     const toast = await this.toastCtrl.create({
       message,
       duration: 2000,
-      color: 'success',
-      position: 'bottom',
+      color: "success",
+      position: "bottom",
     });
     await toast.present();
   }
@@ -334,7 +336,7 @@ Use Angular's environment files for API URLs and feature flags:
 ```typescript
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api',
+  apiUrl: "http://localhost:3000/api",
 };
 ```
 
@@ -343,18 +345,18 @@ export const environment = {
 ```typescript
 export const environment = {
   production: true,
-  apiUrl: 'https://api.example.com',
+  apiUrl: "https://api.example.com",
 };
 ```
 
 Use in services:
 
 ```typescript
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { Injectable, inject } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { environment } from "../../environments/environment";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class ApiService {
   private http = inject(HttpClient);
   private baseUrl = environment.apiUrl;

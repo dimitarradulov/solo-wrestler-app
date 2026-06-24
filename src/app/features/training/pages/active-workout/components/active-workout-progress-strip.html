@@ -1,0 +1,15 @@
+<section class="strip" aria-label="Workout progress">
+  <div>
+    <span>
+      {{
+        workoutTemplate() | activeWorkoutDrillProgress: completedDrillCount()
+      }}
+    </span>
+    <strong>
+      Current: {{ workoutTemplate() | activeWorkoutCurrentDrillTitle }}
+    </strong>
+  </div>
+  <div class="track" aria-hidden="true">
+    <span></span>
+  </div>
+</section>

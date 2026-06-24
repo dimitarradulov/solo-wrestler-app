@@ -20,9 +20,9 @@ Check the project to determine which architecture is in use:
 `src/main.ts`:
 
 ```typescript
-import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { AppComponent } from './app/app.component';
+import { bootstrapApplication } from "@angular/platform-browser";
+import { appConfig } from "./app/app.config";
+import { AppComponent } from "./app/app.component";
 
 bootstrapApplication(AppComponent, appConfig);
 ```
@@ -30,10 +30,10 @@ bootstrapApplication(AppComponent, appConfig);
 `src/app/app.config.ts`:
 
 ```typescript
-import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { provideIonicAngular } from '@ionic/angular/standalone';
-import { routes } from './app.routes';
+import { ApplicationConfig } from "@angular/core";
+import { provideRouter } from "@angular/router";
+import { provideIonicAngular } from "@ionic/angular/standalone";
+import { routes } from "./app.routes";
 
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes), provideIonicAngular({})],
@@ -47,20 +47,11 @@ export const appConfig: ApplicationConfig = {
 Each standalone component must import the Ionic components it uses from `@ionic/angular/standalone`:
 
 ```typescript
-import { Component } from '@angular/core';
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonButton,
-  IonList,
-  IonItem,
-  IonLabel,
-} from '@ionic/angular/standalone';
+import { Component } from "@angular/core";
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonList, IonItem, IonLabel } from "@ionic/angular/standalone";
 
 @Component({
-  selector: 'app-home',
+  selector: "app-home",
   template: `
     <ion-header>
       <ion-toolbar>
@@ -89,13 +80,13 @@ export class HomePage {
 Icons must be registered with `addIcons()` from `ionicons`:
 
 ```typescript
-import { Component } from '@angular/core';
-import { IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { homeOutline, settingsOutline, personOutline } from 'ionicons/icons';
+import { Component } from "@angular/core";
+import { IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { homeOutline, settingsOutline, personOutline } from "ionicons/icons";
 
 @Component({
-  selector: 'app-menu',
+  selector: "app-menu",
   template: `
     <ion-icon name="home-outline"></ion-icon>
     <ion-icon name="settings-outline"></ion-icon>
@@ -117,7 +108,7 @@ The icon names in the template use kebab-case (`home-outline`), while the import
 Controllers (`ModalController`, `ActionSheetController`, `AlertController`, `LoadingController`, `PopoverController`, `ToastController`, `PickerController`) are imported from `@ionic/angular/standalone`:
 
 ```typescript
-import { ModalController } from '@ionic/angular/standalone';
+import { ModalController } from "@ionic/angular/standalone";
 ```
 
 ### Advantages
@@ -133,8 +124,8 @@ import { ModalController } from '@ionic/angular/standalone';
 `src/main.ts`:
 
 ```typescript
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { AppModule } from './app/app.module';
+import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
+import { AppModule } from "./app/app.module";
 
 platformBrowserDynamic().bootstrapModule(AppModule);
 ```
@@ -142,11 +133,11 @@ platformBrowserDynamic().bootstrapModule(AppModule);
 `src/app/app.module.ts`:
 
 ```typescript
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { IonicModule } from '@ionic/angular';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
+import { NgModule } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
+import { IonicModule } from "@ionic/angular";
+import { AppRoutingModule } from "./app-routing.module";
+import { AppComponent } from "./app.component";
 
 @NgModule({
   declarations: [AppComponent],
@@ -163,12 +154,12 @@ export class AppModule {}
 Each lazy-loaded page has its own module:
 
 ```typescript
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
-import { HomePage } from './home.page';
-import { HomePageRoutingModule } from './home-routing.module';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { IonicModule } from "@ionic/angular";
+import { FormsModule } from "@angular/forms";
+import { HomePage } from "./home.page";
+import { HomePageRoutingModule } from "./home-routing.module";
 
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, HomePageRoutingModule],
@@ -199,6 +190,7 @@ ng generate @ionic/angular-toolkit:standalone
 This must be run as a single migration. Gradual (partial) migration is not supported.
 
 The migration:
+
 1. Updates `src/main.ts` to use `bootstrapApplication`.
 2. Creates `src/app/app.config.ts` with `provideIonicAngular`.
 3. Converts page modules to standalone components with explicit imports.
@@ -206,6 +198,7 @@ The migration:
 5. Updates routing to use `loadComponent` instead of `loadChildren`.
 
 After migration, verify:
+
 - All Ionic component imports in standalone components reference `@ionic/angular/standalone`.
 - Icons are registered with `addIcons()`.
 - The app compiles and runs without errors.

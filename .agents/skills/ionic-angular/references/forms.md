@@ -9,36 +9,15 @@ Using Angular reactive forms and template-driven forms with Ionic input componen
 **Standalone components** — import `ReactiveFormsModule` directly in the component:
 
 ```typescript
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonList,
-  IonItem,
-  IonInput,
-  IonButton,
-  IonNote,
-} from '@ionic/angular/standalone';
+import { Component } from "@angular/core";
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput, IonButton, IonNote } from "@ionic/angular/standalone";
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.page.html',
+  selector: "app-register",
+  templateUrl: "./register.page.html",
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonList,
-    IonItem,
-    IonInput,
-    IonButton,
-    IonNote,
-  ],
+  imports: [ReactiveFormsModule, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput, IonButton, IonNote],
 })
 export class RegisterPage {
   // ...
@@ -48,12 +27,12 @@ export class RegisterPage {
 **NgModule components** — import `ReactiveFormsModule` in the page module:
 
 ```typescript
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-import { RegisterPage } from './register.page';
-import { RegisterPageRoutingModule } from './register-routing.module';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { ReactiveFormsModule } from "@angular/forms";
+import { IonicModule } from "@ionic/angular";
+import { RegisterPage } from "./register.page";
+import { RegisterPageRoutingModule } from "./register-routing.module";
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, IonicModule, RegisterPageRoutingModule],
@@ -65,17 +44,19 @@ export class RegisterPageModule {}
 ### Form Definition
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, inject } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
-@Component({ /* ... */ })
+@Component({
+  /* ... */
+})
 export class RegisterPage {
   private fb = inject(FormBuilder);
 
   registerForm: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    name: ["", [Validators.required, Validators.minLength(2)]],
+    email: ["", [Validators.required, Validators.email]],
+    password: ["", [Validators.required, Validators.minLength(8)]],
   });
 
   onSubmit() {
@@ -100,39 +81,19 @@ export class RegisterPage {
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <ion-list>
       <ion-item>
-        <ion-input
-          label="Name"
-          labelPlacement="floating"
-          formControlName="name"
-          type="text"
-          errorText="Name is required (min 2 characters)."
-        ></ion-input>
+        <ion-input label="Name" labelPlacement="floating" formControlName="name" type="text" errorText="Name is required (min 2 characters)."></ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-input
-          label="Email"
-          labelPlacement="floating"
-          formControlName="email"
-          type="email"
-          errorText="Please enter a valid email."
-        ></ion-input>
+        <ion-input label="Email" labelPlacement="floating" formControlName="email" type="email" errorText="Please enter a valid email."></ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-input
-          label="Password"
-          labelPlacement="floating"
-          formControlName="password"
-          type="password"
-          errorText="Password must be at least 8 characters."
-        ></ion-input>
+        <ion-input label="Password" labelPlacement="floating" formControlName="password" type="password" errorText="Password must be at least 8 characters."></ion-input>
       </ion-item>
     </ion-list>
 
-    <ion-button expand="block" type="submit" [disabled]="registerForm.invalid">
-      Register
-    </ion-button>
+    <ion-button expand="block" type="submit" [disabled]="registerForm.invalid"> Register </ion-button>
   </form>
 </ion-content>
 ```
@@ -146,9 +107,7 @@ Ionic 7+ supports `errorText` on `<ion-input>` which displays automatically when
   <ion-input label="Email" labelPlacement="floating" formControlName="email" type="email"></ion-input>
 </ion-item>
 @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
-  <ion-note color="danger" class="ion-padding-start">
-    Please enter a valid email.
-  </ion-note>
+<ion-note color="danger" class="ion-padding-start"> Please enter a valid email. </ion-note>
 }
 ```
 
@@ -159,19 +118,19 @@ Ionic 7+ supports `errorText` on `<ion-input>` which displays automatically when
 **Standalone components** — import `FormsModule`:
 
 ```typescript
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonInput, IonButton } from '@ionic/angular/standalone';
+import { Component } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonInput, IonButton } from "@ionic/angular/standalone";
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.page.html',
+  selector: "app-login",
+  templateUrl: "./login.page.html",
   standalone: true,
   imports: [FormsModule, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonInput, IonButton],
 })
 export class LoginPage {
-  email = '';
-  password = '';
+  email = "";
+  password = "";
 
   onLogin() {
     // Process login
@@ -194,25 +153,11 @@ export class LoginPage {
   <form (ngSubmit)="onLogin()">
     <ion-list>
       <ion-item>
-        <ion-input
-          label="Email"
-          labelPlacement="floating"
-          [(ngModel)]="email"
-          name="email"
-          type="email"
-          required
-        ></ion-input>
+        <ion-input label="Email" labelPlacement="floating" [(ngModel)]="email" name="email" type="email" required></ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-input
-          label="Password"
-          labelPlacement="floating"
-          [(ngModel)]="password"
-          name="password"
-          type="password"
-          required
-        ></ion-input>
+        <ion-input label="Password" labelPlacement="floating" [(ngModel)]="password" name="password" type="password" required></ion-input>
       </ion-item>
     </ion-list>
 
@@ -262,17 +207,13 @@ Dropdown / picker:
 ### ion-checkbox
 
 ```html
-<ion-checkbox formControlName="agreeTerms" labelPlacement="end">
-  I agree to the terms
-</ion-checkbox>
+<ion-checkbox formControlName="agreeTerms" labelPlacement="end"> I agree to the terms </ion-checkbox>
 ```
 
 ### ion-toggle
 
 ```html
-<ion-toggle formControlName="notifications" labelPlacement="start">
-  Enable Notifications
-</ion-toggle>
+<ion-toggle formControlName="notifications" labelPlacement="start"> Enable Notifications </ion-toggle>
 ```
 
 ### ion-radio-group
@@ -311,16 +252,5 @@ Dropdown / picker:
 When using standalone components, import each Ionic form component used in the template:
 
 ```typescript
-import {
-  IonInput,
-  IonTextarea,
-  IonSelect,
-  IonSelectOption,
-  IonCheckbox,
-  IonToggle,
-  IonRadio,
-  IonRadioGroup,
-  IonRange,
-  IonDatetime,
-} from '@ionic/angular/standalone';
+import { IonInput, IonTextarea, IonSelect, IonSelectOption, IonCheckbox, IonToggle, IonRadio, IonRadioGroup, IonRange, IonDatetime } from "@ionic/angular/standalone";
 ```

@@ -16,13 +16,13 @@ export class CurriculumStore {
   private readonly localStorage = inject(LocalStorageService);
   private readonly orderedWorkouts = this.getOrderedWorkouts();
   private readonly validWorkoutIds = new Set(
-    this.orderedWorkouts.map((workout) => workout.id)
+    this.orderedWorkouts.map((workout) => workout.id),
   );
   private readonly completedWorkoutIds = signal<WorkoutInstanceId[]>(
-    this.readCompletedWorkoutIds()
+    this.readCompletedWorkoutIds(),
   );
   private readonly completedWorkoutIdSet = computed(
-    () => new Set(this.completedWorkoutIds())
+    () => new Set(this.completedWorkoutIds()),
   );
   private readonly currentWorkoutId = computed(() => {
     const completedIds = this.completedWorkoutIdSet();
@@ -42,7 +42,7 @@ export class CurriculumStore {
       weeks: phase.weeks.map((week) => ({
         ...week,
         workouts: week.workouts.map((workout) =>
-          this.withDerivedStatus(workout, completedIds, currentWorkoutId)
+          this.withDerivedStatus(workout, completedIds, currentWorkoutId),
         ),
       })),
     }));
@@ -57,7 +57,7 @@ export class CurriculumStore {
     for (const phase of this.phases()) {
       for (const week of phase.weeks) {
         const currentWorkout = week.workouts.find(
-          (workout) => workout.id === currentWorkoutId
+          (workout) => workout.id === currentWorkoutId,
         );
 
         if (currentWorkout) {
@@ -89,16 +89,13 @@ export class CurriculumStore {
     return (
       this.phases().find((phase) =>
         phase.weeks.some((week) =>
-          week.workouts.some((workout) => workout.id === currentWorkout.id)
-        )
+          week.workouts.some((workout) => workout.id === currentWorkout.id),
+        ),
       ) ?? null
     );
   });
 
-  setWorkoutCompleted(
-    workoutId: WorkoutInstanceId,
-    completed: boolean
-  ): void {
+  setWorkoutCompleted(workoutId: WorkoutInstanceId, completed: boolean): void {
     if (!this.validWorkoutIds.has(workoutId)) {
       return;
     }
@@ -114,7 +111,7 @@ export class CurriculumStore {
   private withDerivedStatus(
     workout: WorkoutInstance,
     completedIds: Set<WorkoutInstanceId>,
-    currentWorkoutId: WorkoutInstanceId | null
+    currentWorkoutId: WorkoutInstanceId | null,
   ): WorkoutInstance {
     if (completedIds.has(workout.id)) {
       return { ...workout, status: 'completed' };
@@ -128,7 +125,7 @@ export class CurriculumStore {
   }
 
   private addCompletedWorkout(
-    workoutId: WorkoutInstanceId
+    workoutId: WorkoutInstanceId,
   ): WorkoutInstanceId[] {
     const completedIds = new Set(this.completedWorkoutIds());
     completedIds.add(workoutId);
@@ -137,15 +134,15 @@ export class CurriculumStore {
   }
 
   private removeCompletedWorkoutAndLater(
-    workoutId: WorkoutInstanceId
+    workoutId: WorkoutInstanceId,
   ): WorkoutInstanceId[] {
     const workoutIndex = this.orderedWorkouts.findIndex(
-      (workout) => workout.id === workoutId
+      (workout) => workout.id === workoutId,
     );
 
     return this.completedWorkoutIds().filter((completedWorkoutId) => {
       const completedWorkoutIndex = this.orderedWorkouts.findIndex(
-        (workout) => workout.id === completedWorkoutId
+        (workout) => workout.id === completedWorkoutId,
       );
 
       return completedWorkoutIndex < workoutIndex;
@@ -165,7 +162,7 @@ export class CurriculumStore {
   }
 
   private sequentialCompletedWorkoutIds(
-    completedIds: Set<WorkoutInstanceId>
+    completedIds: Set<WorkoutInstanceId>,
   ): WorkoutInstanceId[] {
     const sequentialWorkoutIds: WorkoutInstanceId[] = [];
 
@@ -192,11 +189,13 @@ export class CurriculumStore {
     return workouts;
   }
 
-  private getWorkoutTemplate(workoutTemplateId: string): WorkoutTemplate | null {
+  private getWorkoutTemplate(
+    workoutTemplateId: string,
+  ): WorkoutTemplate | null {
     for (const phase of curriculumPhases) {
       const workoutTemplate =
         phase.workoutTemplates.find(
-          (template) => template.id === workoutTemplateId
+          (template) => template.id === workoutTemplateId,
         ) ?? null;
 
       if (workoutTemplate) {

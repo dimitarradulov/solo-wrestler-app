@@ -37,7 +37,9 @@ describe('TabsPage', () => {
       ) as HTMLElement;
 
       expect(tabButton).not.toBeNull();
-      expect(tabButton.querySelector(`ion-icon[name="${icon}"]`)).not.toBeNull();
+      expect(
+        tabButton.querySelector(`ion-icon[name="${icon}"]`),
+      ).not.toBeNull();
       expect(normalizeText(tabButton.textContent)).toBe(label);
     }
   });

@@ -17,10 +17,10 @@ ng test
 ### Standalone Page
 
 ```typescript
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HomePage } from './home.page';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { HomePage } from "./home.page";
 
-describe('HomePage', () => {
+describe("HomePage", () => {
   let component: HomePage;
   let fixture: ComponentFixture<HomePage>;
 
@@ -34,7 +34,7 @@ describe('HomePage', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });
@@ -43,11 +43,11 @@ describe('HomePage', () => {
 ### NgModule Page
 
 ```typescript
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
-import { HomePage } from './home.page';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { IonicModule } from "@ionic/angular";
+import { HomePage } from "./home.page";
 
-describe('HomePage', () => {
+describe("HomePage", () => {
   let component: HomePage;
   let fixture: ComponentFixture<HomePage>;
 
@@ -62,7 +62,7 @@ describe('HomePage', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });
@@ -73,10 +73,10 @@ describe('HomePage', () => {
 ### Basic Service
 
 ```typescript
-import { TestBed } from '@angular/core/testing';
-import { DataService } from './data.service';
+import { TestBed } from "@angular/core/testing";
+import { DataService } from "./data.service";
 
-describe('DataService', () => {
+describe("DataService", () => {
   let service: DataService;
 
   beforeEach(() => {
@@ -84,12 +84,12 @@ describe('DataService', () => {
     service = TestBed.inject(DataService);
   });
 
-  it('should be created', () => {
+  it("should be created", () => {
     expect(service).toBeTruthy();
   });
 
-  it('should add an item', () => {
-    service.add({ id: 1, name: 'Test' });
+  it("should add an item", () => {
+    service.add({ id: 1, name: "Test" });
     expect(service.getAll().length).toBe(1);
   });
 });
@@ -98,12 +98,12 @@ describe('DataService', () => {
 ### Service with HTTP
 
 ```typescript
-import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-import { ItemService, Item } from './item.service';
+import { TestBed } from "@angular/core/testing";
+import { provideHttpClient } from "@angular/common/http";
+import { provideHttpClientTesting, HttpTestingController } from "@angular/common/http/testing";
+import { ItemService, Item } from "./item.service";
 
-describe('ItemService', () => {
+describe("ItemService", () => {
   let service: ItemService;
   let httpMock: HttpTestingController;
 
@@ -119,10 +119,10 @@ describe('ItemService', () => {
     httpMock.verify();
   });
 
-  it('should fetch all items', () => {
+  it("should fetch all items", () => {
     const mockItems: Item[] = [
-      { id: 1, name: 'Item 1' },
-      { id: 2, name: 'Item 2' },
+      { id: 1, name: "Item 1" },
+      { id: 2, name: "Item 2" },
     ];
 
     service.getAll().subscribe((items) => {
@@ -130,8 +130,8 @@ describe('ItemService', () => {
       expect(items).toEqual(mockItems);
     });
 
-    const req = httpMock.expectOne('https://api.example.com/items');
-    expect(req.request.method).toBe('GET');
+    const req = httpMock.expectOne("https://api.example.com/items");
+    expect(req.request.method).toBe("GET");
     req.flush(mockItems);
   });
 });
@@ -142,19 +142,19 @@ describe('ItemService', () => {
 Mock services using `jasmine.createSpyObj`:
 
 ```typescript
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ItemListPage } from './item-list.page';
-import { ItemService } from '../services/item.service';
-import { of } from 'rxjs';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ItemListPage } from "./item-list.page";
+import { ItemService } from "../services/item.service";
+import { of } from "rxjs";
 
-describe('ItemListPage', () => {
+describe("ItemListPage", () => {
   let component: ItemListPage;
   let fixture: ComponentFixture<ItemListPage>;
   let itemServiceSpy: jasmine.SpyObj<ItemService>;
 
   beforeEach(async () => {
-    itemServiceSpy = jasmine.createSpyObj('ItemService', ['getAll', 'delete']);
-    itemServiceSpy.getAll.and.returnValue(of([{ id: 1, name: 'Test Item' }]));
+    itemServiceSpy = jasmine.createSpyObj("ItemService", ["getAll", "delete"]);
+    itemServiceSpy.getAll.and.returnValue(of([{ id: 1, name: "Test Item" }]));
 
     await TestBed.configureTestingModule({
       imports: [ItemListPage],
@@ -166,7 +166,7 @@ describe('ItemListPage', () => {
     fixture.detectChanges();
   });
 
-  it('should load items on enter', () => {
+  it("should load items on enter", () => {
     component.ionViewWillEnter();
     expect(itemServiceSpy.getAll).toHaveBeenCalled();
   });
@@ -178,17 +178,17 @@ describe('ItemListPage', () => {
 Mock `NavController` for navigation tests:
 
 ```typescript
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NavController } from '@ionic/angular';
-import { HomePage } from './home.page';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { NavController } from "@ionic/angular";
+import { HomePage } from "./home.page";
 
-describe('HomePage', () => {
+describe("HomePage", () => {
   let component: HomePage;
   let fixture: ComponentFixture<HomePage>;
   let navCtrlSpy: jasmine.SpyObj<NavController>;
 
   beforeEach(async () => {
-    navCtrlSpy = jasmine.createSpyObj('NavController', ['navigateForward', 'back']);
+    navCtrlSpy = jasmine.createSpyObj("NavController", ["navigateForward", "back"]);
 
     await TestBed.configureTestingModule({
       imports: [HomePage],
@@ -199,9 +199,9 @@ describe('HomePage', () => {
     component = fixture.componentInstance;
   });
 
-  it('should navigate to detail page', () => {
+  it("should navigate to detail page", () => {
     component.goToDetail(42);
-    expect(navCtrlSpy.navigateForward).toHaveBeenCalledWith('/detail/42');
+    expect(navCtrlSpy.navigateForward).toHaveBeenCalledWith("/detail/42");
   });
 });
 ```
@@ -209,13 +209,13 @@ describe('HomePage', () => {
 ## Testing Pipes
 
 ```typescript
-import { CurrencyFormatPipe } from './currency-format.pipe';
+import { CurrencyFormatPipe } from "./currency-format.pipe";
 
-describe('CurrencyFormatPipe', () => {
+describe("CurrencyFormatPipe", () => {
   const pipe = new CurrencyFormatPipe();
 
-  it('should format a number as currency', () => {
-    expect(pipe.transform(1234.5)).toBe('$1,234.50');
+  it("should format a number as currency", () => {
+    expect(pipe.transform(1234.5)).toBe("$1,234.50");
   });
 });
 ```
@@ -223,18 +223,18 @@ describe('CurrencyFormatPipe', () => {
 ## Testing Guards
 
 ```typescript
-import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { authGuard } from './auth.guard';
-import { AuthService } from '../services/auth.service';
+import { TestBed } from "@angular/core/testing";
+import { Router } from "@angular/router";
+import { authGuard } from "./auth.guard";
+import { AuthService } from "../services/auth.service";
 
-describe('authGuard', () => {
+describe("authGuard", () => {
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let routerSpy: jasmine.SpyObj<Router>;
 
   beforeEach(() => {
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated']);
-    routerSpy = jasmine.createSpyObj('Router', ['createUrlTree']);
+    authServiceSpy = jasmine.createSpyObj("AuthService", ["isAuthenticated"]);
+    routerSpy = jasmine.createSpyObj("Router", ["createUrlTree"]);
 
     TestBed.configureTestingModule({
       providers: [
@@ -244,21 +244,17 @@ describe('authGuard', () => {
     });
   });
 
-  it('should allow access when authenticated', () => {
+  it("should allow access when authenticated", () => {
     authServiceSpy.isAuthenticated.and.returnValue(true);
-    const result = TestBed.runInInjectionContext(() =>
-      authGuard({} as any, {} as any)
-    );
+    const result = TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
     expect(result).toBe(true);
   });
 
-  it('should redirect to login when not authenticated', () => {
+  it("should redirect to login when not authenticated", () => {
     authServiceSpy.isAuthenticated.and.returnValue(false);
     routerSpy.createUrlTree.and.returnValue({} as any);
-    TestBed.runInInjectionContext(() =>
-      authGuard({} as any, {} as any)
-    );
-    expect(routerSpy.createUrlTree).toHaveBeenCalledWith(['/login']);
+    TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
+    expect(routerSpy.createUrlTree).toHaveBeenCalledWith(["/login"]);
   });
 });
 ```
@@ -299,5 +295,5 @@ E2E tests verify complete user flows (login, form submission, navigation) agains
 
 ```typescript
 // Playwright example
-await page.getByTestId('submit-btn').click();
+await page.getByTestId("submit-btn").click();
 ```

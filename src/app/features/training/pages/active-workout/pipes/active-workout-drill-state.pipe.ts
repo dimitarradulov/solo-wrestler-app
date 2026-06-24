@@ -1,9 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import {
-  drillState,
-  MockDrillState,
-} from '../utils/active-workout.utils';
+import { drillState, MockDrillState } from '../utils/active-workout.utils';
 
 @Pipe({
   name: 'activeWorkoutDrillState',

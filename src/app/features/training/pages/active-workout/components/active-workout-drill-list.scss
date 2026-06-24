@@ -1,0 +1,32 @@
+:host {
+  display: contents;
+}
+
+.drills {
+  display: grid;
+  gap: var(--sw-space-4);
+  list-style: none;
+  margin-bottom: var(--sw-space-5);
+  margin-top: var(--sw-space-5);
+  padding: 0;
+}
+
+.drills > li {
+  background: var(--sw-color-surface);
+  border: 2px solid var(--sw-color-border);
+  border-radius: var(--sw-radius-card);
+  box-shadow: 0 0.75rem 1.5rem #0003;
+  display: grid;
+  gap: var(--sw-space-3);
+  padding: var(--sw-space-4);
+}
+
+.drills > li.done {
+  background: var(--sw-color-status-completed-surface);
+  border-color: rgb(0 210 106 / 36%);
+}
+
+.drills > li.cur {
+  background: var(--sw-color-status-current-surface);
+  border-color: var(--sw-color-status-current);
+}

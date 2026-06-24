@@ -1,4 +1,4 @@
-@use '../../page-shell' as firstLaunchPage;
+@use "../../page-shell" as firstLaunchPage;
 
 .intro-content {
   @include firstLaunchPage.content();

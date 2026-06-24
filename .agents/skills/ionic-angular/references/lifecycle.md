@@ -6,12 +6,12 @@ Ionic page lifecycle hooks and their relationship with Angular lifecycle hooks.
 
 Ionic provides four lifecycle hooks for page components routed via `<ion-router-outlet>`. These hooks only fire on components directly mapped to a route, not on child components.
 
-| Hook                  | Fires When                                                       |
-| --------------------- | ---------------------------------------------------------------- |
-| `ionViewWillEnter`    | The page is about to animate into view (before transition).      |
-| `ionViewDidEnter`     | The page has finished animating into view (after transition).    |
-| `ionViewWillLeave`    | The page is about to animate out of view (before transition).    |
-| `ionViewDidLeave`     | The page has finished animating out of view (after transition).  |
+| Hook               | Fires When                                                      |
+| ------------------ | --------------------------------------------------------------- |
+| `ionViewWillEnter` | The page is about to animate into view (before transition).     |
+| `ionViewDidEnter`  | The page has finished animating into view (after transition).   |
+| `ionViewWillLeave` | The page is about to animate out of view (before transition).   |
+| `ionViewDidLeave`  | The page has finished animating out of view (after transition). |
 
 ## Execution Order
 
@@ -48,12 +48,12 @@ Use Ionic lifecycle hooks for logic that must run on every page visit (e.g., ref
 ### Standalone Component
 
 ```typescript
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ViewWillEnter, ViewDidEnter, ViewWillLeave, ViewDidLeave } from '@ionic/angular';
-import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { ViewWillEnter, ViewDidEnter, ViewWillLeave, ViewDidLeave } from "@ionic/angular";
+import { IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/angular/standalone";
 
 @Component({
-  selector: 'app-home',
+  selector: "app-home",
   template: `
     <ion-header>
       <ion-toolbar>
@@ -67,10 +67,8 @@ import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/stan
   standalone: true,
   imports: [IonHeader, IonToolbar, IonTitle, IonContent],
 })
-export class HomePage
-  implements OnInit, OnDestroy, ViewWillEnter, ViewDidEnter, ViewWillLeave, ViewDidLeave
-{
-  message = '';
+export class HomePage implements OnInit, OnDestroy, ViewWillEnter, ViewDidEnter, ViewWillLeave, ViewDidLeave {
+  message = "";
 
   ngOnInit() {
     // One-time setup. Fires once when the component is first created.
@@ -106,16 +104,14 @@ export class HomePage
 ### NgModule Component
 
 ```typescript
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ViewWillEnter, ViewDidEnter, ViewWillLeave, ViewDidLeave } from '@ionic/angular';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { ViewWillEnter, ViewDidEnter, ViewWillLeave, ViewDidLeave } from "@ionic/angular";
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.page.html',
+  selector: "app-home",
+  templateUrl: "./home.page.html",
 })
-export class HomePage
-  implements OnInit, OnDestroy, ViewWillEnter, ViewDidEnter, ViewWillLeave, ViewDidLeave
-{
+export class HomePage implements OnInit, OnDestroy, ViewWillEnter, ViewDidEnter, ViewWillLeave, ViewDidLeave {
   ngOnInit() {}
   ionViewWillEnter() {}
   ionViewDidEnter() {}
@@ -144,19 +140,17 @@ private async loadItems() {
 ### Pausing and Resuming Subscriptions
 
 ```typescript
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 
 export class DashboardPage implements ViewWillEnter, ViewWillLeave, OnDestroy {
   private leave$ = new Subject<void>();
   private destroy$ = new Subject<void>();
 
   ionViewWillEnter() {
-    this.dataService.stream$
-      .pipe(takeUntil(this.leave$))
-      .subscribe((data) => {
-        this.data = data;
-      });
+    this.dataService.stream$.pipe(takeUntil(this.leave$)).subscribe((data) => {
+      this.data = data;
+    });
   }
 
   ionViewWillLeave() {

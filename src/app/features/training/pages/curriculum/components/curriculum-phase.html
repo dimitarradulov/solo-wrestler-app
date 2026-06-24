@@ -13,15 +13,14 @@
 
     @for (week of weeks(); track week.number) {
       <div class="curriculum-grid__row">
-        <div class="curriculum-week">
-          Week {{ week.number }}
-        </div>
+        <div class="curriculum-week">Week {{ week.number }}</div>
 
         @for (workout of week.workouts; track $index) {
           <app-curriculum-node
             [title]="workout.title"
             [status]="workout.status"
-            [label]="workout.label" />
+            [label]="workout.label"
+          />
         }
       </div>
     }

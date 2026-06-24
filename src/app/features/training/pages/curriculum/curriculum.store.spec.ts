@@ -104,7 +104,7 @@ describe('CurriculumStore', () => {
   it('ignores unknown and non-sequential stored workout ids', () => {
     storage.setItem(
       storageKey,
-      JSON.stringify(['unknown-workout', secondWorkoutId])
+      JSON.stringify(['unknown-workout', secondWorkoutId]),
     );
 
     expect(getWorkoutStatus(firstWorkoutId)).toBe('current');
@@ -121,7 +121,7 @@ describe('CurriculumStore', () => {
 
     expect(getWorkoutStatus(lastWorkoutId)).toBe('completed');
     expect(getWorkouts().some((workout) => workout.status === 'current')).toBe(
-      false
+      false,
     );
   });
 });

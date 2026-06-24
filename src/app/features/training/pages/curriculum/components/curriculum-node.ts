@@ -25,7 +25,7 @@ export class CurriculumNodeComponent {
 
   isCurrent = computed(() => this.status() === 'current');
   iconName = computed(() =>
-    this.status() === 'completed' ? 'checkmark' : 'lock-closed'
+    this.status() === 'completed' ? 'checkmark' : 'lock-closed',
   );
   displayStatusText = computed(() => {
     const override = this.statusText();

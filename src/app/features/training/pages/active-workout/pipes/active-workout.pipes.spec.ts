@@ -1,4 +1,7 @@
-import { Drill, WorkoutTemplate } from '../../curriculum/model/curriculum.model';
+import {
+  Drill,
+  WorkoutTemplate,
+} from '../../curriculum/model/curriculum.model';
 import { ActiveWorkoutClockPipe } from './active-workout-clock.pipe';
 import { ActiveWorkoutCoreTechniquePipe } from './active-workout-core-technique.pipe';
 import { ActiveWorkoutCurrentDrillTitlePipe } from './active-workout-current-drill-title.pipe';
@@ -66,9 +69,9 @@ describe('active workout pipes', () => {
   };
 
   it('formats workout-level display values', () => {
-    expect(
-      new ActiveWorkoutEquipmentPipe().transform(workoutTemplate),
-    ).toBe('Mat + Dummy');
+    expect(new ActiveWorkoutEquipmentPipe().transform(workoutTemplate)).toBe(
+      'Mat + Dummy',
+    );
     expect(new ActiveWorkoutEquipmentPipe().transform(null)).toBe('');
     expect(new ActiveWorkoutRestPipe().transform(120)).toBe('2 min');
     expect(new ActiveWorkoutRestPipe().transform(45)).toBe('45 sec');
@@ -93,12 +96,8 @@ describe('active workout pipes', () => {
     expect(new ActiveWorkoutDrillStateLabelPipe().transform(0)).toBe(
       'Complete',
     );
-    expect(new ActiveWorkoutDrillStateLabelPipe().transform(1)).toBe(
-      'Current',
-    );
-    expect(new ActiveWorkoutDrillStateLabelPipe().transform(2)).toBe(
-      'Queued',
-    );
+    expect(new ActiveWorkoutDrillStateLabelPipe().transform(1)).toBe('Current');
+    expect(new ActiveWorkoutDrillStateLabelPipe().transform(2)).toBe('Queued');
     expect(new ActiveWorkoutDrillTypeLabelPipe().transform('reps')).toBe(
       'Reps',
     );
@@ -120,18 +119,20 @@ describe('active workout pipes', () => {
     expect(new ActiveWorkoutDrillMetaPipe().transform(roundsDrill)).toBe(
       '3 rounds x 1 min with 30 sec rest',
     );
-    expect(new ActiveWorkoutDrillMetaPipe().transform({
-      id: 'cue-only',
-      title: 'Cue only',
-      type: 'reps',
-      cue: 'Keep position.',
-    })).toBeNull();
+    expect(
+      new ActiveWorkoutDrillMetaPipe().transform({
+        id: 'cue-only',
+        title: 'Cue only',
+        type: 'reps',
+        cue: 'Keep position.',
+      }),
+    ).toBeNull();
     expect(new ActiveWorkoutCoreTechniquePipe().transform(repsDrill)).toBe(
       'Level change drill',
     );
-    expect(
-      new ActiveWorkoutCoreTechniquePipe().transform(durationDrill),
-    ).toBe('Stance and motion');
+    expect(new ActiveWorkoutCoreTechniquePipe().transform(durationDrill)).toBe(
+      'Stance and motion',
+    );
   });
 
   it('formats timer and rest values', () => {

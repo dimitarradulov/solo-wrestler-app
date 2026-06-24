@@ -3,8 +3,7 @@ import { Routes } from '@angular/router';
 export const firstLaunchRoutes: Routes = [
   {
     path: 'intro',
-    loadComponent: () =>
-      import('./pages/intro/intro').then((m) => m.IntroPage),
+    loadComponent: () => import('./pages/intro/intro').then((m) => m.IntroPage),
   },
   {
     path: 'safety-disclaimer',

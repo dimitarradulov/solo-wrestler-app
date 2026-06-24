@@ -21,7 +21,7 @@ export function formatDrillMeta(drill: Drill): string | null {
 
   if (drill.roundsConfig) {
     return `${drill.roundsConfig.rounds} rounds x ${formatMinutes(
-      drill.roundsConfig.roundSeconds
+      drill.roundsConfig.roundSeconds,
     )} with ${drill.roundsConfig.restBetweenRoundsSeconds} sec rest`;
   }
 
@@ -46,7 +46,7 @@ export function drillActionIcon(drill: Drill): string {
 
 export function drillProgressText(
   workoutTemplate: WorkoutTemplate,
-  completedDrillCount: number
+  completedDrillCount: number,
 ): string {
   const drillCount = workoutTemplate.drills.length;
 
@@ -87,7 +87,9 @@ export function currentDrillTitle(workoutTemplate: WorkoutTemplate): string {
   );
 }
 
-export function formatEquipment(workoutTemplate: WorkoutTemplate | null): string {
+export function formatEquipment(
+  workoutTemplate: WorkoutTemplate | null,
+): string {
   if (workoutTemplate === null) {
     return '';
   }
@@ -143,7 +145,7 @@ export function timerLabel(drill: Drill): string {
 export function restText(drill: Drill, defaultRestSeconds: number): string {
   if (drill.roundsConfig) {
     return `${formatRest(
-      drill.roundsConfig.restBetweenRoundsSeconds
+      drill.roundsConfig.restBetweenRoundsSeconds,
     )} between rounds`;
   }
 

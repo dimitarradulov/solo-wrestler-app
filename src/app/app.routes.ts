@@ -12,9 +12,7 @@ export const routes: Routes = [
     redirectTo: () => {
       const onboardingCompletionStore = inject(OnboardingCompletionStore);
 
-      return onboardingCompletionStore.isComplete()
-        ? '/tabs/today'
-        : '/intro';
+      return onboardingCompletionStore.isComplete() ? '/tabs/today' : '/intro';
     },
   },
   ...firstLaunchRoutes,

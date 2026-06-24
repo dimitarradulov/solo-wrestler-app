@@ -13,12 +13,12 @@ Use `loadComponent` in route definitions:
 ```typescript
 const routes: Routes = [
   {
-    path: 'home',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
+    path: "home",
+    loadComponent: () => import("./home/home.page").then((m) => m.HomePage),
   },
   {
-    path: 'settings',
-    loadComponent: () => import('./settings/settings.page').then((m) => m.SettingsPage),
+    path: "settings",
+    loadComponent: () => import("./settings/settings.page").then((m) => m.SettingsPage),
   },
 ];
 ```
@@ -30,12 +30,12 @@ Use `loadChildren` to lazy-load page modules:
 ```typescript
 const routes: Routes = [
   {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then((m) => m.HomePageModule),
+    path: "home",
+    loadChildren: () => import("./home/home.module").then((m) => m.HomePageModule),
   },
   {
-    path: 'settings',
-    loadChildren: () => import('./settings/settings.module').then((m) => m.SettingsPageModule),
+    path: "settings",
+    loadChildren: () => import("./settings/settings.module").then((m) => m.SettingsPageModule),
   },
 ];
 ```
@@ -49,14 +49,14 @@ When rendering lists with `*ngFor` or `@for`, provide a track function so Angula
 ```html
 <ion-list>
   @for (item of items; track item.id) {
-    <ion-item>
-      <ion-label>{{ item.name }}</ion-label>
-    </ion-item>
+  <ion-item>
+    <ion-label>{{ item.name }}</ion-label>
+  </ion-item>
   }
 </ion-list>
 ```
 
-### *ngFor
+### \*ngFor
 
 ```html
 <ion-list>
@@ -85,12 +85,12 @@ npm install @angular/cdk
 ```
 
 ```typescript
-import { Component } from '@angular/core';
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { IonItem, IonLabel } from '@ionic/angular/standalone';
+import { Component } from "@angular/core";
+import { ScrollingModule } from "@angular/cdk/scrolling";
+import { IonItem, IonLabel } from "@ionic/angular/standalone";
 
 @Component({
-  selector: 'app-long-list',
+  selector: "app-long-list",
   template: `
     <cdk-virtual-scroll-viewport itemSize="48" class="ion-content-scroll-host">
       <ion-item *cdkVirtualFor="let item of items">
@@ -98,11 +98,13 @@ import { IonItem, IonLabel } from '@ionic/angular/standalone';
       </ion-item>
     </cdk-virtual-scroll-viewport>
   `,
-  styles: [`
-    cdk-virtual-scroll-viewport {
-      height: 100%;
-    }
-  `],
+  styles: [
+    `
+      cdk-virtual-scroll-viewport {
+        height: 100%;
+      }
+    `,
+  ],
   standalone: true,
   imports: [ScrollingModule, IonItem, IonLabel],
 })
@@ -116,10 +118,10 @@ export class LongListComponent {
 Use `ChangeDetectionStrategy.OnPush` on components to reduce change detection cycles. The component only re-renders when its `@Input` references change, an event handler fires, or an `async` pipe emits:
 
 ```typescript
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input } from "@angular/core";
 
 @Component({
-  selector: 'app-item-card',
+  selector: "app-item-card",
   template: `
     <ion-card>
       <ion-card-header>
@@ -129,7 +131,9 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [/* Ionic imports */],
+  imports: [
+    /* Ionic imports */
+  ],
 })
 export class ItemCardComponent {
   @Input() item!: { name: string };
@@ -141,20 +145,17 @@ export class ItemCardComponent {
 Preload lazy-loaded routes in the background after the initial load completes:
 
 ```typescript
-import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router';
+import { PreloadAllModules, provideRouter, withPreloading } from "@angular/router";
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideIonicAngular({}),
-  ],
+  providers: [provideRouter(routes, withPreloading(PreloadAllModules)), provideIonicAngular({})],
 };
 ```
 
 For NgModule:
 
 ```typescript
-RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules });
 ```
 
 This loads all lazy routes in the background immediately after the app starts, so subsequent navigation is instant.
@@ -200,12 +201,12 @@ import { NgOptimizedImage } from '@angular/common';
 
    ```html
    @if (loading) {
-     <ion-item>
-       <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-     </ion-item>
+   <ion-item>
+     <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+   </ion-item>
    } @else {
-     <ion-item>
-       <ion-label>{{ item.name }}</ion-label>
-     </ion-item>
+   <ion-item>
+     <ion-label>{{ item.name }}</ion-label>
+   </ion-item>
    }
    ```
