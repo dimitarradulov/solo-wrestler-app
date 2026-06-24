@@ -16,14 +16,6 @@
           <dt>Duration</dt>
           <dd>{{ estimatedMinutes() }}</dd>
         </div>
-        <div>
-          <dt>Equipment</dt>
-          <dd>{{ workoutTemplate | activeWorkoutEquipment }}</dd>
-        </div>
-        <div>
-          <dt>Default rest</dt>
-          <dd>{{ defaultRestSeconds | activeWorkoutRest }}</dd>
-        </div>
       </dl>
 
       @if (progressionFocus(); as focus) {
