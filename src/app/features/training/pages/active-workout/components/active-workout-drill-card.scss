@@ -124,7 +124,6 @@
   color: var(--sw-color-status-rest);
 }
 
-.controls span,
 .video,
 .action {
   border-radius: var(--sw-radius-control);
@@ -134,6 +133,8 @@
 
 .controls span {
   background: var(--sw-color-surface);
+  border-radius: var(--sw-radius-control);
+  padding: var(--sw-space-3);
 }
 
 .actions {
