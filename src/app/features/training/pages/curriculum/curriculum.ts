@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { IonContent } from '@ionic/angular/standalone';
 
 import { CurriculumNodeComponent } from './components/curriculum-node';
@@ -10,7 +10,7 @@ import { futureCurriculumPhases } from './data/curriculum.data';
   selector: 'app-curriculum',
   templateUrl: 'curriculum.html',
   styleUrls: ['curriculum.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonContent, CurriculumPhaseComponent, CurriculumNodeComponent],
 })
 export class CurriculumPage {

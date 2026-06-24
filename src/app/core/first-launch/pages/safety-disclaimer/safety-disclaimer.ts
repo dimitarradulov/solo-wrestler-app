@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
   IonButton,
   IonContent,
@@ -10,7 +10,7 @@ import { OnboardingCompletionStore } from '../../onboarding-completion-store';
   selector: 'app-safety-disclaimer',
   templateUrl: 'safety-disclaimer.html',
   styleUrl: 'safety-disclaimer.scss',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonButton, IonContent],
 })
 export class SafetyDisclaimerPage {

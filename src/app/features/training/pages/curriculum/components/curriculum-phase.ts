@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 import { CurriculumNodeComponent } from './curriculum-node';
 import { CurriculumWeek } from '../model/curriculum.model';
@@ -7,7 +7,7 @@ import { CurriculumWeek } from '../model/curriculum.model';
   selector: 'app-curriculum-phase',
   templateUrl: 'curriculum-phase.html',
   styleUrls: ['curriculum-phase.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CurriculumNodeComponent],
 })
 export class CurriculumPhaseComponent {

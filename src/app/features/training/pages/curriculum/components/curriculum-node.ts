@@ -1,4 +1,9 @@
-import { Component, computed, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 
@@ -8,7 +13,7 @@ import { CurriculumNodeStatus } from '../model/curriculum.model';
   selector: 'app-curriculum-node',
   templateUrl: 'curriculum-node.html',
   styleUrls: ['curriculum-node.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonIcon, RouterLink],
 })
 export class CurriculumNodeComponent {

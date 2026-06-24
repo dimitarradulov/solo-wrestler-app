@@ -21,6 +21,11 @@ scope growth.
 - Use Vitest APIs for mocks, spies, and timers.
 - Use Node.js 20.19+ or 22.12+ LTS; do not use Node.js 25.
 
+## Angular conventions
+
+- `standalone: true` is no longer necessary in component decorators.
+- Every new component should set `changeDetection: ChangeDetectionStrategy.OnPush`.
+
 ## Working rules
 
 1. Think Before Coding

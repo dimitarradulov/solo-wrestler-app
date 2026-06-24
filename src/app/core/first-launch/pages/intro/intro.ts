@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
 
@@ -6,7 +6,7 @@ import { IonButton, IonContent } from '@ionic/angular/standalone';
   selector: 'app-intro',
   templateUrl: 'intro.html',
   styleUrl: 'intro.scss',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonButton, IonContent, RouterLink],
 })
 export class IntroPage {}
