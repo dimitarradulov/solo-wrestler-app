@@ -712,6 +712,7 @@ export interface WorkoutInstance {
   weekNumber: number;
   workoutTemplateId: string;
   label: string;
+  title: string;
   status: "locked" | "current" | "completed";
 }
 ```
@@ -721,9 +722,13 @@ export interface WorkoutInstance {
 ```ts
 export interface WorkoutTemplate {
   id: string;
+  label: string;
   title: string;
   focus: string;
-  estimatedMinutes: number;
+  estimatedMinutes: {
+    min: number;
+    max: number;
+  };
   equipment: string[];
   drills: Drill[];
 }
@@ -736,16 +741,29 @@ export interface Drill {
   id: string;
   title: string;
   type: "reps" | "duration" | "rounds";
-  prescription: string;
-  coreTechnique: string;
+  prescription?: string;
   cue: string;
-  videoUrl: string;
-  restAfterSeconds: number;
+  details?: string[];
+  options?: string[];
+  optionInstruction?: string;
+  coreTechnique?: string;
+  videoUrl?: string;
+  estimatedDuration?: {
+    seconds: number;
+  };
   repsConfig?: RepsDrillConfig;
   durationConfig?: DurationDrillConfig;
   roundsConfig?: RoundsDrillConfig;
 }
 ```
+
+App-wide default rest:
+
+```ts
+export const DEFAULT_REST_SECONDS = 120;
+```
+
+This applies after every completed drill except the final drill, after warm-up, and after a timed round drill completes in addition to between-round rest. Users can skip rest or add 30 seconds.
 
 ### Reps Drill Config
 
@@ -805,6 +823,10 @@ export interface CompletedWorkout {
 
 Phase 1 builds the base for a safe, controlled double-leg takedown: stance, motion, level change, penetration step, double-leg entry, finish, and safe disengagement.
 
+### Phase Principle
+
+Enter safely, change levels, keep posture, control both legs, turn the corner, finish on top.
+
 ### Structure
 
 - 6 weeks
@@ -816,11 +838,75 @@ Phase 1 builds the base for a safe, controlled double-leg takedown: stance, moti
 
 **Title:** Mechanics
 **Focus:** Stance, motion, level change, penetration step, shadow double leg, dummy finish.
+**Estimated duration:** 35-45 minutes
+**Equipment:** Mat, wrestling dummy
+
+Drills:
+
+1. Warm-up
+   5 minutes
+   Cue: Move easy. Protect your neck.
+   Details: light bouncing, hip circles, low-impact sprawls, shoulder rolls.
+2. Stance and motion
+   5 minutes
+   Cue: Small steps. Do not cross your feet.
+   Details: move forward, backward, left, and right in stance; small steps; do not cross your feet.
+3. Level change drill
+   3 sets x 10 reps
+   Estimated duration: 5 minutes
+   Cue: Drop your hips. Stay tall.
+4. Penetration step drill
+   5 sets x 10 reps
+   Estimated duration: 10 minutes
+   Cue: Step deep. Stay tall.
+   Details: step, knee touch, trail leg up, posture tall.
+5. Shadow double leg
+   5 rounds x 1 minute with 30 seconds rest between rounds
+   Cue: Level change first. Head up.
+   Details: move around the mat, feint with hands, level change, penetration step, finish by turning the corner.
+6. Dummy finish
+   10 minutes
+   Cue: Land safely on top.
+   Details: start with the dummy already low or leaning, connect shoulder to the dummy, wrap both legs or body, turn the corner, land safely on top.
 
 ### Workout B
 
 **Title:** Application
 **Focus:** Boxing-to-shot entry, double leg on dummy, safe finish, self-defense exit.
+**Estimated duration:** 35-45 minutes
+**Equipment:** Mat, wrestling dummy
+
+Drills:
+
+1. Warm-up
+   5 minutes
+   Cue: Move easy. Protect your neck.
+   Details: light bouncing, hip circles, low-impact sprawls, shoulder rolls.
+2. Stance and entry
+   5 minutes
+   Cue: Level change suddenly.
+   Details: move in stance, then suddenly level change.
+3. Boxing-to-shot entry
+   10 minutes
+   Cue: Enter safely behind your hands.
+   Option instruction: Practice simple entries. Keep the strike as a distraction, not a combination.
+   Options: jab feint -> level change -> double leg; jab-cross cover -> step in -> double leg; hands high shell -> level change -> double leg.
+4. Double leg on dummy
+   20 clean reps
+   Estimated duration: 15 minutes
+   Cue: Quality over speed.
+   Details: head up, hips under you, control both legs or body, turn the corner, finish on top.
+5. Self-defense exit drill
+   10 minutes
+   Cue: Finish safe, then leave or control.
+   Option instruction: Choose one exit and practice that.
+   Options: land on top -> hands posted -> stand up and back away; land on top -> knee on belly or control for 2 seconds -> disengage; land on top -> move to safe side control position for BJJ.
+
+### Weekly Progression Focus
+
+- Weeks 1-2: Slow mechanics only. Make every rep clean.
+- Weeks 3-4: Add boxing feints and faster entries. No wild blasting.
+- Weeks 5-6: Start from movement, finish quickly, then disengage.
 
 ---
 

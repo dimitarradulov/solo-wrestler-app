@@ -1,7 +1,70 @@
 <ion-content class="ion-padding">
-  <h1>Active Workout</h1>
+  @if (currentWorkout(); as workout) {
+    <h1>Week {{ workout.weekNumber }} · {{ workout.label }}</h1>
 
-  <ion-button routerLink="/workout-completion" routerDirection="forward">
-    Complete Workout
-  </ion-button>
+    @if (currentWorkoutTemplate(); as workoutTemplate) {
+      <p>{{ workout.title }}</p>
+      <p>{{ workoutTemplate.focus }}</p>
+      <p>{{ estimatedMinutes() }} · {{ formatEquipment(workoutTemplate) }}</p>
+    }
+
+    @if (currentPhase(); as phase) {
+      <p>{{ phase.description }}</p>
+      <p><strong>Phase principle:</strong> {{ phase.principle }}</p>
+
+      @for (week of phase.weeks; track week.number) {
+        @if (week.number === workout.weekNumber) {
+          <p><strong>Progression focus:</strong> {{ week.progressionFocus }}</p>
+        }
+      }
+    }
+
+    <p><strong>Default rest:</strong> {{ defaultRestSeconds / 60 }} minutes</p>
+
+    @if (currentWorkoutTemplate(); as workoutTemplate) {
+      <ol>
+        @for (
+          drill of workoutTemplate.drills;
+          track trackDrill($index, drill)
+        ) {
+          <li>
+            <strong>{{ drill.title }}</strong>
+
+            @if (formatDrillMeta(drill); as drillMeta) {
+              <p>{{ drillMeta }}</p>
+            }
+
+            <p>{{ drill.cue }}</p>
+
+            @if (drill.details?.length) {
+              <ul>
+                @for (detail of drill.details; track detail) {
+                  <li>{{ detail }}</li>
+                }
+              </ul>
+            }
+
+            @if (drill.optionInstruction) {
+              <p>{{ drill.optionInstruction }}</p>
+            }
+
+            @if (drill.options?.length) {
+              <ul>
+                @for (option of drill.options; track option) {
+                  <li>{{ option }}</li>
+                }
+              </ul>
+            }
+          </li>
+        }
+      </ol>
+    }
+
+    <ion-button routerLink="/workout-completion" routerDirection="forward">
+      Complete Workout
+    </ion-button>
+  } @else {
+    <h1>Active Workout</h1>
+    <p>No workout is currently available.</p>
+  }
 </ion-content>

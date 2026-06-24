@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideNgxLocalstorage } from 'ngx-localstorage';
 
 import { CurriculumStore } from './curriculum.store';
-import { CurriculumWorkout } from './model/curriculum.model';
+import { WorkoutInstance } from './model/curriculum.model';
 
 describe('CurriculumStore', () => {
   const storageKey = 'solo-wrestler.curriculum.completed-workout-ids';
@@ -60,8 +60,8 @@ describe('CurriculumStore', () => {
   const getWorkoutStatus = (workoutId: string) =>
     getWorkouts().find((workout) => workout.id === workoutId)?.status;
 
-  const getWorkouts = (): CurriculumWorkout[] => {
-    const workouts: CurriculumWorkout[] = [];
+  const getWorkouts = (): WorkoutInstance[] => {
+    const workouts: WorkoutInstance[] = [];
 
     for (const phase of TestBed.inject(CurriculumStore).phases()) {
       for (const week of phase.weeks) {
@@ -84,6 +84,8 @@ describe('CurriculumStore', () => {
 
     expect(getWorkoutStatus(firstWorkoutId)).toBe('completed');
     expect(getWorkoutStatus(secondWorkoutId)).toBe('current');
+    expect(store.currentWorkout()?.id).toBe(secondWorkoutId);
+    expect(store.currentWorkoutTemplate()?.title).toBe('Application');
     expect(storage.getItem(storageKey)).toBe(JSON.stringify([firstWorkoutId]));
   });
 
