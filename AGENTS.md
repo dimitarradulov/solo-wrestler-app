@@ -25,6 +25,7 @@ scope growth.
 
 - `standalone: true` is no longer necessary in component decorators.
 - Every new component should set `changeDetection: ChangeDetectionStrategy.OnPush`.
+- Templates must not call component methods or utility functions. Signal reads are allowed; use pure pipes for formatting and display derivation.
 
 ## Working rules
 

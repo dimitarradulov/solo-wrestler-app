@@ -1,70 +1,187 @@
-<ion-content class="ion-padding">
-  @if (currentWorkout(); as workout) {
-    <h1>Week {{ workout.weekNumber }} · {{ workout.label }}</h1>
-
-    @if (currentWorkoutTemplate(); as workoutTemplate) {
-      <p>{{ workout.title }}</p>
-      <p>{{ workoutTemplate.focus }}</p>
-      <p>{{ estimatedMinutes() }} · {{ formatEquipment(workoutTemplate) }}</p>
-    }
-
-    @if (currentPhase(); as phase) {
-      <p>{{ phase.description }}</p>
-      <p><strong>Phase principle:</strong> {{ phase.principle }}</p>
-
-      @for (week of phase.weeks; track week.number) {
-        @if (week.number === workout.weekNumber) {
-          <p><strong>Progression focus:</strong> {{ week.progressionFocus }}</p>
-        }
+<ion-content class="aw-content">
+  <main class="aw-shell">
+    @if (currentWorkout(); as workout) { @if (currentWorkoutTemplate(); as
+    workoutTemplate) {
+    <header class="hdr">
+      @if (currentPhase(); as phase) {
+      <p class="phase">{{ phase.title }}</p>
       }
-    }
 
-    <p><strong>Default rest:</strong> {{ defaultRestSeconds / 60 }} minutes</p>
+      <p class="label">Week {{ workout.weekNumber }} · {{ workout.label }}</p>
+      <h1>{{ workout.title }}</h1>
+      <p class="focus">{{ workoutTemplate.focus }}</p>
 
-    @if (currentWorkoutTemplate(); as workoutTemplate) {
-      <ol>
-        @for (
-          drill of workoutTemplate.drills;
-          track trackDrill($index, drill)
-        ) {
-          <li>
-            <strong>{{ drill.title }}</strong>
+      <dl class="meta" aria-label="Workout details">
+        <div>
+          <dt>Duration</dt>
+          <dd>{{ estimatedMinutes() }}</dd>
+        </div>
+        <div>
+          <dt>Equipment</dt>
+          <dd>{{ workoutTemplate | activeWorkoutEquipment }}</dd>
+        </div>
+        <div>
+          <dt>Default rest</dt>
+          <dd>{{ defaultRestSeconds | activeWorkoutRest }}</dd>
+        </div>
+      </dl>
 
-            @if (formatDrillMeta(drill); as drillMeta) {
-              <p>{{ drillMeta }}</p>
+      @if (progressionFocus(); as focus) {
+      <p class="prog">
+        <strong>Progression focus</strong>
+        {{ focus }}
+      </p>
+      }
+    </header>
+
+    <section class="strip" aria-label="Workout progress">
+      <div>
+        <span>
+          {{ workoutTemplate | activeWorkoutDrillProgress: completedDrillCount()
+          }}
+        </span>
+        <strong>
+          Current: {{ workoutTemplate | activeWorkoutCurrentDrillTitle }}
+        </strong>
+      </div>
+      <div class="track" aria-hidden="true">
+        <span></span>
+      </div>
+    </section>
+
+    <ol class="drills">
+      @for ( drill of workoutTemplate.drills; track $index + '-' + drill.id; let
+      drillIndex = $index ) {
+      <li
+        class="card"
+        [class.done]="
+                (drillIndex | activeWorkoutDrillState) === 'completed'
+              "
+        [class.cur]="
+                (drillIndex | activeWorkoutDrillState) === 'current'
+              "
+        [class.queue]="
+                (drillIndex | activeWorkoutDrillState) === 'queued'
+              "
+      >
+        <div class="top">
+          <span class="num">{{ drillIndex + 1 }}</span>
+          <span class="state">
+            {{ drillIndex | activeWorkoutDrillStateLabel }}
+          </span>
+          <span class="type">
+            {{ drill.type | activeWorkoutDrillTypeLabel }}
+          </span>
+        </div>
+
+        <div class="head">
+          <div>
+            <h2>{{ drill.title }}</h2>
+            @if ((drill | activeWorkoutDrillMeta); as drillMeta) {
+            <p class="rx">{{ drillMeta }}</p>
             }
+          </div>
+          @if ( (drillIndex | activeWorkoutDrillState) === 'completed' ) {
+          <ion-icon
+            name="checkmark-circle-outline"
+            aria-label="Completed drill"
+          ></ion-icon>
+          }
+        </div>
 
-            <p>{{ drill.cue }}</p>
+        <div class="tech">
+          <span style="display: block">Core technique</span>
+          <strong>{{ drill | activeWorkoutCoreTechnique }}</strong>
+        </div>
 
-            @if (drill.details?.length) {
-              <ul>
-                @for (detail of drill.details; track detail) {
-                  <li>{{ detail }}</li>
-                }
-              </ul>
-            }
+        <div class="cue">
+          <span>Cue</span>
+          <p>{{ drill.cue }}</p>
+        </div>
 
-            @if (drill.optionInstruction) {
-              <p>{{ drill.optionInstruction }}</p>
-            }
-
-            @if (drill.options?.length) {
-              <ul>
-                @for (option of drill.options; track option) {
-                  <li>{{ option }}</li>
-                }
-              </ul>
-            }
-          </li>
+        @if (drill.details?.length) {
+        <ul class="details">
+          @for (detail of drill.details; track detail) {
+          <li>{{ detail }}</li>
+          }
+        </ul>
+        } @if (drill.optionInstruction) {
+        <p class="option-intro">{{ drill.optionInstruction }}</p>
+        } @if (drill.options?.length) {
+        <ul class="options">
+          @for (option of drill.options; track option) {
+          <li>{{ option }}</li>
+          }
+        </ul>
+        } @if (drill | activeWorkoutHasTimerPreview) {
+        <section
+          class="timer"
+          [class.timer--rounds]="drill.type === 'rounds'"
+          aria-label="Timer preview"
+        >
+          <div>
+            <span>{{ drill | activeWorkoutTimerLabel }}</span>
+            <strong>{{ drill | activeWorkoutTimerClock }}</strong>
+          </div>
+          <div class="controls">
+            <span>
+              <ion-icon name="pause-outline" aria-hidden="true"></ion-icon>
+              Pause
+            </span>
+            <span>
+              <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+              Reset
+            </span>
+          </div>
+          @if (drill.roundsConfig) {
+          <p>
+            <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+            Rest {{ drill.roundsConfig.restBetweenRoundsSeconds |
+            activeWorkoutClock }}
+          </p>
+          }
+        </section>
         }
-      </ol>
-    }
 
-    <ion-button routerLink="/workout-completion" routerDirection="forward">
-      Complete Workout
+        <div class="actions">
+          <span> {{ drill | activeWorkoutRestText: defaultRestSeconds }} </span>
+          @if (drill.videoUrl) {
+          <span class="video">
+            <ion-icon name="videocam-outline" aria-hidden="true"></ion-icon>
+            Watch
+          </span>
+          }
+          <span class="action">
+            <ion-icon
+              [name]="drill | activeWorkoutDrillActionIcon"
+              aria-hidden="true"
+            ></ion-icon>
+            {{ drill | activeWorkoutDrillActionLabel }}
+          </span>
+        </div>
+      </li>
+      }
+    </ol>
+
+    <ion-button
+      class="finish"
+      routerLink="/workout-completion"
+      routerDirection="forward"
+      expand="block"
+    >
+      <ion-icon name="flag-outline" slot="start" aria-hidden="true"></ion-icon>
+      Finish Workout
     </ion-button>
-  } @else {
-    <h1>Active Workout</h1>
-    <p>No workout is currently available.</p>
-  }
+    } @else {
+    <section class="empty">
+      <h1>Active Workout</h1>
+      <p>No workout template is currently available.</p>
+    </section>
+    } } @else {
+    <section class="empty">
+      <h1>Active Workout</h1>
+      <p>No workout is currently available.</p>
+    </section>
+    }
+  </main>
 </ion-content>
