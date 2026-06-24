@@ -28,6 +28,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         title: 'Warm-up',
         type: 'duration',
         cue: 'Move easy. Protect your neck.',
+        videoUrl: 'https://www.youtube.com/watch?v=pfNtYzw97Ew',
         details: [
           'Light bouncing.',
           'Hip circles.',
@@ -42,6 +43,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         title: 'Stance and motion',
         type: 'duration',
         cue: 'Small steps. Do not cross your feet.',
+        videoUrl: 'https://www.youtube.com/watch?v=crvfcKsaN0g',
         details: [
           'Move forward, backward, left, and right in stance.',
           'Take small steps.',
@@ -56,6 +58,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         type: 'reps',
         prescription: '3 sets x 10 reps',
         cue: 'Drop your hips. Stay tall.',
+        videoUrl: 'https://www.youtube.com/watch?v=3fAryvfNF8U',
         estimatedDuration: { seconds: 300 },
         repsConfig: {
           sets: 3,
@@ -68,6 +71,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         type: 'reps',
         prescription: '5 sets x 10 reps',
         cue: 'Step deep. Stay tall.',
+        videoUrl: 'https://www.youtube.com/watch?v=3fAryvfNF8U',
         details: ['Step.', 'Knee touch.', 'Trail leg up.', 'Posture tall.'],
         estimatedDuration: { seconds: 600 },
         repsConfig: {
@@ -80,6 +84,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         title: 'Shadow double leg',
         type: 'rounds',
         cue: 'Level change first. Head up.',
+        videoUrl: 'https://www.youtube.com/watch?v=8FyeXO4rviw',
         details: [
           'Move around the mat.',
           'Feint with your hands.',
@@ -99,6 +104,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         title: 'Dummy finish',
         type: 'duration',
         cue: 'Land safely on top.',
+        videoUrl: 'https://www.youtube.com/watch?v=8FyeXO4rviw',
         details: [
           'Start with the dummy already low or leaning.',
           'Connect your shoulder to the dummy.',
@@ -128,6 +134,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         title: 'Warm-up',
         type: 'duration',
         cue: 'Move easy. Protect your neck.',
+        videoUrl: 'https://www.youtube.com/watch?v=pfNtYzw97Ew',
         details: [
           'Light bouncing.',
           'Hip circles.',
@@ -142,6 +149,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         title: 'Stance and entry',
         type: 'duration',
         cue: 'Level change suddenly.',
+        videoUrl: 'https://www.youtube.com/watch?v=6Ao2yUZolSA',
         details: ['Move in stance.', 'Then suddenly level change.'],
         estimatedDuration: { seconds: 300 },
         durationConfig: { durationSeconds: 300 },
@@ -168,6 +176,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         type: 'reps',
         prescription: '20 clean reps',
         cue: 'Quality over speed.',
+        videoUrl: 'https://www.youtube.com/watch?v=8FyeXO4rviw',
         details: [
           'Head up.',
           'Hips under you.',
@@ -255,7 +264,8 @@ export const curriculumPhases: CurriculumPhase[] = [
       },
       {
         number: 3,
-        progressionFocus: 'Add boxing feints and faster entries. No wild blasting.',
+        progressionFocus:
+          'Add boxing feints and faster entries. No wild blasting.',
         workouts: [
           {
             id: 'phase-1-week-3-workout-a',
@@ -277,7 +287,8 @@ export const curriculumPhases: CurriculumPhase[] = [
       },
       {
         number: 4,
-        progressionFocus: 'Add boxing feints and faster entries. No wild blasting.',
+        progressionFocus:
+          'Add boxing feints and faster entries. No wild blasting.',
         workouts: [
           {
             id: 'phase-1-week-4-workout-a',
@@ -299,7 +310,8 @@ export const curriculumPhases: CurriculumPhase[] = [
       },
       {
         number: 5,
-        progressionFocus: 'Start from movement, finish quickly, then disengage.',
+        progressionFocus:
+          'Start from movement, finish quickly, then disengage.',
         workouts: [
           {
             id: 'phase-1-week-5-workout-a',
@@ -321,7 +333,8 @@ export const curriculumPhases: CurriculumPhase[] = [
       },
       {
         number: 6,
-        progressionFocus: 'Start from movement, finish quickly, then disengage.',
+        progressionFocus:
+          'Start from movement, finish quickly, then disengage.',
         workouts: [
           {
             id: 'phase-1-week-6-workout-a',
