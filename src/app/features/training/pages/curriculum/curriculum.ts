@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { IonContent } from '@ionic/angular/standalone';
 
 import { CurriculumNodeComponent } from './components/curriculum-node';
 import { CurriculumPhaseComponent } from './components/curriculum-phase';
-import { CurriculumWeek } from './curriculum.model';
+import { CurriculumStore } from './curriculum.store';
+import { futureCurriculumPhases } from './data/curriculum.data';
 
 @Component({
   selector: 'app-curriculum',
@@ -13,48 +14,8 @@ import { CurriculumWeek } from './curriculum.model';
   imports: [IonContent, CurriculumPhaseComponent, CurriculumNodeComponent],
 })
 export class CurriculumPage {
-  weeks: CurriculumWeek[] = [
-    {
-      number: 1,
-      workouts: [
-        { label: 'Workout A', title: 'Mechanics', status: 'current' },
-        { label: 'Workout B', title: 'Application', status: 'locked' },
-      ],
-    },
-    {
-      number: 2,
-      workouts: [
-        { label: 'Workout A', title: 'Mechanics', status: 'locked' },
-        { label: 'Workout B', title: 'Application', status: 'locked' },
-      ],
-    },
-    {
-      number: 3,
-      workouts: [
-        { label: 'Workout A', title: 'Mechanics', status: 'locked' },
-        { label: 'Workout B', title: 'Application', status: 'locked' },
-      ],
-    },
-    {
-      number: 4,
-      workouts: [
-        { label: 'Workout A', title: 'Mechanics', status: 'locked' },
-        { label: 'Workout B', title: 'Application', status: 'locked' },
-      ],
-    },
-    {
-      number: 5,
-      workouts: [
-        { label: 'Workout A', title: 'Mechanics', status: 'locked' },
-        { label: 'Workout B', title: 'Application', status: 'locked' },
-      ],
-    },
-    {
-      number: 6,
-      workouts: [
-        { label: 'Workout A', title: 'Mechanics', status: 'locked' },
-        { label: 'Workout B', title: 'Application', status: 'locked' },
-      ],
-    },
-  ];
+  private readonly curriculumStore = inject(CurriculumStore);
+
+  readonly phases = this.curriculumStore.phases;
+  readonly futurePhases = futureCurriculumPhases;
 }

@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 
 import { CurriculumNodeComponent } from './curriculum-node';
-import { CurriculumWeek } from '../curriculum.model';
+import { CurriculumWeek } from '../model/curriculum.model';
 
 @Component({
   selector: 'app-curriculum-phase',

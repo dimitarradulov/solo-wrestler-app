@@ -2,9 +2,7 @@ import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 
-import {
-  CurriculumNodeStatus,
-} from '../curriculum.model';
+import { CurriculumNodeStatus } from '../model/curriculum.model';
 
 @Component({
   selector: 'app-curriculum-node',
@@ -22,7 +20,7 @@ export class CurriculumNodeComponent {
 
   isCurrent = computed(() => this.status() === 'current');
   iconName = computed(() =>
-    this.status() === 'completed' ? 'checkmark' : 'lock-closed',
+    this.status() === 'completed' ? 'checkmark' : 'lock-closed'
   );
   displayStatusText = computed(() => {
     const override = this.statusText();

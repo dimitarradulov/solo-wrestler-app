@@ -1,18 +1,22 @@
 <ion-content class="curriculum-content ion-padding">
   <h1>Curriculum</h1>
 
-  <app-curriculum-phase
-    headingId="phase-1-heading"
-    title="Phase 1: Foundations"
-    meta="6 weeks · 2 workouts/week · 12 total workouts"
-    [weeks]="weeks"
-  />
+  @for (phase of phases(); track phase.id) {
+    <app-curriculum-phase
+      [headingId]="phase.id + '-heading'"
+      [title]="phase.title"
+      [meta]="phase.meta"
+      [weeks]="phase.weeks"
+    />
+  }
 
   <section class="curriculum-future-phase" aria-label="Future phases">
-    <app-curriculum-node
-      title="Phase 2"
-      status="locked"
-      statusText="Coming Soon"
-    />
+    @for (phase of futurePhases; track phase.id) {
+      <app-curriculum-node
+        [title]="phase.title"
+        [status]="phase.status"
+        [statusText]="phase.statusText"
+      />
+    }
   </section>
 </ion-content>
