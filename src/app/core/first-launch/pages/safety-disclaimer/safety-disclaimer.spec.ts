@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { provideIonicAngular } from '@ionic/angular/standalone';
+import { provideNgxLocalstorage } from 'ngx-localstorage';
 import { routes } from '../../../../app.routes';
-import { ONBOARDING_COMPLETE_KEY } from '../../onboarding-completion-store';
 import { SafetyDisclaimerPage } from './safety-disclaimer';
 
 describe('SafetyDisclaimerPage', () => {
@@ -48,7 +48,11 @@ describe('SafetyDisclaimerPage', () => {
   const setup = async () => {
     await TestBed.configureTestingModule({
       imports: [SafetyDisclaimerPage],
-      providers: [provideIonicAngular({}), provideRouter(routes)],
+      providers: [
+        provideIonicAngular({}),
+        provideRouter(routes),
+        provideNgxLocalstorage({ prefix: 'solo-wrestler', delimiter: '.' }),
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(SafetyDisclaimerPage);
@@ -112,6 +116,6 @@ describe('SafetyDisclaimerPage', () => {
     await fixture.whenStable();
 
     expect(router.url).toBe('/tabs/today');
-    expect(storage.getItem(ONBOARDING_COMPLETE_KEY)).toBe('true');
+    expect(storage.getItem('solo-wrestler.onboarding-complete')).toBe('true');
   });
 });

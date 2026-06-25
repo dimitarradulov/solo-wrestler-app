@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
+import { provideNgxLocalstorage } from 'ngx-localstorage';
 import { routes } from './app.routes';
-import { ONBOARDING_COMPLETE_KEY } from './core/first-launch/onboarding-completion-store';
 
 describe('app routes', () => {
   const createStorage = (): Storage => {
@@ -44,7 +44,10 @@ describe('app routes', () => {
 
   const setupRouter = () => {
     TestBed.configureTestingModule({
-      providers: [provideRouter(routes)],
+      providers: [
+        provideRouter(routes),
+        provideNgxLocalstorage({ prefix: 'solo-wrestler', delimiter: '.' }),
+      ],
     });
 
     return TestBed.inject(Router);
@@ -59,7 +62,7 @@ describe('app routes', () => {
   });
 
   it('redirects / to /tabs/today when onboarding is complete', async () => {
-    storage.setItem(ONBOARDING_COMPLETE_KEY, 'true');
+    storage.setItem('solo-wrestler.onboarding-complete', 'true');
     const router = setupRouter();
 
     await router.navigateByUrl('/');

@@ -1,14 +1,17 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { LocalStorageService } from 'ngx-localstorage';
 
-export const ONBOARDING_COMPLETE_KEY = 'solo-wrestler.onboarding-complete';
+export const ONBOARDING_COMPLETE_KEY = 'onboarding-complete';
 
 @Injectable({ providedIn: 'root' })
 export class OnboardingCompletionStore {
+  private readonly localStorage = inject(LocalStorageService);
+
   isComplete(): boolean {
-    return window.localStorage.getItem(ONBOARDING_COMPLETE_KEY) === 'true';
+    return this.localStorage.get<boolean>(ONBOARDING_COMPLETE_KEY) === true;
   }
 
   markComplete(): void {
-    window.localStorage.setItem(ONBOARDING_COMPLETE_KEY, 'true');
+    this.localStorage.set(ONBOARDING_COMPLETE_KEY, true);
   }
 }
