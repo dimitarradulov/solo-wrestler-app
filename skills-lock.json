@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "capacitor-best-practices": {
+      "source": "cap-go/capacitor-skills",
+      "sourceType": "github",
+      "skillPath": "skills/capacitor-best-practices/SKILL.md",
+      "computedHash": "5070b60d829a8bfab87c5a51db0543174d1b9be4a990e305a9b56a06054770a3"
+    },
     "grill-with-docs": {
       "source": "mattpocock/skills",
       "sourceType": "github",
