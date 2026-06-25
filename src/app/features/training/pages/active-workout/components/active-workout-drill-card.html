@@ -86,11 +86,11 @@
   <span class="rest">
     {{ drill() | activeWorkoutRestText: defaultRestSeconds() }}
   </span>
-  @if (drill().videoUrl) {
-    <span class="video">
+  @if (drill().videoUrl; as videoUrl) {
+    <button class="video" type="button" (click)="watchVideo.emit(videoUrl)">
       <ion-icon name="videocam-outline" aria-hidden="true"></ion-icon>
       Watch
-    </span>
+    </button>
   }
   <span class="action">
     <ion-icon

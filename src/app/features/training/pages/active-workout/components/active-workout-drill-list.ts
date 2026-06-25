@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+} from '@angular/core';
 
 import { Drill } from '../../curriculum/model/curriculum.model';
 import { ActiveWorkoutDrillStatePipe } from '../pipes/active-workout-drill-state.pipe';
@@ -14,4 +19,5 @@ import { ActiveWorkoutDrillCardComponent } from './active-workout-drill-card';
 export class ActiveWorkoutDrillListComponent {
   drills = input.required<Drill[]>();
   defaultRestSeconds = input.required<number>();
+  watchVideo = output<string>();
 }

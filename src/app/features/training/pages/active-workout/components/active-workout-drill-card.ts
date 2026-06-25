@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   input,
+  output,
 } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 
@@ -44,6 +45,7 @@ export class ActiveWorkoutDrillCardComponent {
   drill = input.required<Drill>();
   drillIndex = input.required<number>();
   defaultRestSeconds = input.required<number>();
+  watchVideo = output<string>();
 
   readonly state = computed(() => drillState(this.drillIndex()));
 }

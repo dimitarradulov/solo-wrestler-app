@@ -28,7 +28,6 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         title: 'Warm-up',
         type: 'duration',
         cue: 'Move easy. Protect your neck.',
-        videoUrl: 'https://www.youtube.com/watch?v=pfNtYzw97Ew',
         details: [
           'Light bouncing.',
           'Hip circles.',
@@ -134,7 +133,6 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         title: 'Warm-up',
         type: 'duration',
         cue: 'Move easy. Protect your neck.',
-        videoUrl: 'https://www.youtube.com/watch?v=pfNtYzw97Ew',
         details: [
           'Light bouncing.',
           'Hip circles.',

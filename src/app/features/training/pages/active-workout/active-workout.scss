@@ -27,6 +27,37 @@
   min-height: var(--sw-touch-target-min);
 }
 
+.video-modal {
+  --background: var(--sw-color-canvas);
+  --padding-bottom: max(var(--sw-space-4), var(--ion-safe-area-bottom));
+  --padding-end: var(--sw-space-4);
+  --padding-start: var(--sw-space-4);
+  --padding-top: max(var(--sw-space-4), var(--ion-safe-area-top));
+}
+
+.video-modal__bar {
+  align-items: center;
+  color: var(--sw-color-text-high);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--sw-space-3);
+}
+
+.video-modal__bar h2 {
+  font-size: var(--sw-text-h2);
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.video-modal__frame {
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 0;
+  border-radius: var(--sw-radius-control);
+  display: block;
+  width: 100%;
+}
+
 .empty {
   color: var(--sw-color-text-medium);
   min-height: 60vh;

@@ -18,6 +18,7 @@
         <app-active-workout-drill-list
           [drills]="workoutTemplate.drills"
           [defaultRestSeconds]="defaultRestSeconds"
+          (watchVideo)="selectedVideoUrl.set($event)"
         />
 
         <ion-button
@@ -46,4 +47,34 @@
       </section>
     }
   </main>
+
+  <ion-modal
+    [isOpen]="selectedVideoEmbedUrl() !== null"
+    (didDismiss)="selectedVideoUrl.set(null)"
+  >
+    <ng-template>
+      <ion-content class="video-modal">
+        <div class="video-modal__bar">
+          <h2>Technique Video</h2>
+          <ion-button
+            fill="clear"
+            aria-label="Close technique video"
+            (click)="selectedVideoUrl.set(null)"
+          >
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </ion-button>
+        </div>
+
+        @if (selectedVideoEmbedUrl(); as videoUrl) {
+          <iframe
+            class="video-modal__frame"
+            title="Technique video"
+            [src]="videoUrl"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        }
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

@@ -41,7 +41,7 @@ describe('ActiveWorkoutPage', () => {
         type: 'reps',
         prescription: '3 sets x 10 reps',
         cue: 'Drop your hips and stay tall.',
-        videoUrl: 'https://example.test/level-change',
+        videoUrl: 'https://www.youtube.com/watch?v=levelChange123',
         repsConfig: {
           sets: 3,
           reps: 10,
@@ -172,6 +172,22 @@ describe('ActiveWorkoutPage', () => {
       'Drop your hips and stay tall.',
     );
     expect(fixture.nativeElement.querySelectorAll('.video')).toHaveLength(3);
+  });
+
+  it('opens an in-app technique video target from Watch', async () => {
+    const { fixture } = await setup();
+    const watchButton = fixture.nativeElement.querySelector(
+      '.video',
+    ) as HTMLButtonElement;
+
+    watchButton.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.selectedVideoEmbedUrl()).not.toBeNull();
+    expect(fixture.componentInstance.selectedVideoEmbedSrc()).toBe(
+      'https://www.youtube.com/embed/levelChange123',
+    );
   });
 
   it('uses type-specific action labels and timer previews', async () => {

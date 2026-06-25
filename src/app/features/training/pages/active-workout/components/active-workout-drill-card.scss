@@ -143,7 +143,10 @@
 
 .video {
   background: var(--sw-color-status-rest-surface);
+  border: 0;
   color: var(--sw-color-action-primary);
+  cursor: pointer;
+  font: inherit;
 }
 
 .action {
