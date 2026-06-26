@@ -2,10 +2,10 @@
   <span class="num">{{ drillIndex() + 1 }}</span>
   <span
     class="state"
-    [class.state--completed]="state() === 'completed'"
-    [class.state--current]="state() === 'current'"
+    [class.state--completed]="drillState() === 'completed'"
+    [class.state--current]="drillState() === 'current'"
   >
-    {{ drillIndex() | activeWorkoutDrillStateLabel }}
+    {{ stateLabel() }}
   </span>
   <span class="type"> {{ drill().type | activeWorkoutDrillTypeLabel }} </span>
 </div>
@@ -17,7 +17,7 @@
       <p class="rx">{{ drillMeta }}</p>
     }
   </div>
-  @if (state() === "completed") {
+  @if (drillState() === "completed") {
     <ion-icon
       class="done-icon"
       name="checkmark-circle-outline"
@@ -60,19 +60,32 @@
     aria-label="Timer preview"
   >
     <div class="timer-head">
-      <span>{{ drill() | activeWorkoutTimerLabel }}</span>
-      <strong>{{ drill() | activeWorkoutTimerClock }}</strong>
+      <span>{{ timerLabel() }}</span>
+      <strong>{{ timerClock() }}</strong>
     </div>
-    <div class="controls">
-      <span>
-        <ion-icon name="pause-outline" aria-hidden="true"></ion-icon>
-        Pause
-      </span>
-      <span>
-        <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
-        Reset
-      </span>
-    </div>
+    @if (showTimerControls()) {
+      <div class="controls">
+        <ion-button size="small" fill="outline" (click)="pauseTriggered.emit()">
+          <ion-icon name="pause-outline" aria-hidden="true" slot="start"></ion-icon>
+          Pause
+        </ion-button>
+        <ion-button size="small" fill="outline" (click)="resetTriggered.emit()">
+          <ion-icon name="refresh-outline" aria-hidden="true" slot="start"></ion-icon>
+          Reset
+        </ion-button>
+      </div>
+    } @else {
+      <div class="controls">
+        <span>
+          <ion-icon name="pause-outline" aria-hidden="true"></ion-icon>
+          Pause
+        </span>
+        <span>
+          <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+          Reset
+        </span>
+      </div>
+    }
     @if (drill().roundsConfig; as roundsConfig) {
       <p>
         <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
@@ -92,11 +105,17 @@
       Watch
     </button>
   }
-  <span class="action">
+  <ion-button
+    class="action-button"
+    size="small"
+    [disabled]="!isActionEnabled()"
+    (click)="actionTriggered.emit()"
+  >
     <ion-icon
-      [name]="drill() | activeWorkoutDrillActionIcon"
+      [name]="actionIcon()"
       aria-hidden="true"
+      slot="start"
     ></ion-icon>
-    {{ drill() | activeWorkoutDrillActionLabel }}
-  </span>
+    {{ actionLabel() }}
+  </ion-button>
 </div>

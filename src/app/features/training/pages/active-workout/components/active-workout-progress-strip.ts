@@ -1,7 +1,11 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+} from '@angular/core';
 
 import { WorkoutTemplate } from '../../curriculum/model/curriculum.model';
-import { ActiveWorkoutCurrentDrillTitlePipe } from '../pipes/active-workout-current-drill-title.pipe';
 import { ActiveWorkoutDrillProgressPipe } from '../pipes/active-workout-drill-progress.pipe';
 
 @Component({
@@ -9,9 +13,20 @@ import { ActiveWorkoutDrillProgressPipe } from '../pipes/active-workout-drill-pr
   templateUrl: 'active-workout-progress-strip.html',
   styleUrls: ['active-workout-progress-strip.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ActiveWorkoutCurrentDrillTitlePipe, ActiveWorkoutDrillProgressPipe],
+  imports: [ActiveWorkoutDrillProgressPipe],
 })
 export class ActiveWorkoutProgressStripComponent {
   workoutTemplate = input.required<WorkoutTemplate>();
   completedDrillCount = input.required<number>();
+  currentDrillTitle = input.required<string>();
+
+  progressPercent = computed(() => {
+    const totalDrills = this.workoutTemplate().drills.length;
+
+    if (totalDrills === 0) {
+      return 0;
+    }
+
+    return (this.completedDrillCount() / totalDrills) * 100;
+  });
 }

@@ -13,11 +13,26 @@
         <app-active-workout-progress-strip
           [workoutTemplate]="workoutTemplate"
           [completedDrillCount]="completedDrillCount()"
+          [currentDrillTitle]="currentDrillTitle()"
         />
 
         <app-active-workout-drill-list
           [drills]="workoutTemplate.drills"
+          [drillStates]="drillStates()"
+          [actionEnabledStates]="actionEnabledStates()"
+          [actionLabels]="actionLabels()"
+          [actionIcons]="actionIcons()"
           [defaultRestSeconds]="defaultRestSeconds"
+          [timerLabels]="timerLabels()"
+          [timerClocks]="timerClocks()"
+          [timerControlStates]="timerControlStates()"
+          [restAfterDrillIndex]="restAfterDrillIndex()"
+          [drillRestClock]="drillRestClock()"
+          (drillAction)="handleDrillAction($event)"
+          (pauseTimer)="pauseTimer($event)"
+          (resetTimer)="resetTimer($event)"
+          (skipRest)="skipRest()"
+          (addRestSeconds)="addRestSeconds($event)"
           (watchVideo)="selectedVideoUrl.set($event)"
         />
 
@@ -26,6 +41,7 @@
           routerLink="/workout-completion"
           routerDirection="forward"
           expand="block"
+          [disabled]="!isWorkoutReadyToFinish()"
         >
           <ion-icon
             name="flag-outline"

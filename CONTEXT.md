@@ -20,6 +20,10 @@ _Avoid_: Routine, program
 A specific occurrence of a workout template at a place in the curriculum sequence.
 _Avoid_: Copy, scheduled workout
 
+**Completed Workout Log Entry**:
+A saved historical record for a completed workout, including its completion details separate from the curriculum workout instance.
+_Avoid_: Workout instance, history item
+
 **Drill**:
 An ordered training block inside a workout that the user completes before moving to the next block. A drill may be measured by time, reps, or rounds.
 _Avoid_: Exercise, section, block

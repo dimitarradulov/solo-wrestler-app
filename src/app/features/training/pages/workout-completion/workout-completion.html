@@ -1,7 +1,43 @@
 <ion-content class="ion-padding">
   <h1>Workout Completion</h1>
 
-  <ion-button routerLink="/tabs/today" routerDirection="root">
-    Back to Today
+  <p>How did this workout feel?</p>
+
+  <div class="difficulty-options">
+    <ion-button
+      data-testid="difficulty-easy"
+      fill="outline"
+      [strong]="selectedDifficulty() === 'easy'"
+      (click)="selectDifficulty('easy')"
+    >
+      Easy
+    </ion-button>
+    <ion-button
+      data-testid="difficulty-good"
+      fill="outline"
+      [strong]="selectedDifficulty() === 'good'"
+      (click)="selectDifficulty('good')"
+    >
+      Good
+    </ion-button>
+    <ion-button
+      data-testid="difficulty-hard"
+      fill="outline"
+      [strong]="selectedDifficulty() === 'hard'"
+      (click)="selectDifficulty('hard')"
+    >
+      Hard
+    </ion-button>
+  </div>
+
+  <label for="completion-note">Notes</label>
+  <textarea id="completion-note" (input)="updateNote($any($event.target).value)"></textarea>
+
+  <ion-button
+    data-testid="save-workout"
+    [disabled]="!canSaveWorkout()"
+    (click)="saveWorkout()"
+  >
+    Save Workout
   </ion-button>
 </ion-content>

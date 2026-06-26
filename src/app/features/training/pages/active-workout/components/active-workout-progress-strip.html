@@ -5,11 +5,9 @@
         workoutTemplate() | activeWorkoutDrillProgress: completedDrillCount()
       }}
     </span>
-    <strong>
-      Current: {{ workoutTemplate() | activeWorkoutCurrentDrillTitle }}
-    </strong>
+    <strong> Current: {{ currentDrillTitle() }} </strong>
   </div>
   <div class="track" aria-hidden="true">
-    <span></span>
+    <span [style.width.%]="progressPercent()"></span>
   </div>
 </section>

@@ -1,7 +1,19 @@
 <ion-content class="ion-padding">
   <h1>Today</h1>
 
+  @if (workoutLabel(); as workoutLabel) {
+    <p>{{ workoutLabel }}</p>
+  }
+
+  @if (workoutTitle(); as workoutTitle) {
+    <p>{{ workoutTitle }}</p>
+  }
+
+  @if (inProgressWorkout()) {
+    <p>{{ completedDrillCount() }} drills complete</p>
+  }
+
   <ion-button routerLink="/active-workout" routerDirection="forward">
-    Start Workout
+    {{ workoutActionLabel() }}
   </ion-button>
 </ion-content>

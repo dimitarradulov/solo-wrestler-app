@@ -4,13 +4,10 @@ import {
 } from '../../curriculum/model/curriculum.model';
 import { ActiveWorkoutClockPipe } from './active-workout-clock.pipe';
 import { ActiveWorkoutCoreTechniquePipe } from './active-workout-core-technique.pipe';
-import { ActiveWorkoutCurrentDrillTitlePipe } from './active-workout-current-drill-title.pipe';
 import { ActiveWorkoutDrillActionIconPipe } from './active-workout-drill-action-icon.pipe';
 import { ActiveWorkoutDrillActionLabelPipe } from './active-workout-drill-action-label.pipe';
 import { ActiveWorkoutDrillMetaPipe } from './active-workout-drill-meta.pipe';
 import { ActiveWorkoutDrillProgressPipe } from './active-workout-drill-progress.pipe';
-import { ActiveWorkoutDrillStateLabelPipe } from './active-workout-drill-state-label.pipe';
-import { ActiveWorkoutDrillStatePipe } from './active-workout-drill-state.pipe';
 import { ActiveWorkoutDrillTypeLabelPipe } from './active-workout-drill-type-label.pipe';
 import { ActiveWorkoutEquipmentPipe } from './active-workout-equipment.pipe';
 import { ActiveWorkoutHasTimerPreviewPipe } from './active-workout-has-timer-preview.pipe';
@@ -78,26 +75,9 @@ describe('active workout pipes', () => {
     expect(
       new ActiveWorkoutDrillProgressPipe().transform(workoutTemplate, 1),
     ).toBe('1 of 3 drills complete');
-    expect(
-      new ActiveWorkoutCurrentDrillTitlePipe().transform(workoutTemplate),
-    ).toBe('Stance motion');
-    expect(
-      new ActiveWorkoutCurrentDrillTitlePipe().transform({
-        ...workoutTemplate,
-        drills: [],
-      }),
-    ).toBe('None');
   });
 
-  it('formats drill state and type labels', () => {
-    expect(new ActiveWorkoutDrillStatePipe().transform(0)).toBe('completed');
-    expect(new ActiveWorkoutDrillStatePipe().transform(1)).toBe('current');
-    expect(new ActiveWorkoutDrillStatePipe().transform(2)).toBe('queued');
-    expect(new ActiveWorkoutDrillStateLabelPipe().transform(0)).toBe(
-      'Complete',
-    );
-    expect(new ActiveWorkoutDrillStateLabelPipe().transform(1)).toBe('Current');
-    expect(new ActiveWorkoutDrillStateLabelPipe().transform(2)).toBe('Queued');
+  it('formats drill type labels', () => {
     expect(new ActiveWorkoutDrillTypeLabelPipe().transform('reps')).toBe(
       'Reps',
     );
