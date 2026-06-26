@@ -3,12 +3,12 @@ import { provideNgxLocalstorage } from 'ngx-localstorage';
 import { vi } from 'vitest';
 
 import { InProgressWorkoutStore } from './in-progress-workout.store';
-import { TimerEndAlertService } from '../../core/timers/timer-end-alert.service';
+import { TimerEndAlertService } from '../../../core/timers/timer-end-alert.service';
 import {
   Drill,
   WorkoutInstance,
   WorkoutTemplate,
-} from './pages/curriculum/model/curriculum.model';
+} from '../models/curriculum.model';
 
 describe('InProgressWorkoutStore', () => {
   const storageKey = 'solo-wrestler.training.in-progress-workout';

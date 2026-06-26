@@ -7,7 +7,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 
-import { CurriculumNodeStatus } from '../model/curriculum.model';
+import { CurriculumNodeStatus } from '../../../models/curriculum.model';
 
 @Component({
   selector: 'app-curriculum-node',

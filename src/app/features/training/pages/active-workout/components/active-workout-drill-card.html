@@ -1,23 +1,23 @@
 <div class="top">
-  <span class="num">{{ drillIndex() + 1 }}</span>
+  <span class="num">{{ drillCard().drillIndex + 1 }}</span>
   <span
     class="state"
-    [class.state--completed]="drillState() === 'completed'"
-    [class.state--current]="drillState() === 'current'"
+    [class.state--completed]="drillCard().state === 'completed'"
+    [class.state--current]="drillCard().state === 'current'"
   >
-    {{ stateLabel() }}
+    {{ drillCard().stateLabel }}
   </span>
-  <span class="type"> {{ drill().type | activeWorkoutDrillTypeLabel }} </span>
+  <span class="type"> {{ drillCard().typeLabel }} </span>
 </div>
 
 <div class="head">
   <div>
-    <h2>{{ drill().title }}</h2>
-    @if (drill() | activeWorkoutDrillMeta; as drillMeta) {
+    <h2>{{ drillCard().drill.title }}</h2>
+    @if (drillCard().meta; as drillMeta) {
       <p class="rx">{{ drillMeta }}</p>
     }
   </div>
-  @if (drillState() === "completed") {
+  @if (drillCard().state === "completed") {
     <ion-icon
       class="done-icon"
       name="checkmark-circle-outline"
@@ -28,42 +28,42 @@
 
 <div class="tech">
   <span style="display: block">Core technique</span>
-  <strong>{{ drill() | activeWorkoutCoreTechnique }}</strong>
+  <strong>{{ drillCard().coreTechnique }}</strong>
 </div>
 
 <div class="cue">
   <span>Cue</span>
-  <p>{{ drill().cue }}</p>
+  <p>{{ drillCard().drill.cue }}</p>
 </div>
 
-@if (drill().details?.length) {
+@if (drillCard().drill.details?.length) {
   <ul class="details">
-    @for (detail of drill().details; track detail) {
+    @for (detail of drillCard().drill.details; track detail) {
       <li>{{ detail }}</li>
     }
   </ul>
 }
-@if (drill().optionInstruction) {
-  <p class="option-intro">{{ drill().optionInstruction }}</p>
+@if (drillCard().drill.optionInstruction) {
+  <p class="option-intro">{{ drillCard().drill.optionInstruction }}</p>
 }
-@if (drill().options?.length) {
+@if (drillCard().drill.options?.length) {
   <ul class="options">
-    @for (option of drill().options; track option) {
+    @for (option of drillCard().drill.options; track option) {
       <li>{{ option }}</li>
     }
   </ul>
 }
-@if (drill() | activeWorkoutHasTimerPreview) {
+@if (drillCard().showTimerPreview) {
   <section
     class="timer"
-    [class.timer--rounds]="drill().type === 'rounds'"
+    [class.timer--rounds]="drillCard().drill.type === 'rounds'"
     aria-label="Timer preview"
   >
     <div class="timer-head">
-      <span>{{ timerLabel() }}</span>
-      <strong>{{ timerClock() }}</strong>
+      <span>{{ drillCard().timerLabel }}</span>
+      <strong>{{ drillCard().timerClock }}</strong>
     </div>
-    @if (showTimerControls()) {
+    @if (drillCard().showTimerControls) {
       <div class="controls">
         <ion-button size="small" fill="outline" (click)="pauseTriggered.emit()">
           <ion-icon name="pause-outline" aria-hidden="true" slot="start"></ion-icon>
@@ -86,7 +86,7 @@
         </span>
       </div>
     }
-    @if (drill().roundsConfig; as roundsConfig) {
+    @if (drillCard().drill.roundsConfig; as roundsConfig) {
       <p>
         <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
         Rest {{ roundsConfig.restBetweenRoundsSeconds | activeWorkoutClock }}
@@ -97,9 +97,9 @@
 
 <div class="actions">
   <span class="rest">
-    {{ drill() | activeWorkoutRestText: defaultRestSeconds() }}
+    {{ drillCard().restText }}
   </span>
-  @if (drill().videoUrl; as videoUrl) {
+  @if (drillCard().drill.videoUrl; as videoUrl) {
     <button class="video" type="button" (click)="watchVideo.emit(videoUrl)">
       <ion-icon name="videocam-outline" aria-hidden="true"></ion-icon>
       Watch
@@ -108,14 +108,14 @@
   <ion-button
     class="action-button"
     size="small"
-    [disabled]="!isActionEnabled()"
+    [disabled]="!drillCard().actionEnabled"
     (click)="actionTriggered.emit()"
   >
     <ion-icon
-      [name]="actionIcon()"
+      [name]="drillCard().actionIcon"
       aria-hidden="true"
       slot="start"
     ></ion-icon>
-    {{ actionLabel() }}
+    {{ drillCard().actionLabel }}
   </ion-button>
 </div>

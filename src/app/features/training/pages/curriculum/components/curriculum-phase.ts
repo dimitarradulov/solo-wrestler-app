@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 import { CurriculumNodeComponent } from './curriculum-node';
-import { CurriculumWeek } from '../model/curriculum.model';
+import { CurriculumWeek } from '../../../models/curriculum.model';
 
 @Component({
   selector: 'app-curriculum-phase',

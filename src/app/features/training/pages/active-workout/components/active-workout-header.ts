@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import {
   WorkoutInstance,
   WorkoutTemplate,
-} from '../../curriculum/model/curriculum.model';
+} from '../../../models/curriculum.model';
 
 @Component({
   selector: 'app-active-workout-header',

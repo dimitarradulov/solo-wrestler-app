@@ -3,8 +3,8 @@ import { IonContent } from '@ionic/angular/standalone';
 
 import { CurriculumNodeComponent } from './components/curriculum-node';
 import { CurriculumPhaseComponent } from './components/curriculum-phase';
-import { CurriculumStore } from './curriculum.store';
-import { futureCurriculumPhases } from './data/curriculum.data';
+import { futureCurriculumPhases } from '../../data/curriculum.data';
+import { CurriculumStore } from '../../stores/curriculum.store';
 
 @Component({
   selector: 'app-curriculum',

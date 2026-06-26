@@ -1,14 +1,14 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { LocalStorageService } from 'ngx-localstorage';
 
-import { TimerEndAlertService } from '../../core/timers/timer-end-alert.service';
-import { appWorkoutConfig } from './pages/curriculum/data/curriculum.data';
+import { TimerEndAlertService } from '../../../core/timers/timer-end-alert.service';
+import { appWorkoutConfig } from '../data/curriculum.data';
 import {
   Drill,
   WorkoutInstance,
   WorkoutTemplate,
-} from './pages/curriculum/model/curriculum.model';
-import { InProgressWorkout } from './training-session.model';
+} from '../models/curriculum.model';
+import { InProgressWorkout } from '../models/training-session.model';
 
 const IN_PROGRESS_WORKOUT_KEY = 'training.in-progress-workout';
 

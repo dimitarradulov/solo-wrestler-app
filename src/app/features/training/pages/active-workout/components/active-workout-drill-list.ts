@@ -6,8 +6,10 @@ import {
 } from '@angular/core';
 import { IonButton } from '@ionic/angular/standalone';
 
-import { DrillSequenceState } from '../../../training-session.model';
-import { Drill } from '../../curriculum/model/curriculum.model';
+import {
+  ActiveWorkoutDrillCardView,
+  ActiveWorkoutRestPanelView,
+} from '../../../models/workout-session.model';
 import { ActiveWorkoutDrillCardComponent } from './active-workout-drill-card';
 
 @Component({
@@ -18,17 +20,8 @@ import { ActiveWorkoutDrillCardComponent } from './active-workout-drill-card';
   imports: [IonButton, ActiveWorkoutDrillCardComponent],
 })
 export class ActiveWorkoutDrillListComponent {
-  drills = input.required<Drill[]>();
-  drillStates = input.required<DrillSequenceState[]>();
-  actionEnabledStates = input.required<boolean[]>();
-  actionLabels = input.required<string[]>();
-  actionIcons = input.required<string[]>();
-  defaultRestSeconds = input.required<number>();
-  timerLabels = input.required<string[]>();
-  timerClocks = input.required<string[]>();
-  timerControlStates = input.required<boolean[]>();
-  restAfterDrillIndex = input.required<number | null>();
-  drillRestClock = input.required<string>();
+  drillCards = input.required<ActiveWorkoutDrillCardView[]>();
+  restPanel = input.required<ActiveWorkoutRestPanelView | null>();
   drillAction = output<number>();
   pauseTimer = output<number>();
   resetTimer = output<number>();

@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { LocalStorageService } from 'ngx-localstorage';
 
-import { CompletedWorkoutLogEntry } from './training-session.model';
+import { CompletedWorkoutLogEntry } from '../models/training-session.model';
 
 const COMPLETED_WORKOUT_LOG_KEY = 'training.completed-workout-log';
 

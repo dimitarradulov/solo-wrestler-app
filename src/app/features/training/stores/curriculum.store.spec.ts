@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideNgxLocalstorage } from 'ngx-localstorage';
 
 import { CurriculumStore } from './curriculum.store';
-import { WorkoutInstance } from './model/curriculum.model';
+import { WorkoutInstance } from '../models/curriculum.model';
 
 describe('CurriculumStore', () => {
   const storageKey = 'solo-wrestler.curriculum.completed-workout-ids';

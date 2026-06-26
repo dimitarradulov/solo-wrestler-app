@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideNgxLocalstorage } from 'ngx-localstorage';
 
 import { CompletedWorkoutLogStore } from './completed-workout-log.store';
-import { CompletedWorkoutLogEntry } from './training-session.model';
+import { CompletedWorkoutLogEntry } from '../models/training-session.model';
 
 describe('CompletedWorkoutLogStore', () => {
   const storageKey = 'solo-wrestler.training.completed-workout-log';

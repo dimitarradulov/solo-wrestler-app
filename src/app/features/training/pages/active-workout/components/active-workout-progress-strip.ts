@@ -5,7 +5,7 @@ import {
   input,
 } from '@angular/core';
 
-import { WorkoutTemplate } from '../../curriculum/model/curriculum.model';
+import { WorkoutTemplate } from '../../../models/curriculum.model';
 import { ActiveWorkoutDrillProgressPipe } from '../pipes/active-workout-drill-progress.pipe';
 
 @Component({

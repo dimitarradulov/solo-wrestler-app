@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { WorkoutTemplate } from '../../curriculum/model/curriculum.model';
-import { drillProgressText } from '../utils/active-workout.utils';
+import { WorkoutTemplate } from '../../../models/curriculum.model';
+import { drillProgressText } from '../../../utils/workout-session.formatters';
 
 @Pipe({
   name: 'activeWorkoutDrillProgress',

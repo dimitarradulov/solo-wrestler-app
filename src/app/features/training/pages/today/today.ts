@@ -7,8 +7,8 @@ import {
 import { RouterLink } from '@angular/router';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
 
-import { InProgressWorkoutStore } from '../../in-progress-workout.store';
-import { CurriculumStore } from '../curriculum/curriculum.store';
+import { CurriculumStore } from '../../stores/curriculum.store';
+import { InProgressWorkoutStore } from '../../stores/in-progress-workout.store';
 
 @Component({
   selector: 'app-today',

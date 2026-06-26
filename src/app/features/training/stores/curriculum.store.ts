@@ -6,8 +6,8 @@ import {
   WorkoutInstance,
   WorkoutInstanceId,
   WorkoutTemplate,
-} from './model/curriculum.model';
-import { curriculumPhases } from './data/curriculum.data';
+} from '../models/curriculum.model';
+import { curriculumPhases } from '../data/curriculum.data';
 
 const COMPLETED_WORKOUT_IDS_KEY = 'curriculum.completed-workout-ids';
 

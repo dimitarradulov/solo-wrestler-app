@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { formatClock } from '../utils/active-workout.utils';
+import { formatClock } from '../../../utils/workout-session.formatters';
 
 @Pipe({
   name: 'activeWorkoutClock',

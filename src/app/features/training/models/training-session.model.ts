@@ -1,7 +1,7 @@
 import {
   WorkoutInstanceId,
   WorkoutTemplateId,
-} from './pages/curriculum/model/curriculum.model';
+} from './curriculum.model';
 
 export type DrillSequenceState = 'completed' | 'current' | 'queued';
 export type WorkoutTimerPhase =

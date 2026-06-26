@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { WorkoutTemplate } from '../../curriculum/model/curriculum.model';
+import { WorkoutTemplate } from '../../../models/curriculum.model';
 import { ActiveWorkoutProgressStripComponent } from './active-workout-progress-strip';
 
 describe('ActiveWorkoutProgressStripComponent', () => {

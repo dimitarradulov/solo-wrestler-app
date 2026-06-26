@@ -72,6 +72,10 @@ _Avoid_: Disabled
 A workout the user has started but not finished.
 _Avoid_: Active workout
 
+**Workout Session**:
+The user's live interaction with an In-progress Workout, including Current Drill, timer state, Rest, and valid actions.
+_Avoid_: Active workout state, workout facade
+
 **Work**:
 The timed effort portion of a duration-based or round-based drill.
 _Avoid_: Active, timer active

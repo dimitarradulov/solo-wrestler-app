@@ -17,17 +17,8 @@
         />
 
         <app-active-workout-drill-list
-          [drills]="workoutTemplate.drills"
-          [drillStates]="drillStates()"
-          [actionEnabledStates]="actionEnabledStates()"
-          [actionLabels]="actionLabels()"
-          [actionIcons]="actionIcons()"
-          [defaultRestSeconds]="defaultRestSeconds"
-          [timerLabels]="timerLabels()"
-          [timerClocks]="timerClocks()"
-          [timerControlStates]="timerControlStates()"
-          [restAfterDrillIndex]="restAfterDrillIndex()"
-          [drillRestClock]="drillRestClock()"
+          [drillCards]="drillCards()"
+          [restPanel]="restPanel()"
           (drillAction)="handleDrillAction($event)"
           (pauseTimer)="pauseTimer($event)"
           (resetTimer)="resetTimer($event)"

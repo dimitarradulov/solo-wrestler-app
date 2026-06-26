@@ -4,7 +4,7 @@ import {
   FutureCurriculumPhase,
   DEFAULT_REST_SECONDS,
   WorkoutTemplate,
-} from '../model/curriculum.model';
+} from '../models/curriculum.model';
 
 export const appWorkoutConfig: AppWorkoutConfig = {
   defaultRestSeconds: DEFAULT_REST_SECONDS,

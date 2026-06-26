@@ -1,39 +1,29 @@
 <ol class="drills">
   @for (
-    drill of drills();
-    track $index + "-" + drill.id;
-    let drillIndex = $index
+    drillCard of drillCards();
+    track drillCard.drillIndex + "-" + drillCard.drill.id
   ) {
     <li class="drill-item">
       <article
         class="card"
-        [class.done]="drillStates()[drillIndex] === 'completed'"
-        [class.cur]="drillStates()[drillIndex] === 'current'"
-        [class.queue]="drillStates()[drillIndex] === 'queued'"
+        [class.done]="drillCard.state === 'completed'"
+        [class.cur]="drillCard.state === 'current'"
+        [class.queue]="drillCard.state === 'queued'"
       >
         <app-active-workout-drill-card
-          [drill]="drill"
-          [drillIndex]="drillIndex"
-          [drillState]="drillStates()[drillIndex]"
-          [isActionEnabled]="actionEnabledStates()[drillIndex]"
-          [actionLabel]="actionLabels()[drillIndex]"
-          [actionIcon]="actionIcons()[drillIndex]"
-          [defaultRestSeconds]="defaultRestSeconds()"
-          [timerLabel]="timerLabels()[drillIndex]"
-          [timerClock]="timerClocks()[drillIndex]"
-          [showTimerControls]="timerControlStates()[drillIndex]"
-          (actionTriggered)="drillAction.emit(drillIndex)"
-          (pauseTriggered)="pauseTimer.emit(drillIndex)"
-          (resetTriggered)="resetTimer.emit(drillIndex)"
+          [drillCard]="drillCard"
+          (actionTriggered)="drillAction.emit(drillCard.drillIndex)"
+          (pauseTriggered)="pauseTimer.emit(drillCard.drillIndex)"
+          (resetTriggered)="resetTimer.emit(drillCard.drillIndex)"
           (watchVideo)="watchVideo.emit($event)"
         />
       </article>
 
-      @if (restAfterDrillIndex() === drillIndex) {
+      @if (restPanel()?.afterDrillIndex === drillCard.drillIndex) {
         <section class="rest-panel" aria-label="Between-drill rest">
           <div class="rest-panel__head">
             <span>Rest</span>
-            <strong>{{ drillRestClock() }}</strong>
+            <strong>{{ restPanel()?.clock }}</strong>
           </div>
           <div class="rest-panel__controls">
             <ion-button size="small" fill="outline" (click)="skipRest.emit()">

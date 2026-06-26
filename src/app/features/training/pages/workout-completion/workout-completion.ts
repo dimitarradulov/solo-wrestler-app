@@ -9,10 +9,10 @@ import {
 import { Router } from '@angular/router';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
 
-import { CompletedWorkoutLogStore } from '../../completed-workout-log.store';
-import { InProgressWorkoutStore } from '../../in-progress-workout.store';
-import { WorkoutDifficulty } from '../../training-session.model';
-import { CurriculumStore } from '../curriculum/curriculum.store';
+import { WorkoutDifficulty } from '../../models/training-session.model';
+import { CompletedWorkoutLogStore } from '../../stores/completed-workout-log.store';
+import { CurriculumStore } from '../../stores/curriculum.store';
+import { InProgressWorkoutStore } from '../../stores/in-progress-workout.store';
 
 @Component({
   selector: 'app-workout-completion',

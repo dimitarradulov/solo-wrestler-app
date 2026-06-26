@@ -4,14 +4,14 @@ import { provideRouter } from '@angular/router';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { vi } from 'vitest';
 
-import { InProgressWorkoutStore } from '../../in-progress-workout.store';
-import { InProgressWorkout } from '../../training-session.model';
-import { CurriculumStore } from '../curriculum/curriculum.store';
+import { InProgressWorkout } from '../../models/training-session.model';
+import { CurriculumStore } from '../../stores/curriculum.store';
+import { InProgressWorkoutStore } from '../../stores/in-progress-workout.store';
 import {
   CurriculumPhase,
   WorkoutInstance,
   WorkoutTemplate,
-} from '../curriculum/model/curriculum.model';
+} from '../../models/curriculum.model';
 import { ActiveWorkoutPage } from './active-workout';
 
 describe('ActiveWorkoutPage', () => {
