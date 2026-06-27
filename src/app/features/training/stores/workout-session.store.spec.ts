@@ -6,6 +6,7 @@ import { InProgressWorkoutStore } from './in-progress-workout.store';
 import { InProgressWorkout } from '../models/training-session.model';
 import { WorkoutSessionStore } from './workout-session.store';
 import { CurriculumStore } from './curriculum.store';
+import { WorkoutCancellationService } from '../services/workout-cancellation.service';
 import {
   CurriculumPhase,
   WorkoutInstance,
@@ -118,6 +119,13 @@ describe('WorkoutSessionStore', () => {
     const pauseCurrentTimer = vi.fn();
     const resetCurrentTimer = vi.fn();
     const clear = vi.fn();
+    const isCancelWorkoutConfirmationOpen = signal(false);
+    const requestCancelWorkout = vi.fn().mockResolvedValue(undefined);
+    const confirmWorkoutCancellation = vi.fn().mockResolvedValue(false);
+    const cancelWorkout = vi.fn();
+    const keepTraining = vi.fn();
+    const confirmCancelWorkout = vi.fn();
+    const dismissCancelWorkoutConfirmation = vi.fn();
 
     TestBed.configureTestingModule({
       providers: [
@@ -150,16 +158,35 @@ describe('WorkoutSessionStore', () => {
             clear,
           },
         },
+        {
+          provide: WorkoutCancellationService,
+          useValue: {
+            isCancelWorkoutConfirmationOpen,
+            requestCancelWorkout,
+            confirmWorkoutCancellation,
+            cancelWorkout,
+            keepTraining,
+            confirmCancelWorkout,
+            dismissCancelWorkoutConfirmation,
+          },
+        },
       ],
     });
 
     return {
       store: TestBed.inject(WorkoutSessionStore),
       addRestSeconds,
+      cancelWorkout,
       clear,
+      confirmCancelWorkout,
+      confirmWorkoutCancellation,
+      dismissCancelWorkoutConfirmation,
+      isCancelWorkoutConfirmationOpen,
+      keepTraining,
       markCurrentDrillComplete,
       pauseCurrentTimer,
       resetCurrentTimer,
+      requestCancelWorkout,
       skipRest,
       startCurrentTimer,
       startOrResumeWorkout,
@@ -333,11 +360,34 @@ describe('WorkoutSessionStore', () => {
     expect(tickCurrentTimer).toHaveBeenCalledWith(workoutTemplate);
   });
 
-  it('cancels the in-progress workout through the facade', () => {
-    const { clear, store } = setup(signal(createInProgressWorkout()));
+  it('exposes the cancellation service through the facade', async () => {
+    const {
+      cancelWorkout,
+      confirmCancelWorkout,
+      confirmWorkoutCancellation,
+      dismissCancelWorkoutConfirmation,
+      isCancelWorkoutConfirmationOpen,
+      keepTraining,
+      requestCancelWorkout,
+      store,
+    } = setup(signal(createInProgressWorkout()));
 
+    expect(store.isCancelWorkoutConfirmationOpen).toBe(
+      isCancelWorkoutConfirmationOpen,
+    );
+
+    await store.requestCancelWorkout();
+    await store.confirmWorkoutCancellation();
     store.cancelWorkout();
+    store.keepTraining();
+    store.confirmCancelWorkout();
+    store.dismissCancelWorkoutConfirmation();
 
-    expect(clear).toHaveBeenCalledTimes(1);
+    expect(requestCancelWorkout).toHaveBeenCalledTimes(1);
+    expect(confirmWorkoutCancellation).toHaveBeenCalledTimes(1);
+    expect(cancelWorkout).toHaveBeenCalledTimes(1);
+    expect(keepTraining).toHaveBeenCalledTimes(1);
+    expect(confirmCancelWorkout).toHaveBeenCalledTimes(1);
+    expect(dismissCancelWorkoutConfirmation).toHaveBeenCalledTimes(1);
   });
 });

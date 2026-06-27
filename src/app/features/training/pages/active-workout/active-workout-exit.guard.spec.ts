@@ -3,14 +3,19 @@ import { TestBed } from '@angular/core/testing';
 import { Router, RouterStateSnapshot, provideRouter } from '@angular/router';
 import { vi } from 'vitest';
 
+import { WorkoutSessionStore } from '../../stores/workout-session.store';
 import type { ActiveWorkoutPage } from './active-workout';
 import { activeWorkoutExitGuard } from './active-workout-exit.guard';
 
 describe('activeWorkoutExitGuard', () => {
+  const hasInProgressWorkout = signal(true);
+  const confirmWorkoutCancellation = vi.fn();
+  const cancelWorkout = vi.fn();
+  const component = {} as ActiveWorkoutPage;
   const createRouterState = (url: string) =>
     ({ url }) as unknown as RouterStateSnapshot;
 
-  const runGuard = (component: ActiveWorkoutPage, nextUrl: string) =>
+  const runGuard = (nextUrl: string) =>
     TestBed.runInInjectionContext(() =>
       activeWorkoutExitGuard(
         component,
@@ -21,8 +26,22 @@ describe('activeWorkoutExitGuard', () => {
     );
 
   beforeEach(() => {
+    hasInProgressWorkout.set(true);
+    confirmWorkoutCancellation.mockReset();
+    cancelWorkout.mockReset();
+
     TestBed.configureTestingModule({
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([]),
+        {
+          provide: WorkoutSessionStore,
+          useValue: {
+            hasInProgressWorkout,
+            confirmWorkoutCancellation,
+            cancelWorkout,
+          },
+        },
+      ],
     });
   });
 
@@ -31,39 +50,30 @@ describe('activeWorkoutExitGuard', () => {
   });
 
   it('allows the normal workout completion route', async () => {
-    const component = {
-      hasInProgressWorkout: signal(true),
-      confirmWorkoutCancellation: vi.fn(),
-      cancelWorkout: vi.fn(),
-    } as unknown as ActiveWorkoutPage;
+    await expect(runGuard('/workout-completion')).resolves.toBe(true);
+    expect(confirmWorkoutCancellation).not.toHaveBeenCalled();
+  });
 
-    await expect(runGuard(component, '/workout-completion')).resolves.toBe(
-      true,
-    );
-    expect(component.confirmWorkoutCancellation).not.toHaveBeenCalled();
+  it('allows navigation when there is no active workout session', async () => {
+    hasInProgressWorkout.set(false);
+
+    await expect(runGuard('/tabs/today')).resolves.toBe(true);
+    expect(confirmWorkoutCancellation).not.toHaveBeenCalled();
   });
 
   it('keeps the user on the active workout when cancellation is dismissed', async () => {
-    const component = {
-      hasInProgressWorkout: signal(true),
-      confirmWorkoutCancellation: vi.fn().mockResolvedValue(false),
-      cancelWorkout: vi.fn(),
-    } as unknown as ActiveWorkoutPage;
+    confirmWorkoutCancellation.mockResolvedValue(false);
 
-    await expect(runGuard(component, '/tabs/today')).resolves.toBe(false);
-    expect(component.cancelWorkout).not.toHaveBeenCalled();
+    await expect(runGuard('/tabs/today')).resolves.toBe(false);
+    expect(cancelWorkout).not.toHaveBeenCalled();
   });
 
   it('cancels the workout and redirects to Today when confirmed', async () => {
     const router = TestBed.inject(Router);
-    const component = {
-      hasInProgressWorkout: signal(true),
-      confirmWorkoutCancellation: vi.fn().mockResolvedValue(true),
-      cancelWorkout: vi.fn(),
-    } as unknown as ActiveWorkoutPage;
-    const result = await runGuard(component, '/tabs/today');
+    confirmWorkoutCancellation.mockResolvedValue(true);
+    const result = await runGuard('/tabs/today');
 
-    expect(component.cancelWorkout).toHaveBeenCalledTimes(1);
+    expect(cancelWorkout).toHaveBeenCalledTimes(1);
     expect(router.serializeUrl(result as ReturnType<Router['parseUrl']>)).toBe(
       '/tabs/today',
     );

@@ -14,6 +14,7 @@ import {
   WorkoutTemplate,
 } from '../models/curriculum.model';
 import { appWorkoutConfig } from '../data/curriculum.data';
+import { WorkoutCancellationService } from '../services/workout-cancellation.service';
 import {
   coreTechnique,
   drillActionIcon,
@@ -30,6 +31,9 @@ import {
 export class WorkoutSessionStore {
   private readonly curriculumStore = inject(CurriculumStore);
   private readonly inProgressWorkoutStore = inject(InProgressWorkoutStore);
+  private readonly workoutCancellationService = inject(
+    WorkoutCancellationService,
+  );
   private readonly phases = this.curriculumStore.phases;
 
   readonly inProgressWorkout = this.inProgressWorkoutStore.inProgressWorkout;
@@ -37,6 +41,8 @@ export class WorkoutSessionStore {
     this.inProgressWorkoutStore.hasInProgressWorkout;
   readonly completedDrillCount =
     this.inProgressWorkoutStore.completedDrillCount;
+  readonly isCancelWorkoutConfirmationOpen =
+    this.workoutCancellationService.isCancelWorkoutConfirmationOpen;
   readonly currentWorkout = computed(() => {
     const inProgressWorkout = this.inProgressWorkout();
 
@@ -277,8 +283,28 @@ export class WorkoutSessionStore {
     this.inProgressWorkoutStore.pauseCurrentTimer();
   }
 
+  requestCancelWorkout(): Promise<void> {
+    return this.workoutCancellationService.requestCancelWorkout();
+  }
+
+  confirmWorkoutCancellation(): Promise<boolean> {
+    return this.workoutCancellationService.confirmWorkoutCancellation();
+  }
+
   cancelWorkout(): void {
-    this.inProgressWorkoutStore.clear();
+    this.workoutCancellationService.cancelWorkout();
+  }
+
+  keepTraining(): void {
+    this.workoutCancellationService.keepTraining();
+  }
+
+  confirmCancelWorkout(): void {
+    this.workoutCancellationService.confirmCancelWorkout();
+  }
+
+  dismissCancelWorkoutConfirmation(): void {
+    this.workoutCancellationService.dismissCancelWorkoutConfirmation();
   }
 
   private resolveActionLabel(drill: Drill, drillIndex: number): string {

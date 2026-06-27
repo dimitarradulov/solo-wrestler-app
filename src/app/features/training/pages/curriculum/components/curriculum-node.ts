@@ -8,6 +8,8 @@ import { RouterLink } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 
 import { CurriculumNodeStatus } from '../../../models/curriculum.model';
+import { addIcons } from 'ionicons';
+import { checkmark, chevronForwardOutline, lockClosed } from 'ionicons/icons';
 
 @Component({
   selector: 'app-curriculum-node',
@@ -46,4 +48,12 @@ export class CurriculumNodeComponent {
       ? `Start ${label}, ${this.title()}`
       : `${label}, ${this.status()}`;
   });
+
+  constructor() {
+    addIcons({
+      checkmark,
+      lockClosed,
+      chevronForwardOutline,
+    });
+  }
 }

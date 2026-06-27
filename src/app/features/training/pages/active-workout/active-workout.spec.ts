@@ -1,6 +1,6 @@
 import { computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { vi } from 'vitest';
 
@@ -13,6 +13,7 @@ import {
   WorkoutTemplate,
 } from '../../models/curriculum.model';
 import { ActiveWorkoutPage } from './active-workout';
+import { WorkoutCancellationService } from '../../services/workout-cancellation.service';
 
 describe('ActiveWorkoutPage', () => {
   const normalizeText = (value: string | null | undefined) =>
@@ -138,6 +139,13 @@ describe('ActiveWorkoutPage', () => {
     const pauseCurrentTimer = vi.fn();
     const resetCurrentTimer = vi.fn();
     const clear = vi.fn(() => inProgressWorkout.set(null));
+    const cancelWorkoutConfirmationOpen = signal(false);
+    const requestCancelWorkout = vi.fn().mockResolvedValue(undefined);
+    const confirmWorkoutCancellation = vi.fn().mockResolvedValue(false);
+    const cancelWorkout = vi.fn();
+    const keepTraining = vi.fn();
+    const confirmCancelWorkout = vi.fn();
+    const dismissCancelWorkoutConfirmation = vi.fn();
 
     await TestBed.configureTestingModule({
       imports: [ActiveWorkoutPage],
@@ -170,11 +178,21 @@ describe('ActiveWorkoutPage', () => {
             clear,
           },
         },
+        {
+          provide: WorkoutCancellationService,
+          useValue: {
+            isCancelWorkoutConfirmationOpen: cancelWorkoutConfirmationOpen,
+            requestCancelWorkout,
+            confirmWorkoutCancellation,
+            cancelWorkout,
+            keepTraining,
+            confirmCancelWorkout,
+            dismissCancelWorkoutConfirmation,
+          },
+        },
       ],
     }).compileComponents();
 
-    const router = TestBed.inject(Router);
-    const navigateByUrl = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
     const fixture = TestBed.createComponent(ActiveWorkoutPage);
 
     fixture.detectChanges();
@@ -192,7 +210,11 @@ describe('ActiveWorkoutPage', () => {
       pauseCurrentTimer,
       resetCurrentTimer,
       clear,
-      navigateByUrl,
+      cancelWorkoutConfirmationOpen,
+      requestCancelWorkout,
+      keepTraining,
+      confirmCancelWorkout,
+      dismissCancelWorkoutConfirmation,
     };
   };
 
@@ -216,109 +238,42 @@ describe('ActiveWorkoutPage', () => {
   });
 
   it('shows a cancel workout control on the workout screen', async () => {
-    const { fixture } = await setup();
+    const { fixture, requestCancelWorkout } = await setup();
     const cancelButton = fixture.nativeElement.querySelector(
       '.cancel-workout-trigger',
     ) as HTMLElement | null;
 
     expect(cancelButton).not.toBeNull();
     expect(cancelButton?.getAttribute('aria-label')).toBe('Cancel workout');
+
+    cancelButton?.click();
+
+    expect(requestCancelWorkout).toHaveBeenCalledTimes(1);
   });
 
-  it('pauses the timer and opens confirmation before canceling a workout', async () => {
-    const { fixture, pauseCurrentTimer } = await setup(
-      signal<InProgressWorkout | null>({
-        workoutId: workout.id,
-        workoutTemplateId: workoutTemplate.id,
-        workoutLabel: workout.label,
-        workoutTitle: workout.title,
-        weekNumber: workout.weekNumber,
-        drillIds: workoutTemplate.drills.map((drill) => drill.id),
-        completedDrillIds: [workoutTemplate.drills[0].id],
-        currentDrillIndex: 1,
-        timer: {
-          phase: 'work',
-          status: 'running',
-          remainingSeconds: 125,
-          roundNumber: null,
-          totalRounds: null,
-        },
-        restSeconds: 120,
-      }),
-    );
+  it('delegates cancellation modal actions to the facade', async () => {
+    const {
+      cancelWorkoutConfirmationOpen,
+      confirmCancelWorkout,
+      dismissCancelWorkoutConfirmation,
+      fixture,
+      keepTraining,
+    } = await setup();
 
-    const confirmation = fixture.componentInstance.confirmWorkoutCancellation();
+    cancelWorkoutConfirmationOpen.set(true);
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(pauseCurrentTimer).toHaveBeenCalledTimes(1);
-    expect(fixture.componentInstance.isCancelWorkoutConfirmationOpen()).toBe(true);
-
+    expect(fixture.componentInstance.isCancelWorkoutConfirmationOpen()).toBe(
+      true,
+    );
     fixture.componentInstance.keepTraining();
-
-    await expect(confirmation).resolves.toBe(false);
-  });
-
-  it('keeps the in-progress workout when cancellation is dismissed', async () => {
-    const { clear, fixture, navigateByUrl } = await setup(
-      signal<InProgressWorkout | null>({
-        workoutId: workout.id,
-        workoutTemplateId: workoutTemplate.id,
-        workoutLabel: workout.label,
-        workoutTitle: workout.title,
-        weekNumber: workout.weekNumber,
-        drillIds: workoutTemplate.drills.map((drill) => drill.id),
-        completedDrillIds: [],
-        currentDrillIndex: 0,
-        timer: {
-          phase: 'idle',
-          status: 'stopped',
-          remainingSeconds: null,
-          roundNumber: null,
-          totalRounds: null,
-        },
-        restSeconds: 120,
-      }),
-    );
-
-    const request = fixture.componentInstance.requestCancelWorkout();
-    fixture.componentInstance.dismissCancelWorkoutConfirmation();
-    await request;
-
-    expect(clear).not.toHaveBeenCalled();
-    expect(navigateByUrl).not.toHaveBeenCalled();
-  });
-
-  it('clears the in-progress workout and returns to Today after confirmed cancellation', async () => {
-    const { clear, fixture, navigateByUrl } = await setup(
-      signal<InProgressWorkout | null>({
-        workoutId: workout.id,
-        workoutTemplateId: workoutTemplate.id,
-        workoutLabel: workout.label,
-        workoutTitle: workout.title,
-        weekNumber: workout.weekNumber,
-        drillIds: workoutTemplate.drills.map((drill) => drill.id),
-        completedDrillIds: [workoutTemplate.drills[0].id],
-        currentDrillIndex: 1,
-        timer: {
-          phase: 'idle',
-          status: 'stopped',
-          remainingSeconds: 180,
-          roundNumber: null,
-          totalRounds: null,
-        },
-        restSeconds: 120,
-      }),
-    );
-
-    const request = fixture.componentInstance.requestCancelWorkout();
     fixture.componentInstance.confirmCancelWorkout();
-    await request;
+    fixture.componentInstance.dismissCancelWorkoutConfirmation();
 
-    expect(clear).toHaveBeenCalledTimes(1);
-    expect(navigateByUrl).toHaveBeenCalledWith('/tabs/today', {
-      replaceUrl: true,
-    });
+    expect(keepTraining).toHaveBeenCalledTimes(1);
+    expect(confirmCancelWorkout).toHaveBeenCalledTimes(1);
+    expect(dismissCancelWorkoutConfirmation).toHaveBeenCalledTimes(1);
   });
 
   it('renders drill cards in workout order', async () => {
@@ -510,7 +465,8 @@ describe('ActiveWorkoutPage', () => {
       },
       restSeconds: 120,
     });
-    const { fixture, markCurrentDrillComplete } = await setup(inProgressWorkout);
+    const { fixture, markCurrentDrillComplete } =
+      await setup(inProgressWorkout);
 
     markCurrentDrillComplete.mockImplementation(() => {
       inProgressWorkout.set({
@@ -556,9 +512,9 @@ describe('ActiveWorkoutPage', () => {
     expect(normalizeText(cards[0].textContent)).toContain('Complete');
     expect(normalizeText(cards[1].textContent)).toContain('Queued');
     expect(normalizeText(cards[2].textContent)).toContain('Queued');
-    expect(normalizeText(cards[1].querySelector('.timer strong')?.textContent)).toBe(
-      '3:00',
-    );
+    expect(
+      normalizeText(cards[1].querySelector('.timer strong')?.textContent),
+    ).toBe('3:00');
     expect(restPanel).not.toBeNull();
     expect(drillItems[0].querySelector('.card.done + .rest-panel')).toBe(
       restPanel,
@@ -585,7 +541,8 @@ describe('ActiveWorkoutPage', () => {
       },
       restSeconds: 120,
     });
-    const { fixture, addRestSeconds, skipRest } = await setup(inProgressWorkout);
+    const { fixture, addRestSeconds, skipRest } =
+      await setup(inProgressWorkout);
     const buttons = fixture.nativeElement.querySelectorAll(
       '.rest-panel ion-button',
     ) as NodeListOf<HTMLElement>;
@@ -628,12 +585,12 @@ describe('ActiveWorkoutPage', () => {
       '.action-button',
     ) as HTMLButtonElement;
 
-    expect(normalizeText(durationCard.querySelector('.timer strong')?.textContent)).toBe(
-      '2:05',
-    );
-    expect(normalizeText(durationCard.querySelector('.timer span')?.textContent)).toBe(
-      'Work timer',
-    );
+    expect(
+      normalizeText(durationCard.querySelector('.timer strong')?.textContent),
+    ).toBe('2:05');
+    expect(
+      normalizeText(durationCard.querySelector('.timer span')?.textContent),
+    ).toBe('Work timer');
     expect(normalizeText(actionButton.textContent)).toContain('Start');
 
     actionButton.click();
@@ -679,12 +636,12 @@ describe('ActiveWorkoutPage', () => {
       '.action-button',
     ) as HTMLButtonElement;
 
-    expect(normalizeText(roundsCard.querySelector('.timer strong')?.textContent)).toBe(
-      '0:45',
-    );
-    expect(normalizeText(roundsCard.querySelector('.timer span')?.textContent)).toBe(
-      'Round 2 of 3',
-    );
+    expect(
+      normalizeText(roundsCard.querySelector('.timer strong')?.textContent),
+    ).toBe('0:45');
+    expect(
+      normalizeText(roundsCard.querySelector('.timer span')?.textContent),
+    ).toBe('Round 2 of 3');
     expect(normalizeText(actionButton.textContent)).toContain('Start');
 
     actionButton.click();
@@ -723,12 +680,12 @@ describe('ActiveWorkoutPage', () => {
     const cards = fixture.nativeElement.querySelectorAll('.card');
     const roundsCard = cards[2] as HTMLElement;
 
-    expect(normalizeText(roundsCard.querySelector('.timer strong')?.textContent)).toBe(
-      '0:20',
-    );
-    expect(normalizeText(roundsCard.querySelector('.timer span')?.textContent)).toBe(
-      'Round 1 of 3',
-    );
+    expect(
+      normalizeText(roundsCard.querySelector('.timer strong')?.textContent),
+    ).toBe('0:20');
+    expect(
+      normalizeText(roundsCard.querySelector('.timer span')?.textContent),
+    ).toBe('Round 1 of 3');
     expect(
       roundsCard.querySelector('.action-button:not([disabled])'),
     ).toBeNull();
@@ -756,9 +713,8 @@ describe('ActiveWorkoutPage', () => {
         },
         restSeconds: 120,
       });
-      const { fixture, startCurrentTimer, tickCurrentTimer } = await setup(
-        inProgressWorkout,
-      );
+      const { fixture, startCurrentTimer, tickCurrentTimer } =
+        await setup(inProgressWorkout);
       const durationCard = fixture.nativeElement.querySelectorAll('.card')[1];
       const actionButton = durationCard.querySelector(
         '.action-button',
@@ -783,7 +739,10 @@ describe('ActiveWorkoutPage', () => {
       tickCurrentTimer.mockImplementation(() => {
         const currentWorkout = inProgressWorkout();
 
-        if (currentWorkout === null || currentWorkout.timer.remainingSeconds === null) {
+        if (
+          currentWorkout === null ||
+          currentWorkout.timer.remainingSeconds === null
+        ) {
           return;
         }
 
@@ -877,9 +836,8 @@ describe('ActiveWorkoutPage', () => {
         },
         restSeconds: 120,
       });
-      const { fixture, pauseCurrentTimer, tickCurrentTimer } = await setup(
-        inProgressWorkout,
-      );
+      const { fixture, pauseCurrentTimer, tickCurrentTimer } =
+        await setup(inProgressWorkout);
 
       pauseCurrentTimer.mockImplementation(() => {
         const currentWorkout = inProgressWorkout();
@@ -1047,7 +1005,10 @@ describe('ActiveWorkoutPage', () => {
       tickCurrentTimer.mockImplementation(() => {
         const currentWorkout = inProgressWorkout();
 
-        if (currentWorkout === null || currentWorkout.timer.remainingSeconds === null) {
+        if (
+          currentWorkout === null ||
+          currentWorkout.timer.remainingSeconds === null
+        ) {
           return;
         }
 
@@ -1071,7 +1032,9 @@ describe('ActiveWorkoutPage', () => {
         });
       });
 
-      expect(normalizeText(fixture.nativeElement.textContent)).toContain('0:02');
+      expect(normalizeText(fixture.nativeElement.textContent)).toContain(
+        '0:02',
+      );
 
       await vi.advanceTimersByTimeAsync(2000);
       fixture.detectChanges();
