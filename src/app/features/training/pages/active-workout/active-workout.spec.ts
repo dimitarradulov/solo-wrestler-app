@@ -237,6 +237,19 @@ describe('ActiveWorkoutPage', () => {
     ).toEqual([['Duration', '25-30 min']]);
   });
 
+  it('focuses the workout main on entry without adding it to the tab order', async () => {
+    const { fixture } = await setup();
+    const workoutMain = fixture.nativeElement.querySelector(
+      'main',
+    ) as HTMLElement;
+    const focus = vi.spyOn(workoutMain, 'focus');
+
+    fixture.componentInstance.ionViewDidEnter();
+
+    expect(focus).toHaveBeenCalledTimes(1);
+    expect(workoutMain.tabIndex).toBe(-1);
+  });
+
   it('shows a cancel workout control on the workout screen', async () => {
     const { fixture, requestCancelWorkout } = await setup();
     const cancelButton = fixture.nativeElement.querySelector(

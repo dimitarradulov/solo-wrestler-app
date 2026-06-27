@@ -3,10 +3,12 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   NgZone,
   OnDestroy,
   signal,
+  viewChild,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
@@ -15,6 +17,7 @@ import {
   IonContent,
   IonIcon,
   IonModal,
+  ViewDidEnter,
   ViewWillLeave,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -50,11 +53,15 @@ import { toYouTubeEmbedUrl } from './utils/active-workout.utils';
     ActiveWorkoutProgressStripComponent,
   ],
 })
-export class ActiveWorkoutPage implements OnDestroy, ViewWillLeave {
+export class ActiveWorkoutPage
+  implements OnDestroy, ViewDidEnter, ViewWillLeave
+{
   private readonly workoutSessionStore = inject(WorkoutSessionStore);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly ngZone = inject(NgZone);
   private readonly isAppVisible = signal(this.documentIsVisible());
+  private readonly workoutMain =
+    viewChild.required<ElementRef<HTMLElement>>('workoutMain');
 
   readonly currentWorkout = this.workoutSessionStore.currentWorkout;
   readonly currentWorkoutTemplate =
@@ -148,6 +155,10 @@ export class ActiveWorkoutPage implements OnDestroy, ViewWillLeave {
 
       this.pauseRunningTimer();
     });
+  }
+
+  ionViewDidEnter(): void {
+    this.workoutMain().nativeElement.focus();
   }
 
   ionViewWillLeave(): void {

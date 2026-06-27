@@ -1,5 +1,5 @@
 <ion-content class="aw-content">
-  <main class="aw-shell">
+  <main #workoutMain class="aw-shell" tabindex="-1">
     @if (currentWorkout(); as workout) {
       @if (currentWorkoutTemplate(); as workoutTemplate) {
         <div class="aw-topbar">
