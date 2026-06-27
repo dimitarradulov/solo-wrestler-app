@@ -4,11 +4,12 @@ import {
   computed,
   effect,
   inject,
+  NgZone,
   OnDestroy,
   signal,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   IonButton,
   IonContent,
@@ -51,11 +52,20 @@ import { toYouTubeEmbedUrl } from './utils/active-workout.utils';
 })
 export class ActiveWorkoutPage implements OnDestroy, ViewWillLeave {
   private readonly workoutSessionStore = inject(WorkoutSessionStore);
+  private readonly router = inject(Router);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly ngZone = inject(NgZone);
   private readonly isAppVisible = signal(this.documentIsVisible());
+  private cancelWorkoutConfirmationResolver:
+    | ((shouldCancelWorkout: boolean) => void)
+    | null = null;
+  private cancelWorkoutConfirmationPromise: Promise<boolean> | null = null;
 
   readonly currentWorkout = this.workoutSessionStore.currentWorkout;
-  readonly currentWorkoutTemplate = this.workoutSessionStore.currentWorkoutTemplate;
+  readonly currentWorkoutTemplate =
+    this.workoutSessionStore.currentWorkoutTemplate;
+  readonly hasInProgressWorkout = this.workoutSessionStore.hasInProgressWorkout;
+  readonly isCancelWorkoutConfirmationOpen = signal(false);
   readonly selectedVideoUrl = signal<string | null>(null);
   readonly selectedVideoEmbedSrc = computed(() => {
     const videoUrl = this.selectedVideoUrl();
@@ -106,7 +116,10 @@ export class ActiveWorkoutPage implements OnDestroy, ViewWillLeave {
       handleVisibilityChange();
 
       onCleanup(() => {
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        document.removeEventListener(
+          'visibilitychange',
+          handleVisibilityChange,
+        );
       });
     });
 
@@ -122,9 +135,11 @@ export class ActiveWorkoutPage implements OnDestroy, ViewWillLeave {
         return;
       }
 
-      const intervalId = window.setInterval(() => {
-        this.workoutSessionStore.tickCurrentTimer();
-      }, 1000);
+      const intervalId = this.ngZone.runOutsideAngular(() =>
+        window.setInterval(() => {
+          this.workoutSessionStore.tickCurrentTimer();
+        }, 1000),
+      );
 
       onCleanup(() => {
         window.clearInterval(intervalId);
@@ -168,11 +183,62 @@ export class ActiveWorkoutPage implements OnDestroy, ViewWillLeave {
     this.workoutSessionStore.addRestSeconds(seconds);
   }
 
+  async requestCancelWorkout(): Promise<void> {
+    const shouldCancelWorkout = await this.confirmWorkoutCancellation();
+
+    if (!shouldCancelWorkout) {
+      return;
+    }
+
+    this.cancelWorkout();
+    void this.router.navigateByUrl('/tabs/today', { replaceUrl: true });
+  }
+
+  confirmWorkoutCancellation(): Promise<boolean> {
+    this.pauseRunningTimer();
+
+    if (this.cancelWorkoutConfirmationPromise !== null) {
+      return this.cancelWorkoutConfirmationPromise;
+    }
+
+    this.isCancelWorkoutConfirmationOpen.set(true);
+    this.cancelWorkoutConfirmationPromise = new Promise<boolean>((resolve) => {
+      this.cancelWorkoutConfirmationResolver = resolve;
+    });
+
+    return this.cancelWorkoutConfirmationPromise;
+  }
+
+  cancelWorkout(): void {
+    this.workoutSessionStore.cancelWorkout();
+  }
+
+  keepTraining(): void {
+    this.resolveCancelWorkoutConfirmation(false);
+  }
+
+  confirmCancelWorkout(): void {
+    this.resolveCancelWorkoutConfirmation(true);
+  }
+
+  dismissCancelWorkoutConfirmation(): void {
+    this.resolveCancelWorkoutConfirmation(false);
+  }
+
   private documentIsVisible(): boolean {
     return document.visibilityState !== 'hidden';
   }
 
   private pauseRunningTimer(): void {
     this.workoutSessionStore.pauseRunningTimer();
+  }
+
+  private resolveCancelWorkoutConfirmation(shouldCancelWorkout: boolean): void {
+    const resolver = this.cancelWorkoutConfirmationResolver;
+
+    this.cancelWorkoutConfirmationResolver = null;
+    this.cancelWorkoutConfirmationPromise = null;
+    this.isCancelWorkoutConfirmationOpen.set(false);
+    resolver?.(shouldCancelWorkout);
   }
 }

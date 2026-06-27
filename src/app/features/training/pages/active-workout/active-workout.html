@@ -2,6 +2,17 @@
   <main class="aw-shell">
     @if (currentWorkout(); as workout) {
       @if (currentWorkoutTemplate(); as workoutTemplate) {
+        <div class="aw-topbar">
+          <button
+            type="button"
+            class="cancel-workout-trigger"
+            aria-label="Cancel workout"
+            (click)="requestCancelWorkout()"
+          >
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </div>
+
         <app-active-workout-header
           [workout]="workout"
           [workoutTemplate]="workoutTemplate"
@@ -77,10 +88,52 @@
             class="video-modal__frame"
             title="Technique video"
             [src]="videoUrl"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+              web-share;
+            "
             allowfullscreen
           ></iframe>
         }
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal
+    class="cancel-workout-modal"
+    [isOpen]="isCancelWorkoutConfirmationOpen()"
+    (didDismiss)="dismissCancelWorkoutConfirmation()"
+  >
+    <ng-template>
+      <ion-content class="cancel-modal">
+        <section
+          class="cancel-modal__panel"
+          role="dialog"
+          aria-labelledby="cancel-workout-title"
+        >
+          <div class="cancel-modal__copy">
+            <h2 id="cancel-workout-title">Cancel workout?</h2>
+            <p>Your progress in this workout will be discarded.</p>
+          </div>
+
+          <div class="cancel-modal__actions">
+            <ion-button fill="outline" expand="block" (click)="keepTraining()">
+              Keep Training
+            </ion-button>
+            <ion-button
+              color="danger"
+              expand="block"
+              (click)="confirmCancelWorkout()"
+            >
+              Cancel Workout
+            </ion-button>
+          </div>
+        </section>
       </ion-content>
     </ng-template>
   </ion-modal>

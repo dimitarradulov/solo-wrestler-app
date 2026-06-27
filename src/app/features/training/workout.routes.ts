@@ -1,8 +1,11 @@
 import { Routes } from '@angular/router';
 
+import { activeWorkoutExitGuard } from './pages/active-workout/active-workout-exit.guard';
+
 export const workoutRoutes: Routes = [
   {
     path: 'active-workout',
+    canDeactivate: [activeWorkoutExitGuard],
     loadComponent: () =>
       import('./pages/active-workout/active-workout').then(
         (m) => m.ActiveWorkoutPage,

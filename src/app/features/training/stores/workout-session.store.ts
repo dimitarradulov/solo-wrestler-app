@@ -33,7 +33,10 @@ export class WorkoutSessionStore {
   private readonly phases = this.curriculumStore.phases;
 
   readonly inProgressWorkout = this.inProgressWorkoutStore.inProgressWorkout;
-  readonly completedDrillCount = this.inProgressWorkoutStore.completedDrillCount;
+  readonly hasInProgressWorkout =
+    this.inProgressWorkoutStore.hasInProgressWorkout;
+  readonly completedDrillCount =
+    this.inProgressWorkoutStore.completedDrillCount;
   readonly currentWorkout = computed(() => {
     const inProgressWorkout = this.inProgressWorkout();
 
@@ -81,7 +84,9 @@ export class WorkoutSessionStore {
       return [];
     }
 
-    const completedDrillIds = new Set(inProgressWorkout?.completedDrillIds ?? []);
+    const completedDrillIds = new Set(
+      inProgressWorkout?.completedDrillIds ?? [],
+    );
     const currentDrillIndex = inProgressWorkout?.currentDrillIndex ?? 0;
     const timerPhase = inProgressWorkout?.timer.phase ?? 'idle';
 
@@ -167,7 +172,8 @@ export class WorkoutSessionStore {
 
   startOrResumeCurrentWorkout(): void {
     const currentWorkout = this.curriculumStore.currentWorkout();
-    const currentWorkoutTemplate = this.curriculumStore.currentWorkoutTemplate();
+    const currentWorkoutTemplate =
+      this.curriculumStore.currentWorkoutTemplate();
 
     if (currentWorkout === null || currentWorkoutTemplate === null) {
       return;
@@ -194,7 +200,9 @@ export class WorkoutSessionStore {
     const currentDrill = currentWorkoutTemplate.drills[drillIndex];
 
     if (currentDrill?.type === 'reps') {
-      this.inProgressWorkoutStore.markCurrentDrillComplete(currentWorkoutTemplate);
+      this.inProgressWorkoutStore.markCurrentDrillComplete(
+        currentWorkoutTemplate,
+      );
       return;
     }
 
@@ -202,7 +210,9 @@ export class WorkoutSessionStore {
       currentWorkout.timer.status === 'finished' &&
       (currentDrill?.type === 'duration' || currentDrill?.type === 'rounds')
     ) {
-      this.inProgressWorkoutStore.markCurrentDrillComplete(currentWorkoutTemplate);
+      this.inProgressWorkoutStore.markCurrentDrillComplete(
+        currentWorkoutTemplate,
+      );
       return;
     }
 
@@ -265,6 +275,10 @@ export class WorkoutSessionStore {
     }
 
     this.inProgressWorkoutStore.pauseCurrentTimer();
+  }
+
+  cancelWorkout(): void {
+    this.inProgressWorkoutStore.clear();
   }
 
   private resolveActionLabel(drill: Drill, drillIndex: number): string {
@@ -380,7 +394,9 @@ export class WorkoutSessionStore {
     return null;
   }
 
-  private findWorkoutTemplate(workoutTemplateId: string): WorkoutTemplate | null {
+  private findWorkoutTemplate(
+    workoutTemplateId: string,
+  ): WorkoutTemplate | null {
     for (const phase of this.phases()) {
       const workoutTemplate =
         phase.workoutTemplates.find((item) => item.id === workoutTemplateId) ??

@@ -1,6 +1,6 @@
 import { computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { vi } from 'vitest';
 
@@ -137,6 +137,7 @@ describe('ActiveWorkoutPage', () => {
     const tickCurrentTimer = vi.fn();
     const pauseCurrentTimer = vi.fn();
     const resetCurrentTimer = vi.fn();
+    const clear = vi.fn(() => inProgressWorkout.set(null));
 
     await TestBed.configureTestingModule({
       imports: [ActiveWorkoutPage],
@@ -156,6 +157,7 @@ describe('ActiveWorkoutPage', () => {
           provide: InProgressWorkoutStore,
           useValue: {
             inProgressWorkout,
+            hasInProgressWorkout: computed(() => inProgressWorkout() !== null),
             completedDrillCount,
             startOrResumeWorkout,
             markCurrentDrillComplete,
@@ -165,11 +167,14 @@ describe('ActiveWorkoutPage', () => {
             tickCurrentTimer,
             pauseCurrentTimer,
             resetCurrentTimer,
+            clear,
           },
         },
       ],
     }).compileComponents();
 
+    const router = TestBed.inject(Router);
+    const navigateByUrl = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
     const fixture = TestBed.createComponent(ActiveWorkoutPage);
 
     fixture.detectChanges();
@@ -186,6 +191,8 @@ describe('ActiveWorkoutPage', () => {
       tickCurrentTimer,
       pauseCurrentTimer,
       resetCurrentTimer,
+      clear,
+      navigateByUrl,
     };
   };
 
@@ -206,6 +213,112 @@ describe('ActiveWorkoutPage', () => {
         normalizeText(item.querySelector('dd')?.textContent),
       ]),
     ).toEqual([['Duration', '25-30 min']]);
+  });
+
+  it('shows a cancel workout control on the workout screen', async () => {
+    const { fixture } = await setup();
+    const cancelButton = fixture.nativeElement.querySelector(
+      '.cancel-workout-trigger',
+    ) as HTMLElement | null;
+
+    expect(cancelButton).not.toBeNull();
+    expect(cancelButton?.getAttribute('aria-label')).toBe('Cancel workout');
+  });
+
+  it('pauses the timer and opens confirmation before canceling a workout', async () => {
+    const { fixture, pauseCurrentTimer } = await setup(
+      signal<InProgressWorkout | null>({
+        workoutId: workout.id,
+        workoutTemplateId: workoutTemplate.id,
+        workoutLabel: workout.label,
+        workoutTitle: workout.title,
+        weekNumber: workout.weekNumber,
+        drillIds: workoutTemplate.drills.map((drill) => drill.id),
+        completedDrillIds: [workoutTemplate.drills[0].id],
+        currentDrillIndex: 1,
+        timer: {
+          phase: 'work',
+          status: 'running',
+          remainingSeconds: 125,
+          roundNumber: null,
+          totalRounds: null,
+        },
+        restSeconds: 120,
+      }),
+    );
+
+    const confirmation = fixture.componentInstance.confirmWorkoutCancellation();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(pauseCurrentTimer).toHaveBeenCalledTimes(1);
+    expect(fixture.componentInstance.isCancelWorkoutConfirmationOpen()).toBe(true);
+
+    fixture.componentInstance.keepTraining();
+
+    await expect(confirmation).resolves.toBe(false);
+  });
+
+  it('keeps the in-progress workout when cancellation is dismissed', async () => {
+    const { clear, fixture, navigateByUrl } = await setup(
+      signal<InProgressWorkout | null>({
+        workoutId: workout.id,
+        workoutTemplateId: workoutTemplate.id,
+        workoutLabel: workout.label,
+        workoutTitle: workout.title,
+        weekNumber: workout.weekNumber,
+        drillIds: workoutTemplate.drills.map((drill) => drill.id),
+        completedDrillIds: [],
+        currentDrillIndex: 0,
+        timer: {
+          phase: 'idle',
+          status: 'stopped',
+          remainingSeconds: null,
+          roundNumber: null,
+          totalRounds: null,
+        },
+        restSeconds: 120,
+      }),
+    );
+
+    const request = fixture.componentInstance.requestCancelWorkout();
+    fixture.componentInstance.dismissCancelWorkoutConfirmation();
+    await request;
+
+    expect(clear).not.toHaveBeenCalled();
+    expect(navigateByUrl).not.toHaveBeenCalled();
+  });
+
+  it('clears the in-progress workout and returns to Today after confirmed cancellation', async () => {
+    const { clear, fixture, navigateByUrl } = await setup(
+      signal<InProgressWorkout | null>({
+        workoutId: workout.id,
+        workoutTemplateId: workoutTemplate.id,
+        workoutLabel: workout.label,
+        workoutTitle: workout.title,
+        weekNumber: workout.weekNumber,
+        drillIds: workoutTemplate.drills.map((drill) => drill.id),
+        completedDrillIds: [workoutTemplate.drills[0].id],
+        currentDrillIndex: 1,
+        timer: {
+          phase: 'idle',
+          status: 'stopped',
+          remainingSeconds: 180,
+          roundNumber: null,
+          totalRounds: null,
+        },
+        restSeconds: 120,
+      }),
+    );
+
+    const request = fixture.componentInstance.requestCancelWorkout();
+    fixture.componentInstance.confirmCancelWorkout();
+    await request;
+
+    expect(clear).toHaveBeenCalledTimes(1);
+    expect(navigateByUrl).toHaveBeenCalledWith('/tabs/today', {
+      replaceUrl: true,
+    });
   });
 
   it('renders drill cards in workout order', async () => {

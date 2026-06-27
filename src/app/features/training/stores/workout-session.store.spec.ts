@@ -106,7 +106,9 @@ describe('WorkoutSessionStore', () => {
     ...patch,
   });
 
-  const setup = (inProgressWorkout = signal<InProgressWorkout | null>(null)) => {
+  const setup = (
+    inProgressWorkout = signal<InProgressWorkout | null>(null),
+  ) => {
     const startOrResumeWorkout = vi.fn();
     const markCurrentDrillComplete = vi.fn();
     const skipRest = vi.fn();
@@ -115,6 +117,7 @@ describe('WorkoutSessionStore', () => {
     const tickCurrentTimer = vi.fn();
     const pauseCurrentTimer = vi.fn();
     const resetCurrentTimer = vi.fn();
+    const clear = vi.fn();
 
     TestBed.configureTestingModule({
       providers: [
@@ -132,6 +135,7 @@ describe('WorkoutSessionStore', () => {
           provide: InProgressWorkoutStore,
           useValue: {
             inProgressWorkout,
+            hasInProgressWorkout: computed(() => inProgressWorkout() !== null),
             completedDrillCount: computed(
               () => inProgressWorkout()?.completedDrillIds.length ?? 0,
             ),
@@ -143,6 +147,7 @@ describe('WorkoutSessionStore', () => {
             tickCurrentTimer,
             pauseCurrentTimer,
             resetCurrentTimer,
+            clear,
           },
         },
       ],
@@ -151,6 +156,7 @@ describe('WorkoutSessionStore', () => {
     return {
       store: TestBed.inject(WorkoutSessionStore),
       addRestSeconds,
+      clear,
       markCurrentDrillComplete,
       pauseCurrentTimer,
       resetCurrentTimer,
@@ -325,5 +331,13 @@ describe('WorkoutSessionStore', () => {
     expect(skipRest).toHaveBeenCalledWith(workoutTemplate);
     expect(addRestSeconds).toHaveBeenCalledWith(30);
     expect(tickCurrentTimer).toHaveBeenCalledWith(workoutTemplate);
+  });
+
+  it('cancels the in-progress workout through the facade', () => {
+    const { clear, store } = setup(signal(createInProgressWorkout()));
+
+    store.cancelWorkout();
+
+    expect(clear).toHaveBeenCalledTimes(1);
   });
 });

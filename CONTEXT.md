@@ -72,6 +72,10 @@ _Avoid_: Disabled
 A workout the user has started but not finished.
 _Avoid_: Active workout
 
+**Canceled Workout**:
+An in-progress workout the user abandons without completing it, saving it, creating a history entry, or advancing the curriculum. A workout can be canceled at any point while it is in progress.
+_Avoid_: Ended workout, discarded workout
+
 **Workout Session**:
 The user's live interaction with an In-progress Workout, including Current Drill, timer state, Rest, and valid actions.
 _Avoid_: Active workout state, workout facade
