@@ -1,8 +1,8 @@
 .aw-content {
   --background: var(--sw-color-canvas);
   --padding-bottom: max(var(--sw-space-5), var(--ion-safe-area-bottom));
-  --padding-end: var(--sw-space-4);
-  --padding-start: var(--sw-space-4);
+  --padding-end: max(var(--sw-space-4), var(--ion-safe-area-right));
+  --padding-start: max(var(--sw-space-4), var(--ion-safe-area-left));
   --padding-top: max(var(--sw-space-4), var(--ion-safe-area-top));
 }
 
@@ -48,8 +48,8 @@
 .video-modal {
   --background: var(--sw-color-canvas);
   --padding-bottom: max(var(--sw-space-4), var(--ion-safe-area-bottom));
-  --padding-end: var(--sw-space-4);
-  --padding-start: var(--sw-space-4);
+  --padding-end: max(var(--sw-space-4), var(--ion-safe-area-right));
+  --padding-start: max(var(--sw-space-4), var(--ion-safe-area-left));
   --padding-top: max(var(--sw-space-4), var(--ion-safe-area-top));
 }
 
@@ -79,8 +79,8 @@
 .cancel-modal {
   --background: rgb(0 0 0 / 0.4);
   --padding-bottom: max(var(--sw-space-4), var(--ion-safe-area-bottom));
-  --padding-end: var(--sw-space-4);
-  --padding-start: var(--sw-space-4);
+  --padding-end: max(var(--sw-space-4), var(--ion-safe-area-right));
+  --padding-start: max(var(--sw-space-4), var(--ion-safe-area-left));
   --padding-top: max(var(--sw-space-4), var(--ion-safe-area-top));
 }
 

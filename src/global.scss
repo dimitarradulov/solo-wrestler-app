@@ -30,3 +30,10 @@
 
 @include typography.sw-typography;
 @include base.sw-base;
+
+ion-content.sw-safe-area-content {
+  --padding-top: max(var(--sw-space-4), var(--ion-safe-area-top));
+  --padding-end: max(var(--sw-space-4), var(--ion-safe-area-right));
+  --padding-bottom: max(var(--sw-space-4), var(--ion-safe-area-bottom));
+  --padding-start: max(var(--sw-space-4), var(--ion-safe-area-left));
+}
