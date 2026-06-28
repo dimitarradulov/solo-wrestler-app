@@ -473,6 +473,14 @@ Allow the user to quickly view the relevant USA Wrestling technique without leav
 - Videos open in a modal.
 - User can close the video and return to the workout.
 - Videos should not open externally in YouTube.
+- Opening a video pauses a running workout timer.
+- Closing the video resumes only the timer that was running before it opened, preserving its phase and remaining time.
+- Video playback starts automatically when supported and may enter landscape fullscreen.
+- Backgrounding the app pauses playback and keeps the modal open; the workout timer remains paused until the modal closes in the foreground.
+- Finishing a video does not close the modal or resume the workout timer.
+- Reopening a video starts it from the beginning.
+- Playback uses YouTube Privacy-Enhanced Mode.
+- A video that fails to initialize within 15 seconds shows Retry and Close actions without opening an external fallback.
 
 ### Video Button
 
@@ -1025,6 +1033,11 @@ As a user, I want to view completed workouts so that I can see my training histo
 - Tapping Watch opens an in-app video modal.
 - Video does not open externally.
 - User can close the modal and return to the workout.
+- A running workout timer pauses while the modal is open and resumes from the same phase and remaining time when the modal closes.
+- A timer that was already paused does not resume when the modal closes.
+- The modal remains open after playback finishes and while the app is backgrounded.
+- The player supports landscape fullscreen playback.
+- Failed or timed-out playback can be retried or closed inside the modal.
 
 ### Timers
 

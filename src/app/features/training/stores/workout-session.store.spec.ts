@@ -117,6 +117,7 @@ describe('WorkoutSessionStore', () => {
     const startCurrentTimer = vi.fn();
     const tickCurrentTimer = vi.fn();
     const pauseCurrentTimer = vi.fn();
+    const resumeCurrentTimer = vi.fn();
     const resetCurrentTimer = vi.fn();
     const clear = vi.fn();
     const isCancelWorkoutConfirmationOpen = signal(false);
@@ -154,6 +155,7 @@ describe('WorkoutSessionStore', () => {
             startCurrentTimer,
             tickCurrentTimer,
             pauseCurrentTimer,
+            resumeCurrentTimer,
             resetCurrentTimer,
             clear,
           },
@@ -187,6 +189,7 @@ describe('WorkoutSessionStore', () => {
       pauseCurrentTimer,
       resetCurrentTimer,
       requestCancelWorkout,
+      resumeCurrentTimer,
       skipRest,
       startCurrentTimer,
       startOrResumeWorkout,
@@ -204,6 +207,14 @@ describe('WorkoutSessionStore', () => {
     store.startOrResumeCurrentWorkout();
 
     expect(startOrResumeWorkout).toHaveBeenCalledWith(workout, workoutTemplate);
+  });
+
+  it('resumes a paused timer through the in-progress workout store', () => {
+    const { resumeCurrentTimer, store } = setup();
+
+    store.resumePausedTimer();
+
+    expect(resumeCurrentTimer).toHaveBeenCalledTimes(1);
   });
 
   it('builds display-ready drill cards for the active workout session', () => {

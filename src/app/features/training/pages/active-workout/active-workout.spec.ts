@@ -14,6 +14,11 @@ import {
 } from '../../models/curriculum.model';
 import { ActiveWorkoutPage } from './active-workout';
 import { WorkoutCancellationService } from '../../services/workout-cancellation.service';
+import { TechniqueVideoPlayerService } from '../../../../core/video/technique-video-player.service';
+import {
+  buildTechniqueVideoEmbedUrl,
+  extractYouTubeVideoId,
+} from '../../../../core/video/technique-video-url';
 
 describe('ActiveWorkoutPage', () => {
   const normalizeText = (value: string | null | undefined) =>
@@ -137,6 +142,7 @@ describe('ActiveWorkoutPage', () => {
     const startCurrentTimer = vi.fn();
     const tickCurrentTimer = vi.fn();
     const pauseCurrentTimer = vi.fn();
+    const resumeCurrentTimer = vi.fn();
     const resetCurrentTimer = vi.fn();
     const clear = vi.fn(() => inProgressWorkout.set(null));
     const cancelWorkoutConfirmationOpen = signal(false);
@@ -146,6 +152,16 @@ describe('ActiveWorkoutPage', () => {
     const keepTraining = vi.fn();
     const confirmCancelWorkout = vi.fn();
     const dismissCancelWorkoutConfirmation = vi.fn();
+    const webEmbedUrl = signal<string | null>(null);
+    const isWebModalOpen = computed(() => webEmbedUrl() !== null);
+    const openTechniqueVideo = vi.fn(async (videoUrl: string) => {
+      const videoId = extractYouTubeVideoId(videoUrl);
+
+      if (videoId !== null) {
+        webEmbedUrl.set(buildTechniqueVideoEmbedUrl(videoId));
+      }
+    });
+    const closeWebModal = vi.fn(() => webEmbedUrl.set(null));
 
     await TestBed.configureTestingModule({
       imports: [ActiveWorkoutPage],
@@ -174,6 +190,7 @@ describe('ActiveWorkoutPage', () => {
             startCurrentTimer,
             tickCurrentTimer,
             pauseCurrentTimer,
+            resumeCurrentTimer,
             resetCurrentTimer,
             clear,
           },
@@ -188,6 +205,15 @@ describe('ActiveWorkoutPage', () => {
             keepTraining,
             confirmCancelWorkout,
             dismissCancelWorkoutConfirmation,
+          },
+        },
+        {
+          provide: TechniqueVideoPlayerService,
+          useValue: {
+            webEmbedUrl,
+            isWebModalOpen,
+            open: openTechniqueVideo,
+            closeWebModal,
           },
         },
       ],
@@ -208,6 +234,7 @@ describe('ActiveWorkoutPage', () => {
       startCurrentTimer,
       tickCurrentTimer,
       pauseCurrentTimer,
+      resumeCurrentTimer,
       resetCurrentTimer,
       clear,
       cancelWorkoutConfirmationOpen,
@@ -215,6 +242,8 @@ describe('ActiveWorkoutPage', () => {
       keepTraining,
       confirmCancelWorkout,
       dismissCancelWorkoutConfirmation,
+      openTechniqueVideo,
+      closeWebModal,
     };
   };
 
@@ -328,7 +357,7 @@ describe('ActiveWorkoutPage', () => {
   });
 
   it('opens an in-app technique video target from Watch', async () => {
-    const { fixture } = await setup();
+    const { fixture, openTechniqueVideo } = await setup();
     const watchButton = fixture.nativeElement.querySelector(
       '.video',
     ) as HTMLButtonElement;
@@ -337,10 +366,44 @@ describe('ActiveWorkoutPage', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
+    expect(openTechniqueVideo).toHaveBeenCalledWith(
+      'https://www.youtube.com/watch?v=levelChange123',
+    );
     expect(fixture.componentInstance.selectedVideoEmbedUrl()).not.toBeNull();
     expect(fixture.componentInstance.selectedVideoEmbedSrc()).toBe(
-      'https://www.youtube.com/embed/levelChange123',
+      'https://www.youtube-nocookie.com/embed/levelChange123?autoplay=1&controls=1&playsinline=1&fs=1&rel=0',
     );
+  });
+
+  it('pauses a running timer before opening a technique video and resumes it after close', async () => {
+    const inProgressWorkout = signal<InProgressWorkout | null>({
+      workoutId: workout.id,
+      workoutTemplateId: workoutTemplate.id,
+      workoutLabel: workout.label,
+      workoutTitle: workout.title,
+      weekNumber: workout.weekNumber,
+      drillIds: workoutTemplate.drills.map((drill) => drill.id),
+      completedDrillIds: [],
+      currentDrillIndex: 1,
+      timer: {
+        phase: 'work',
+        status: 'running',
+        remainingSeconds: 180,
+        roundNumber: null,
+        totalRounds: null,
+      },
+      restSeconds: 120,
+    });
+    const { fixture, pauseCurrentTimer, resumeCurrentTimer } = await setup(
+      inProgressWorkout,
+    );
+
+    await fixture.componentInstance.openTechniqueVideo(
+      'https://www.youtube.com/watch?v=levelChange123',
+    );
+
+    expect(pauseCurrentTimer).toHaveBeenCalledTimes(1);
+    expect(resumeCurrentTimer).toHaveBeenCalledTimes(1);
   });
 
   it('uses type-specific action labels and timer previews', async () => {

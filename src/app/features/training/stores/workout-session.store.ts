@@ -283,6 +283,10 @@ export class WorkoutSessionStore {
     this.inProgressWorkoutStore.pauseCurrentTimer();
   }
 
+  resumePausedTimer(): void {
+    this.inProgressWorkoutStore.resumeCurrentTimer();
+  }
+
   requestCancelWorkout(): Promise<void> {
     return this.workoutCancellationService.requestCancelWorkout();
   }

@@ -32,10 +32,10 @@ import {
   videocamOutline,
 } from 'ionicons/icons';
 import { WorkoutSessionStore } from '../../stores/workout-session.store';
+import { TechniqueVideoPlayerService } from '../../../../core/video/technique-video-player.service';
 import { ActiveWorkoutDrillListComponent } from './components/active-workout-drill-list';
 import { ActiveWorkoutHeaderComponent } from './components/active-workout-header';
 import { ActiveWorkoutProgressStripComponent } from './components/active-workout-progress-strip';
-import { toYouTubeEmbedUrl } from './utils/active-workout.utils';
 
 @Component({
   selector: 'app-active-workout',
@@ -57,9 +57,13 @@ export class ActiveWorkoutPage
   implements OnDestroy, ViewDidEnter, ViewWillLeave
 {
   private readonly workoutSessionStore = inject(WorkoutSessionStore);
+  private readonly techniqueVideoPlayerService = inject(
+    TechniqueVideoPlayerService,
+  );
   private readonly sanitizer = inject(DomSanitizer);
   private readonly ngZone = inject(NgZone);
   private readonly isAppVisible = signal(this.documentIsVisible());
+  private readonly shouldResumeTechniqueVideoTimer = signal(false);
   private readonly workoutMain =
     viewChild.required<ElementRef<HTMLElement>>('workoutMain');
 
@@ -68,16 +72,9 @@ export class ActiveWorkoutPage
     this.workoutSessionStore.currentWorkoutTemplate;
   readonly isCancelWorkoutConfirmationOpen =
     this.workoutSessionStore.isCancelWorkoutConfirmationOpen;
-  readonly selectedVideoUrl = signal<string | null>(null);
-  readonly selectedVideoEmbedSrc = computed(() => {
-    const videoUrl = this.selectedVideoUrl();
-
-    if (videoUrl === null) {
-      return null;
-    }
-
-    return toYouTubeEmbedUrl(videoUrl);
-  });
+  readonly isTechniqueVideoOpen =
+    this.techniqueVideoPlayerService.isWebModalOpen;
+  readonly selectedVideoEmbedSrc = this.techniqueVideoPlayerService.webEmbedUrl;
   readonly selectedVideoEmbedUrl = computed<SafeResourceUrl | null>(() => {
     const embedUrl = this.selectedVideoEmbedSrc();
 
@@ -155,6 +152,15 @@ export class ActiveWorkoutPage
 
       this.pauseRunningTimer();
     });
+
+    effect(() => {
+      if (!this.isAppVisible() || !this.shouldResumeTechniqueVideoTimer()) {
+        return;
+      }
+
+      this.shouldResumeTechniqueVideoTimer.set(false);
+      this.workoutSessionStore.resumePausedTimer();
+    });
   }
 
   ionViewDidEnter(): void {
@@ -205,11 +211,50 @@ export class ActiveWorkoutPage
     this.workoutSessionStore.dismissCancelWorkoutConfirmation();
   }
 
+  async openTechniqueVideo(videoUrl: string): Promise<void> {
+    const shouldResumeTimer = this.shouldPauseTimerForTechniqueVideo();
+
+    if (shouldResumeTimer) {
+      this.workoutSessionStore.pauseRunningTimer();
+      this.shouldResumeTechniqueVideoTimer.set(false);
+    }
+
+    try {
+      await this.techniqueVideoPlayerService.open(videoUrl);
+    } finally {
+      if (!shouldResumeTimer) {
+        return;
+      }
+
+      if (this.isAppVisible()) {
+        this.workoutSessionStore.resumePausedTimer();
+        return;
+      }
+
+      this.shouldResumeTechniqueVideoTimer.set(true);
+    }
+  }
+
+  closeTechniqueVideo(): void {
+    this.techniqueVideoPlayerService.closeWebModal();
+  }
+
   private documentIsVisible(): boolean {
     return document.visibilityState !== 'hidden';
   }
 
   private pauseRunningTimer(): void {
     this.workoutSessionStore.pauseRunningTimer();
+  }
+
+  private shouldPauseTimerForTechniqueVideo(): boolean {
+    const timer = this.workoutSessionStore.inProgressWorkout()?.timer;
+
+    return (
+      timer?.status === 'running' &&
+      (timer.phase === 'work' ||
+        timer.phase === 'round-rest' ||
+        timer.phase === 'drill-rest')
+    );
   }
 }

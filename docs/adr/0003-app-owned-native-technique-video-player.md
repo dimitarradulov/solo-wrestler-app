@@ -1,0 +1,3 @@
+# Use an app-owned native Technique Video player
+
+YouTube requires embedded players in mobile WebViews to identify the installed app, while the Capacitor iOS WebView's custom origin cannot provide the required HTTPS referrer to the existing iframe. Solo Wrestler will therefore own a narrowly scoped Capacitor plugin that presents a native Technique Video modal backed by an OS WebView with the permanent app ID as its identity; the web build retains the Ionic modal. We rejected opening a system browser because it interrupts the Workout Session, and rejected a community player wrapper because it would not remove the native integration requirement while adding dependency risk.

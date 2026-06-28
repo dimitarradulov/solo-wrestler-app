@@ -261,6 +261,20 @@ describe('InProgressWorkoutStore', () => {
     expect(store.inProgressWorkout()?.timer.remainingSeconds).toBe(150);
   });
 
+  it('resumes a paused timer without changing the current phase state', () => {
+    const store = TestBed.inject(InProgressWorkoutStore);
+    store.startOrResumeWorkout(baseWorkout, roundsTemplate);
+    store.startCurrentTimer(roundsTemplate);
+    store.pauseCurrentTimer();
+
+    store.resumeCurrentTimer();
+
+    expect(store.inProgressWorkout()?.timer.phase).toBe('work');
+    expect(store.inProgressWorkout()?.timer.status).toBe('running');
+    expect(store.inProgressWorkout()?.timer.roundNumber).toBe(1);
+    expect(store.inProgressWorkout()?.timer.remainingSeconds).toBe(3);
+  });
+
   it('ticks between-drill rest down and makes the next drill current when rest finishes', () => {
     const store = TestBed.inject(InProgressWorkoutStore);
     store.startOrResumeWorkout(baseWorkout, sequenceTemplate);

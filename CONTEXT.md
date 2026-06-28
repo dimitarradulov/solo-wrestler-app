@@ -36,6 +36,10 @@ _Avoid_: Instruction, explanation
 Optional compact supporting information for a drill when a cue alone is not enough.
 _Avoid_: Long description, tutorial
 
+**Technique Video**:
+An optional video demonstration attached to a drill that helps the user understand its technique.
+_Avoid_: Instructional video, tutorial
+
 **Estimated Duration**:
 The expected time a drill or workout should take, separate from the work required to complete it.
 _Avoid_: Timer, time limit

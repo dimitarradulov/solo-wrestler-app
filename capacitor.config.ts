@@ -3,7 +3,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'com.dimitarradulov.solowrestler',
   appName: 'solo-wrestler',
   webDir: 'www',
   plugins: {

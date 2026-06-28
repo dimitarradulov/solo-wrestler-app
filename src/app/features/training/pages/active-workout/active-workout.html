@@ -39,7 +39,7 @@
           (resetTimer)="resetTimer($event)"
           (skipRest)="skipRest()"
           (addRestSeconds)="addRestSeconds($event)"
-          (watchVideo)="selectedVideoUrl.set($event)"
+          (watchVideo)="openTechniqueVideo($event)"
         />
 
         <ion-button
@@ -71,8 +71,8 @@
   </main>
 
   <ion-modal
-    [isOpen]="selectedVideoEmbedUrl() !== null"
-    (didDismiss)="selectedVideoUrl.set(null)"
+    [isOpen]="isTechniqueVideoOpen()"
+    (didDismiss)="closeTechniqueVideo()"
   >
     <ng-template>
       <ion-content class="video-modal">
@@ -81,7 +81,7 @@
           <ion-button
             fill="clear"
             aria-label="Close technique video"
-            (click)="selectedVideoUrl.set(null)"
+            (click)="closeTechniqueVideo()"
           >
             <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
           </ion-button>
@@ -102,6 +102,7 @@
               web-share;
             "
             allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
           ></iframe>
         }
       </ion-content>

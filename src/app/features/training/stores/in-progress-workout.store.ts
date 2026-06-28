@@ -221,6 +221,28 @@ export class InProgressWorkoutStore {
     });
   }
 
+  resumeCurrentTimer(): void {
+    const currentWorkout = this.inProgressWorkout();
+
+    if (
+      currentWorkout === null ||
+      currentWorkout.timer.status !== 'paused' ||
+      (currentWorkout.timer.phase !== 'work' &&
+        currentWorkout.timer.phase !== 'round-rest' &&
+        currentWorkout.timer.phase !== 'drill-rest')
+    ) {
+      return;
+    }
+
+    this.persist({
+      ...currentWorkout,
+      timer: {
+        ...currentWorkout.timer,
+        status: 'running',
+      },
+    });
+  }
+
   resetCurrentTimer(workoutTemplate: WorkoutTemplate): void {
     const currentWorkout = this.inProgressWorkout();
 
