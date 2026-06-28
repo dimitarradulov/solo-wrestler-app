@@ -4,7 +4,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.dimitarradulov.solowrestler',
-  appName: 'solo-wrestler',
+  appName: 'Solo Wrestler',
   webDir: 'www',
   plugins: {
     SplashScreen: {
