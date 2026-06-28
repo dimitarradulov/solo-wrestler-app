@@ -1,0 +1,81 @@
+.completion-content {
+  --background: var(--sw-color-canvas);
+}
+
+.completion-shell {
+  color: var(--sw-color-text-high);
+  display: grid;
+  gap: var(--sw-space-5);
+  margin: 0 auto;
+  max-width: var(--sw-content-max-width);
+}
+
+.completion-header {
+  display: grid;
+  gap: var(--sw-space-2);
+}
+
+.completion-header p {
+  color: var(--sw-color-text-medium);
+  font-size: var(--sw-text-subtitle);
+}
+
+.completion-card {
+  background: var(--sw-color-surface);
+  border: var(--sw-border-width) solid var(--sw-color-border);
+  border-radius: var(--sw-radius-card);
+  display: grid;
+  gap: var(--sw-space-5);
+  padding: var(--sw-space-4);
+}
+
+.difficulty-options {
+  display: grid;
+  gap: var(--sw-space-2);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.difficulty-options ion-button,
+.save-workout {
+  margin: 0;
+  min-height: var(--sw-touch-target-min);
+}
+
+.notes-field {
+  display: grid;
+  gap: var(--sw-space-2);
+}
+
+.notes-field__label {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+}
+
+.notes-field__label label {
+  color: var(--sw-color-text-high);
+  font-weight: 600;
+}
+
+.notes-field__label span {
+  color: var(--sw-color-text-muted);
+  font-size: var(--sw-text-body);
+}
+
+.notes-field textarea {
+  background: var(--sw-color-surface-recessed);
+  border: var(--sw-border-width) solid var(--sw-color-border);
+  border-radius: var(--sw-radius-control);
+  box-sizing: border-box;
+  color: var(--sw-color-text-high);
+  font: inherit;
+  line-height: var(--sw-leading-body);
+  min-height: 8rem;
+  padding: var(--sw-space-3);
+  resize: vertical;
+  width: 100%;
+}
+
+.notes-field textarea:focus-visible {
+  border-color: var(--sw-color-action-primary);
+}

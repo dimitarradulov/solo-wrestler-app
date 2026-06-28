@@ -17,6 +17,7 @@ import { InProgressWorkoutStore } from '../../stores/in-progress-workout.store';
 @Component({
   selector: 'app-workout-completion',
   templateUrl: 'workout-completion.html',
+  styleUrls: ['workout-completion.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonButton, IonContent],
 })
@@ -80,7 +81,8 @@ export class WorkoutCompletionPage {
   ): boolean {
     return (
       inProgressWorkout !== null &&
-      inProgressWorkout.completedDrillIds.length === inProgressWorkout.drillIds.length
+      inProgressWorkout.completedDrillIds.length ===
+        inProgressWorkout.drillIds.length
     );
   }
 }

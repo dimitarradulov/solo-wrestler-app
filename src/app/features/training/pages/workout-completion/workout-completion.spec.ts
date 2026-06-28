@@ -94,6 +94,23 @@ describe('WorkoutCompletionPage', () => {
     expect(saveButton?.disabled).toBe(true);
   });
 
+  it('shows the selected difficulty and enables save workout', async () => {
+    const { fixture } = await setup();
+    const difficultyButton = fixture.nativeElement.querySelector(
+      '[data-testid="difficulty-good"]',
+    ) as HTMLButtonElement;
+    const saveButton = fixture.nativeElement.querySelector(
+      '[data-testid="save-workout"]',
+    ) as HTMLButtonElement;
+
+    difficultyButton.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(difficultyButton.getAttribute('aria-pressed')).toBe('true');
+    expect(saveButton.disabled).toBe(false);
+  });
+
   it('routes back to active workout when the workout is not fully completed', async () => {
     const { navigateByUrl } = await setup(
       signal<InProgressWorkout | null>({

@@ -1,43 +1,66 @@
-<ion-content class="sw-safe-area-content">
-  <h1>Workout Completion</h1>
+<ion-content class="completion-content sw-safe-area-content">
+  <main class="completion-shell">
+    <header class="completion-header">
+      <h1>Workout Completion</h1>
+      <p id="difficulty-prompt">How did this workout feel?</p>
+    </header>
 
-  <p>How did this workout feel?</p>
+    <div class="completion-card">
+      <div
+        class="difficulty-options"
+        role="group"
+        aria-labelledby="difficulty-prompt"
+      >
+        <ion-button
+          data-testid="difficulty-easy"
+          type="button"
+          [fill]="selectedDifficulty() === 'easy' ? 'solid' : 'outline'"
+          [attr.aria-pressed]="selectedDifficulty() === 'easy'"
+          (click)="selectDifficulty('easy')"
+        >
+          Easy
+        </ion-button>
+        <ion-button
+          data-testid="difficulty-good"
+          type="button"
+          [fill]="selectedDifficulty() === 'good' ? 'solid' : 'outline'"
+          [attr.aria-pressed]="selectedDifficulty() === 'good'"
+          (click)="selectDifficulty('good')"
+        >
+          Good
+        </ion-button>
+        <ion-button
+          data-testid="difficulty-hard"
+          type="button"
+          [fill]="selectedDifficulty() === 'hard' ? 'solid' : 'outline'"
+          [attr.aria-pressed]="selectedDifficulty() === 'hard'"
+          (click)="selectDifficulty('hard')"
+        >
+          Hard
+        </ion-button>
+      </div>
 
-  <div class="difficulty-options">
-    <ion-button
-      data-testid="difficulty-easy"
-      fill="outline"
-      [strong]="selectedDifficulty() === 'easy'"
-      (click)="selectDifficulty('easy')"
-    >
-      Easy
-    </ion-button>
-    <ion-button
-      data-testid="difficulty-good"
-      fill="outline"
-      [strong]="selectedDifficulty() === 'good'"
-      (click)="selectDifficulty('good')"
-    >
-      Good
-    </ion-button>
-    <ion-button
-      data-testid="difficulty-hard"
-      fill="outline"
-      [strong]="selectedDifficulty() === 'hard'"
-      (click)="selectDifficulty('hard')"
-    >
-      Hard
-    </ion-button>
-  </div>
+      <div class="notes-field">
+        <div class="notes-field__label">
+          <label for="completion-note">Notes</label>
+          <span>Optional</span>
+        </div>
+        <textarea
+          id="completion-note"
+          rows="5"
+          (input)="updateNote($any($event.target).value)"
+        ></textarea>
+      </div>
 
-  <label for="completion-note">Notes</label>
-  <textarea id="completion-note" (input)="updateNote($any($event.target).value)"></textarea>
-
-  <ion-button
-    data-testid="save-workout"
-    [disabled]="!canSaveWorkout()"
-    (click)="saveWorkout()"
-  >
-    Save Workout
-  </ion-button>
+      <ion-button
+        class="save-workout"
+        data-testid="save-workout"
+        expand="block"
+        [disabled]="!canSaveWorkout()"
+        (click)="saveWorkout()"
+      >
+        Save Workout
+      </ion-button>
+    </div>
+  </main>
 </ion-content>
