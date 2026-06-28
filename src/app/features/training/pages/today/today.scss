@@ -30,8 +30,8 @@
   justify-content: space-between;
 }
 
-.today-card h1 {
-  font-size: var(--sw-text-h1);
+.today-shell > h1 {
+  margin-bottom: var(--sw-space-5);
 }
 
 .today-card h2 {

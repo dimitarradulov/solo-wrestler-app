@@ -1,9 +1,9 @@
 <ion-content class="today-content sw-safe-area-content">
   <main class="today-shell">
+    <h1 id="today-heading">Today</h1>
+
     @if (isCurriculumComplete()) {
       <section class="today-card today-card--complete" aria-labelledby="today-heading">
-        <h1 id="today-heading">Today</h1>
-
         <div class="today-completion">
           <h2>{{ completionHeading() }}</h2>
           <p>You completed all {{ totalWorkoutCount() }} workouts.</p>
@@ -34,8 +34,6 @@
       @if (workout(); as workout) {
         @if (workoutTemplate(); as workoutTemplate) {
           <section class="today-card" aria-labelledby="today-heading">
-            <h1 id="today-heading">Today</h1>
-
             <div class="today-identity">
               @if (positionLabel(); as positionLabel) {
                 <p class="today-position">{{ positionLabel }}</p>
