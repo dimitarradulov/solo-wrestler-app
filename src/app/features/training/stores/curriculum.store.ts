@@ -33,6 +33,25 @@ export class CurriculumStore {
     );
   });
 
+  readonly totalWorkoutCount = computed(() => this.orderedWorkouts.length);
+  readonly currentWorkoutSequenceNumber = computed(() => {
+    const currentWorkoutId = this.currentWorkoutId();
+
+    if (currentWorkoutId === null) {
+      return null;
+    }
+
+    return this.getWorkoutSequenceNumber(currentWorkoutId);
+  });
+
+  getWorkoutSequenceNumber(workoutId: WorkoutInstanceId): number | null {
+    const index = this.orderedWorkouts.findIndex(
+      (workout) => workout.id === workoutId,
+    );
+
+    return index === -1 ? null : index + 1;
+  }
+
   readonly phases = computed<CurriculumPhase[]>(() => {
     const completedIds = this.completedWorkoutIdSet();
     const currentWorkoutId = this.currentWorkoutId();

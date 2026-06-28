@@ -1,19 +1,125 @@
-<ion-content class="sw-safe-area-content">
-  <h1>Today</h1>
+<ion-content class="today-content sw-safe-area-content">
+  <main class="today-shell">
+    @if (isCurriculumComplete()) {
+      <section class="today-card today-card--complete" aria-labelledby="today-heading">
+        <h1 id="today-heading">Today</h1>
 
-  @if (workoutLabel(); as workoutLabel) {
-    <p>{{ workoutLabel }}</p>
-  }
+        <div class="today-completion">
+          <h2>{{ completionHeading() }}</h2>
+          <p>You completed all {{ totalWorkoutCount() }} workouts.</p>
+        </div>
 
-  @if (workoutTitle(); as workoutTitle) {
-    <p>{{ workoutTitle }}</p>
-  }
+        <div class="today-actions today-actions--stacked">
+          <ion-button
+            class="today-action today-action--primary"
+            routerLink="/tabs/progress"
+            routerDirection="forward"
+            expand="block"
+          >
+            View Progress
+          </ion-button>
 
-  @if (inProgressWorkout()) {
-    <p>{{ completedDrillCount() }} drills complete</p>
-  }
+          <ion-button
+            class="today-action today-action--secondary"
+            routerLink="/tabs/curriculum"
+            routerDirection="forward"
+            expand="block"
+            fill="outline"
+          >
+            Review Curriculum
+          </ion-button>
+        </div>
+      </section>
+    } @else {
+      @if (workout(); as workout) {
+        @if (workoutTemplate(); as workoutTemplate) {
+          <section class="today-card" aria-labelledby="today-heading">
+            <h1 id="today-heading">Today</h1>
 
-  <ion-button routerLink="/active-workout" routerDirection="forward">
-    {{ workoutActionLabel() }}
-  </ion-button>
+            <div class="today-identity">
+              @if (positionLabel(); as positionLabel) {
+                <p class="today-position">{{ positionLabel }}</p>
+              }
+
+              @if (workoutIdentity(); as workoutIdentity) {
+                <h2>{{ workoutIdentity }}</h2>
+              }
+
+              @if (pageState() === 'available') {
+                <div class="today-meta">
+                  @if (estimatedDuration(); as estimatedDuration) {
+                    <span>{{ estimatedDuration }}</span>
+                  }
+
+                  @if (drillCountLabel(); as drillCountLabel) {
+                    <span>{{ drillCountLabel }}</span>
+                  }
+
+                  @if (equipmentLabel(); as equipmentLabel) {
+                    <span>{{ equipmentLabel }}</span>
+                  }
+                </div>
+              }
+            </div>
+
+            @if (pageState() === 'available') {
+              @if (progressionFocus(); as progressionFocus) {
+                <div class="today-emphasis">
+                  <span class="today-emphasis__label">This week</span>
+                  <p>{{ progressionFocus }}</p>
+                </div>
+              }
+            } @else {
+              @if (progressLabel(); as progressLabel) {
+                <p class="today-progress">{{ progressLabel }}</p>
+              }
+            }
+
+            <div
+              class="today-drills"
+              role="list"
+              [attr.aria-label]="workoutTemplate.label + ' drills'"
+            >
+              @for (drill of drills(); track drill.number) {
+                <div
+                  class="today-drill"
+                  [class.today-drill--completed]="drill.state === 'completed'"
+                  [class.today-drill--next]="drill.state === 'next'"
+                  [class.today-drill--pending]="drill.state === 'pending'"
+                  role="listitem"
+                >
+                  <span class="today-drill__number">{{ drill.number }}</span>
+
+                  <div class="today-drill__content">
+                    <span class="today-drill__title">{{ drill.title }}</span>
+
+                    @if (drill.meta; as meta) {
+                      <span class="today-drill__meta">{{ meta }}</span>
+                    }
+                  </div>
+
+                  @if (drill.state === 'completed') {
+                    <ion-icon
+                      class="today-drill__check"
+                      name="checkmark"
+                      aria-label="Completed"
+                    ></ion-icon>
+                  }
+                </div>
+              }
+            </div>
+
+            <ion-button
+              class="today-action today-action--primary"
+              [routerLink]="actionLink()"
+              routerDirection="forward"
+              expand="block"
+            >
+              {{ actionLabel() }}
+            </ion-button>
+          </section>
+        }
+      }
+    }
+  </main>
 </ion-content>

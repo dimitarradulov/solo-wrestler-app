@@ -111,6 +111,39 @@ describe('CurriculumStore', () => {
     expect(getWorkoutStatus(secondWorkoutId)).toBe('locked');
   });
 
+  it('tracks total workout count and current sequence number', () => {
+    const store = TestBed.inject(CurriculumStore);
+
+    expect(store.totalWorkoutCount()).toBe(12);
+    expect(store.currentWorkoutSequenceNumber()).toBe(1);
+    expect(store.getWorkoutSequenceNumber(firstWorkoutId)).toBe(1);
+    expect(store.getWorkoutSequenceNumber(lastWorkoutId)).toBe(12);
+    expect(store.getWorkoutSequenceNumber('unknown')).toBeNull();
+  });
+
+  it('advances the current sequence number after completing workouts', () => {
+    const store = TestBed.inject(CurriculumStore);
+
+    store.setWorkoutCompleted(firstWorkoutId, true);
+
+    expect(store.currentWorkoutSequenceNumber()).toBe(2);
+
+    store.setWorkoutCompleted(secondWorkoutId, true);
+
+    expect(store.currentWorkoutSequenceNumber()).toBe(3);
+  });
+
+  it('has no current sequence number when the curriculum is complete', () => {
+    const store = TestBed.inject(CurriculumStore);
+    const workouts = getWorkouts();
+
+    for (const workout of workouts) {
+      store.setWorkoutCompleted(workout.id, true);
+    }
+
+    expect(store.currentWorkoutSequenceNumber()).toBeNull();
+  });
+
   it('has no current workout after all real workouts are completed', () => {
     const store = TestBed.inject(CurriculumStore);
     const workouts = getWorkouts();
