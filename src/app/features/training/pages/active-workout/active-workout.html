@@ -34,9 +34,9 @@
         <app-active-workout-drill-list
           [drillCards]="drillCards()"
           [restPanel]="restPanel()"
-          (drillAction)="handleDrillAction($event)"
-          (pauseTimer)="pauseTimer($event)"
-          (resetTimer)="resetTimer($event)"
+          (drillAction)="performCurrentDrillAction()"
+          (pauseTimer)="pauseTimer()"
+          (resetTimer)="resetTimer()"
           (skipRest)="skipRest()"
           (addRestSeconds)="addRestSeconds($event)"
           (watchVideo)="openTechniqueVideo($event)"

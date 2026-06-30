@@ -4,7 +4,6 @@ import { provideRouter } from '@angular/router';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 
 import { CurriculumStore } from '../../stores/curriculum.store';
-import { InProgressWorkoutStore } from '../../stores/in-progress-workout.store';
 import { WorkoutSessionStore } from '../../stores/workout-session.store';
 import { TodayPage } from './today';
 import {
@@ -122,14 +121,38 @@ describe('TodayPage', () => {
   const makeWorkoutSessionStore = (
     inProgressWorkout: InProgressWorkout | null,
   ) => {
-    const currentWorkoutSignal = signal(currentWorkout);
-    const inProgressWorkoutSignal = signal(inProgressWorkout);
-    const currentWorkoutTemplateSignal = signal(currentWorkoutTemplate);
+    const session = signal(
+      inProgressWorkout === null
+        ? null
+        : {
+            workout: currentWorkout,
+            workoutTemplate: currentWorkoutTemplate,
+            phaseTitle: 'Phase 1: Foundations',
+            progressionFocus,
+            completedDrillCount: inProgressWorkout.completedDrillIds.length,
+            currentDrillIndex: inProgressWorkout.currentDrillIndex,
+            currentDrill:
+              currentWorkoutTemplate.drills[inProgressWorkout.currentDrillIndex] ??
+              null,
+            drills: currentWorkoutTemplate.drills.map((drill, index) => ({
+              drill,
+              drillIndex: index,
+              state: inProgressWorkout.completedDrillIds.includes(drill.id)
+                ? 'completed'
+                : index === inProgressWorkout.currentDrillIndex
+                  ? 'current'
+                  : 'queued',
+            })),
+            timer: inProgressWorkout.timer,
+            action: null,
+            canFinish:
+              inProgressWorkout.completedDrillIds.length ===
+              currentWorkoutTemplate.drills.length,
+          },
+    );
 
     return {
-      currentWorkout: currentWorkoutSignal,
-      currentWorkoutTemplate: currentWorkoutTemplateSignal,
-      inProgressWorkout: inProgressWorkoutSignal,
+      session,
       completedDrillCount: signal(
         inProgressWorkout?.completedDrillIds.length ?? 0,
       ),
@@ -195,16 +218,6 @@ describe('TodayPage', () => {
         {
           provide: CurriculumStore,
           useValue: makeCurriculumStore(curriculumCompletionOverride),
-        },
-        {
-          provide: InProgressWorkoutStore,
-          useValue: {
-            inProgressWorkout: signal(inProgressWorkout),
-            hasInProgressWorkout: signal(inProgressWorkout !== null),
-            completedDrillCount: signal(
-              inProgressWorkout?.completedDrillIds.length ?? 0,
-            ),
-          },
         },
         {
           provide: WorkoutSessionStore,

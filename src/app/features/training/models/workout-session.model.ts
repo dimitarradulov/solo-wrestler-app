@@ -1,5 +1,30 @@
-import { Drill } from './curriculum.model';
-import { DrillSequenceState } from './training-session.model';
+import { Drill, WorkoutInstance, WorkoutTemplate } from './curriculum.model';
+import {
+  DrillSequenceState,
+  InProgressWorkoutTimer,
+} from './training-session.model';
+
+export type WorkoutSessionAction = 'start' | 'mark-complete' | null;
+
+export interface WorkoutSessionDrill {
+  drill: Drill;
+  drillIndex: number;
+  state: DrillSequenceState;
+}
+
+export interface WorkoutSession {
+  workout: WorkoutInstance;
+  workoutTemplate: WorkoutTemplate;
+  phaseTitle: string | null;
+  progressionFocus: string | null;
+  completedDrillCount: number;
+  currentDrillIndex: number;
+  currentDrill: Drill | null;
+  drills: WorkoutSessionDrill[];
+  timer: InProgressWorkoutTimer;
+  action: WorkoutSessionAction;
+  canFinish: boolean;
+}
 
 export interface ActiveWorkoutDrillCardView {
   drill: Drill;

@@ -14,7 +14,6 @@ import { addIcons } from 'ionicons';
 import { checkmark } from 'ionicons/icons';
 
 import { CurriculumStore } from '../../stores/curriculum.store';
-import { InProgressWorkoutStore } from '../../stores/in-progress-workout.store';
 import { WorkoutSessionStore } from '../../stores/workout-session.store';
 import { Drill } from '../../models/curriculum.model';
 import { formatDrillMeta } from '../../utils/workout-session.formatters';
@@ -43,31 +42,36 @@ type TodayPageState =
 })
 export class TodayPage {
   private readonly curriculumStore = inject(CurriculumStore);
-  private readonly inProgressWorkoutStore = inject(InProgressWorkoutStore);
   private readonly workoutSessionStore = inject(WorkoutSessionStore);
 
   constructor() {
     addIcons({ checkmark });
   }
 
-  readonly inProgressWorkout = this.inProgressWorkoutStore.inProgressWorkout;
   readonly currentWorkout = this.curriculumStore.currentWorkout;
-  readonly workout = this.workoutSessionStore.currentWorkout;
-  readonly workoutTemplate = this.workoutSessionStore.currentWorkoutTemplate;
+  readonly session = this.workoutSessionStore.session;
+  readonly workout = computed(
+    () => this.session()?.workout ?? this.curriculumStore.currentWorkout(),
+  );
+  readonly workoutTemplate = computed(
+    () =>
+      this.session()?.workoutTemplate ??
+      this.curriculumStore.currentWorkoutTemplate(),
+  );
 
   readonly totalWorkoutCount = this.curriculumStore.totalWorkoutCount;
 
   readonly pageState = computed<TodayPageState>(() => {
-    const inProgressWorkout = this.inProgressWorkout();
+    const session = this.session();
     const currentWorkout = this.currentWorkout();
 
-    if (inProgressWorkout === null && currentWorkout === null) {
+    if (session === null && currentWorkout === null) {
       return 'curriculum-complete';
     }
 
-    if (inProgressWorkout !== null) {
-      const totalDrills = inProgressWorkout.drillIds.length;
-      const completedDrills = inProgressWorkout.completedDrillIds.length;
+    if (session !== null) {
+      const totalDrills = session.workoutTemplate.drills.length;
+      const completedDrills = session.completedDrillCount;
 
       if (completedDrills === totalDrills && totalDrills > 0) {
         return 'finished-unsaved';
@@ -159,41 +163,40 @@ export class TodayPage {
   readonly progressionFocus = this.workoutSessionStore.progressionFocus;
 
   readonly progressLabel = computed(() => {
-    const inProgressWorkout = this.inProgressWorkout();
+    const session = this.session();
     const template = this.workoutTemplate();
 
-    if (inProgressWorkout === null || template === null) {
+    if (session === null || template === null) {
       return null;
     }
 
-    const completed = inProgressWorkout.completedDrillIds.length;
+    const completed = session.completedDrillCount;
     const total = template.drills.length;
-    const nextDrill = template.drills[inProgressWorkout.currentDrillIndex];
+    const nextDrill = session.currentDrill;
 
     if (completed === total) {
       return `${completed} of ${total} drills completed`;
     }
 
-    return nextDrill === undefined
+    return nextDrill === null
       ? `${completed} of ${total} completed`
       : `${completed} of ${total} completed · Up next: ${nextDrill.title}`;
   });
 
   readonly drills = computed<TodayDrillView[]>(() => {
     const template = this.workoutTemplate();
-    const inProgressWorkout = this.inProgressWorkout();
+    const session = this.session();
 
     if (template === null) {
       return [];
     }
 
     const completedDrillIds = new Set(
-      inProgressWorkout?.completedDrillIds ?? [],
+      session?.drills
+        .filter((drill) => drill.state === 'completed')
+        .map((drill) => drill.drill.id) ?? [],
     );
-    const currentDrillIndex =
-      inProgressWorkout === null
-        ? null
-        : inProgressWorkout.currentDrillIndex;
+    const currentDrillIndex = session?.currentDrillIndex ?? null;
 
     return template.drills.map((drill, index) => ({
       number: index + 1,

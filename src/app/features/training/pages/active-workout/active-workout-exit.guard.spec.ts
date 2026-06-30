@@ -3,12 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { Router, RouterStateSnapshot, provideRouter } from '@angular/router';
 import { vi } from 'vitest';
 
+import { WorkoutCancellationService } from '../../services/workout-cancellation.service';
 import { WorkoutSessionStore } from '../../stores/workout-session.store';
 import type { ActiveWorkoutPage } from './active-workout';
 import { activeWorkoutExitGuard } from './active-workout-exit.guard';
 
 describe('activeWorkoutExitGuard', () => {
-  const hasInProgressWorkout = signal(true);
+  const session = signal({} as ReturnType<WorkoutSessionStore['session']>);
   const confirmWorkoutCancellation = vi.fn();
   const cancelWorkout = vi.fn();
   const component = {} as ActiveWorkoutPage;
@@ -26,7 +27,7 @@ describe('activeWorkoutExitGuard', () => {
     );
 
   beforeEach(() => {
-    hasInProgressWorkout.set(true);
+    session.set({} as ReturnType<WorkoutSessionStore['session']>);
     confirmWorkoutCancellation.mockReset();
     cancelWorkout.mockReset();
 
@@ -36,9 +37,14 @@ describe('activeWorkoutExitGuard', () => {
         {
           provide: WorkoutSessionStore,
           useValue: {
-            hasInProgressWorkout,
-            confirmWorkoutCancellation,
+            session,
             cancelWorkout,
+          },
+        },
+        {
+          provide: WorkoutCancellationService,
+          useValue: {
+            confirmWorkoutCancellation,
           },
         },
       ],
@@ -55,7 +61,7 @@ describe('activeWorkoutExitGuard', () => {
   });
 
   it('allows navigation when there is no active workout session', async () => {
-    hasInProgressWorkout.set(false);
+    session.set(null);
 
     await expect(runGuard('/tabs/today')).resolves.toBe(true);
     expect(confirmWorkoutCancellation).not.toHaveBeenCalled();

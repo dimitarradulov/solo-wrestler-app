@@ -7,7 +7,7 @@ import { vi } from 'vitest';
 import { InProgressWorkout } from '../../models/training-session.model';
 import { CompletedWorkoutLogStore } from '../../stores/completed-workout-log.store';
 import { CurriculumStore } from '../../stores/curriculum.store';
-import { InProgressWorkoutStore } from '../../stores/in-progress-workout.store';
+import { WorkoutSessionStore } from '../../stores/workout-session.store';
 import { WorkoutCompletionPage } from './workout-completion';
 
 describe('WorkoutCompletionPage', () => {
@@ -34,19 +34,71 @@ describe('WorkoutCompletionPage', () => {
     inProgressWorkout = signal<InProgressWorkout | null>(completedWorkout),
   ) => {
     const appendEntry = vi.fn();
-    const clear = vi.fn();
+    const cancelWorkout = vi.fn();
     const setWorkoutCompleted = vi.fn();
     const navigateByUrl = vi.fn();
+    const session = signal(
+      inProgressWorkout() === null
+        ? null
+        : {
+            workout: {
+              id: inProgressWorkout()!.workoutId,
+              weekNumber: inProgressWorkout()!.weekNumber,
+              workoutTemplateId: inProgressWorkout()!.workoutTemplateId,
+              label: inProgressWorkout()!.workoutLabel,
+              title: inProgressWorkout()!.workoutTitle,
+              status: 'current' as const,
+            },
+            workoutTemplate: {
+              id: inProgressWorkout()!.workoutTemplateId,
+              label: inProgressWorkout()!.workoutLabel,
+              title: inProgressWorkout()!.workoutTitle,
+              focus: '',
+              estimatedMinutes: { min: 0, max: 0 },
+              equipment: [],
+              drills: inProgressWorkout()!.drillIds.map((id) => ({
+                id,
+                title: id,
+                type: 'reps' as const,
+                cue: id,
+                repsConfig: { reps: 1 },
+              })),
+            },
+            phaseTitle: null,
+            progressionFocus: null,
+            completedDrillCount: inProgressWorkout()!.completedDrillIds.length,
+            currentDrillIndex: inProgressWorkout()!.currentDrillIndex,
+            currentDrill: null,
+            drills: inProgressWorkout()!.drillIds.map((id) => ({
+              drill: {
+                id,
+                title: id,
+                type: 'reps' as const,
+                cue: id,
+                repsConfig: { reps: 1 },
+              },
+              drillIndex: 0,
+              state: inProgressWorkout()!.completedDrillIds.includes(id)
+                ? 'completed'
+                : 'queued',
+            })),
+            timer: inProgressWorkout()!.timer,
+            action: null,
+            canFinish:
+              inProgressWorkout()!.completedDrillIds.length ===
+              inProgressWorkout()!.drillIds.length,
+          },
+    );
 
     await TestBed.configureTestingModule({
       imports: [WorkoutCompletionPage],
       providers: [
         provideIonicAngular({}),
         {
-          provide: InProgressWorkoutStore,
+          provide: WorkoutSessionStore,
           useValue: {
-            inProgressWorkout,
-            clear,
+            session,
+            cancelWorkout,
           },
         },
         {
@@ -78,7 +130,7 @@ describe('WorkoutCompletionPage', () => {
     return {
       fixture,
       appendEntry,
-      clear,
+      cancelWorkout,
       navigateByUrl,
       setWorkoutCompleted,
     };
@@ -123,7 +175,13 @@ describe('WorkoutCompletionPage', () => {
   });
 
   it('saves the completed workout, clears in-progress state, and returns to today', async () => {
-    const { appendEntry, clear, fixture, navigateByUrl, setWorkoutCompleted } =
+    const {
+      appendEntry,
+      cancelWorkout,
+      fixture,
+      navigateByUrl,
+      setWorkoutCompleted,
+    } =
       await setup();
     const difficultyButton = fixture.nativeElement.querySelector(
       '[data-testid="difficulty-good"]',
@@ -156,7 +214,7 @@ describe('WorkoutCompletionPage', () => {
       'phase-1-week-1-workout-a',
       true,
     );
-    expect(clear).toHaveBeenCalledTimes(1);
+    expect(cancelWorkout).toHaveBeenCalledTimes(1);
     expect(navigateByUrl).toHaveBeenCalledWith('/tabs/today');
   });
 });

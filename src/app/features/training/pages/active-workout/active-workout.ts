@@ -33,6 +33,7 @@ import {
 } from 'ionicons/icons';
 import { WorkoutSessionStore } from '../../stores/workout-session.store';
 import { TechniqueVideoPlayerService } from '../../../../core/video/technique-video-player.service';
+import { WorkoutCancellationService } from '../../services/workout-cancellation.service';
 import { ActiveWorkoutDrillListComponent } from './components/active-workout-drill-list';
 import { ActiveWorkoutHeaderComponent } from './components/active-workout-header';
 import { ActiveWorkoutProgressStripComponent } from './components/active-workout-progress-strip';
@@ -60,6 +61,9 @@ export class ActiveWorkoutPage
   private readonly techniqueVideoPlayerService = inject(
     TechniqueVideoPlayerService,
   );
+  private readonly workoutCancellationService = inject(
+    WorkoutCancellationService,
+  );
   private readonly sanitizer = inject(DomSanitizer);
   private readonly ngZone = inject(NgZone);
   private readonly isAppVisible = signal(this.documentIsVisible());
@@ -67,11 +71,13 @@ export class ActiveWorkoutPage
   private readonly workoutMain =
     viewChild.required<ElementRef<HTMLElement>>('workoutMain');
 
-  readonly currentWorkout = this.workoutSessionStore.currentWorkout;
-  readonly currentWorkoutTemplate =
-    this.workoutSessionStore.currentWorkoutTemplate;
+  readonly session = this.workoutSessionStore.session;
+  readonly currentWorkout = computed(() => this.session()?.workout ?? null);
+  readonly currentWorkoutTemplate = computed(
+    () => this.session()?.workoutTemplate ?? null,
+  );
   readonly isCancelWorkoutConfirmationOpen =
-    this.workoutSessionStore.isCancelWorkoutConfirmationOpen;
+    this.workoutCancellationService.isCancelWorkoutConfirmationOpen;
   readonly isTechniqueVideoOpen =
     this.techniqueVideoPlayerService.isWebModalOpen;
   readonly selectedVideoEmbedSrc = this.techniqueVideoPlayerService.webEmbedUrl;
@@ -123,7 +129,7 @@ export class ActiveWorkoutPage
     });
 
     effect((onCleanup) => {
-      const timer = this.workoutSessionStore.inProgressWorkout()?.timer;
+      const timer = this.session()?.timer;
 
       if (
         timer?.status !== 'running' ||
@@ -136,7 +142,7 @@ export class ActiveWorkoutPage
 
       const intervalId = this.ngZone.runOutsideAngular(() =>
         window.setInterval(() => {
-          this.workoutSessionStore.tickCurrentTimer();
+          this.workoutSessionStore.tick();
         }, 1000),
       );
 
@@ -159,7 +165,7 @@ export class ActiveWorkoutPage
       }
 
       this.shouldResumeTechniqueVideoTimer.set(false);
-      this.workoutSessionStore.resumePausedTimer();
+      this.workoutSessionStore.resumeTimer();
     });
   }
 
@@ -168,23 +174,23 @@ export class ActiveWorkoutPage
   }
 
   ionViewWillLeave(): void {
-    this.workoutSessionStore.pauseRunningTimer();
+    this.workoutSessionStore.pauseTimer();
   }
 
   ngOnDestroy(): void {
-    this.workoutSessionStore.pauseRunningTimer();
+    this.workoutSessionStore.pauseTimer();
   }
 
-  handleDrillAction(drillIndex: number): void {
-    this.workoutSessionStore.handleDrillAction(drillIndex);
+  performCurrentDrillAction(): void {
+    this.workoutSessionStore.performCurrentDrillAction();
   }
 
-  pauseTimer(drillIndex: number): void {
-    this.workoutSessionStore.pauseTimer(drillIndex);
+  pauseTimer(): void {
+    this.workoutSessionStore.pauseTimer();
   }
 
-  resetTimer(drillIndex: number): void {
-    this.workoutSessionStore.resetTimer(drillIndex);
+  resetTimer(): void {
+    this.workoutSessionStore.resetTimer();
   }
 
   skipRest(): void {
@@ -192,30 +198,30 @@ export class ActiveWorkoutPage
   }
 
   addRestSeconds(seconds: number): void {
-    this.workoutSessionStore.addRestSeconds(seconds);
+    this.workoutSessionStore.addRest(seconds);
   }
 
   requestCancelWorkout(): Promise<void> {
-    return this.workoutSessionStore.requestCancelWorkout();
+    return this.workoutCancellationService.requestCancelWorkout();
   }
 
   keepTraining(): void {
-    this.workoutSessionStore.keepTraining();
+    this.workoutCancellationService.keepTraining();
   }
 
   confirmCancelWorkout(): void {
-    this.workoutSessionStore.confirmCancelWorkout();
+    this.workoutCancellationService.confirmCancelWorkout();
   }
 
   dismissCancelWorkoutConfirmation(): void {
-    this.workoutSessionStore.dismissCancelWorkoutConfirmation();
+    this.workoutCancellationService.dismissCancelWorkoutConfirmation();
   }
 
   async openTechniqueVideo(videoUrl: string): Promise<void> {
     const shouldResumeTimer = this.shouldPauseTimerForTechniqueVideo();
 
     if (shouldResumeTimer) {
-      this.workoutSessionStore.pauseRunningTimer();
+      this.workoutSessionStore.pauseTimer();
       this.shouldResumeTechniqueVideoTimer.set(false);
     }
 
@@ -227,7 +233,7 @@ export class ActiveWorkoutPage
       }
 
       if (this.isAppVisible()) {
-        this.workoutSessionStore.resumePausedTimer();
+        this.workoutSessionStore.resumeTimer();
         return;
       }
 
@@ -244,11 +250,11 @@ export class ActiveWorkoutPage
   }
 
   private pauseRunningTimer(): void {
-    this.workoutSessionStore.pauseRunningTimer();
+    this.workoutSessionStore.pauseTimer();
   }
 
   private shouldPauseTimerForTechniqueVideo(): boolean {
-    const timer = this.workoutSessionStore.inProgressWorkout()?.timer;
+    const timer = this.session()?.timer;
 
     return (
       timer?.status === 'running' &&

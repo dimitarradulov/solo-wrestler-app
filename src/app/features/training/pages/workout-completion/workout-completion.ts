@@ -12,7 +12,7 @@ import { IonButton, IonContent } from '@ionic/angular/standalone';
 import { WorkoutDifficulty } from '../../models/training-session.model';
 import { CompletedWorkoutLogStore } from '../../stores/completed-workout-log.store';
 import { CurriculumStore } from '../../stores/curriculum.store';
-import { InProgressWorkoutStore } from '../../stores/in-progress-workout.store';
+import { WorkoutSessionStore } from '../../stores/workout-session.store';
 
 @Component({
   selector: 'app-workout-completion',
@@ -25,18 +25,18 @@ export class WorkoutCompletionPage {
   private readonly router = inject(Router);
   private readonly curriculumStore = inject(CurriculumStore);
   private readonly completedWorkoutLogStore = inject(CompletedWorkoutLogStore);
-  private readonly inProgressWorkoutStore = inject(InProgressWorkoutStore);
+  private readonly workoutSessionStore = inject(WorkoutSessionStore);
 
-  readonly inProgressWorkout = this.inProgressWorkoutStore.inProgressWorkout;
+  readonly session = this.workoutSessionStore.session;
   readonly selectedDifficulty = signal<WorkoutDifficulty | null>(null);
   readonly note = signal('');
   readonly canSaveWorkout = computed(() => this.selectedDifficulty() !== null);
 
   constructor() {
     effect(() => {
-      const inProgressWorkout = this.inProgressWorkout();
+      const session = this.session();
 
-      if (this.isWorkoutReadyForCompletion(inProgressWorkout)) {
+      if (this.isWorkoutReadyForCompletion(session)) {
         return;
       }
 
@@ -53,36 +53,36 @@ export class WorkoutCompletionPage {
   }
 
   saveWorkout(): void {
-    const inProgressWorkout = this.inProgressWorkout();
+    const session = this.session();
     const difficulty = this.selectedDifficulty();
 
-    if (difficulty === null || inProgressWorkout === null) {
+    if (difficulty === null || session === null) {
       return;
     }
 
-    if (!this.isWorkoutReadyForCompletion(inProgressWorkout)) {
+    if (!this.isWorkoutReadyForCompletion(session)) {
       return;
     }
 
     this.completedWorkoutLogStore.appendEntry({
-      workoutId: inProgressWorkout.workoutId,
+      workoutId: session.workout.id,
       completedAt: new Date().toISOString(),
       difficulty,
       note: this.note().trim() === '' ? null : this.note().trim(),
-      completedDrillIds: [...inProgressWorkout.completedDrillIds],
+      completedDrillIds: session.drills
+        .filter((drill) => drill.state === 'completed')
+        .map((drill) => drill.drill.id),
     });
-    this.curriculumStore.setWorkoutCompleted(inProgressWorkout.workoutId, true);
-    this.inProgressWorkoutStore.clear();
+    this.curriculumStore.setWorkoutCompleted(session.workout.id, true);
+    this.workoutSessionStore.cancelWorkout();
     void this.router.navigateByUrl('/tabs/today');
   }
 
   private isWorkoutReadyForCompletion(
-    inProgressWorkout: ReturnType<InProgressWorkoutStore['inProgressWorkout']>,
+    session: ReturnType<WorkoutSessionStore['session']>,
   ): boolean {
     return (
-      inProgressWorkout !== null &&
-      inProgressWorkout.completedDrillIds.length ===
-        inProgressWorkout.drillIds.length
+      session !== null && session.canFinish
     );
   }
 }

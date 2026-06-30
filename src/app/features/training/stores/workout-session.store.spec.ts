@@ -1,19 +1,19 @@
-import { computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideNgxLocalstorage } from 'ngx-localstorage';
 import { vi } from 'vitest';
 
-import { InProgressWorkoutStore } from './in-progress-workout.store';
-import { InProgressWorkout } from '../models/training-session.model';
-import { WorkoutSessionStore } from './workout-session.store';
-import { CurriculumStore } from './curriculum.store';
-import { WorkoutCancellationService } from '../services/workout-cancellation.service';
+import { TimerEndAlertService } from '../../../core/timers/timer-end-alert.service';
 import {
   CurriculumPhase,
+  Drill,
   WorkoutInstance,
   WorkoutTemplate,
 } from '../models/curriculum.model';
+import { CurriculumStore } from './curriculum.store';
+import { WorkoutSessionStore } from './workout-session.store';
 
 describe('WorkoutSessionStore', () => {
+  const storageKey = 'solo-wrestler.training.in-progress-workout';
   const workout: WorkoutInstance = {
     id: 'phase-1-week-2-workout-b',
     weekNumber: 2,
@@ -85,320 +85,333 @@ describe('WorkoutSessionStore', () => {
     ],
   };
 
-  const createInProgressWorkout = (
-    patch: Partial<InProgressWorkout> = {},
-  ): InProgressWorkout => ({
-    workoutId: workout.id,
-    workoutTemplateId: workoutTemplate.id,
-    workoutLabel: workout.label,
-    workoutTitle: workout.title,
-    weekNumber: workout.weekNumber,
-    drillIds: workoutTemplate.drills.map((drill) => drill.id),
-    completedDrillIds: [],
-    currentDrillIndex: 0,
-    timer: {
-      phase: 'idle',
-      status: 'stopped',
-      remainingSeconds: null,
-      roundNumber: null,
-      totalRounds: null,
-    },
-    restSeconds: 120,
-    ...patch,
-  });
+  const createStorage = (): Storage => {
+    const values = new Map<string, string>();
 
-  const setup = (
-    inProgressWorkout = signal<InProgressWorkout | null>(null),
-  ) => {
-    const startOrResumeWorkout = vi.fn();
-    const markCurrentDrillComplete = vi.fn();
-    const skipRest = vi.fn();
-    const addRestSeconds = vi.fn();
-    const startCurrentTimer = vi.fn();
-    const tickCurrentTimer = vi.fn();
-    const pauseCurrentTimer = vi.fn();
-    const resumeCurrentTimer = vi.fn();
-    const resetCurrentTimer = vi.fn();
-    const clear = vi.fn();
-    const isCancelWorkoutConfirmationOpen = signal(false);
-    const requestCancelWorkout = vi.fn().mockResolvedValue(undefined);
-    const confirmWorkoutCancellation = vi.fn().mockResolvedValue(false);
-    const cancelWorkout = vi.fn();
-    const keepTraining = vi.fn();
-    const confirmCancelWorkout = vi.fn();
-    const dismissCancelWorkoutConfirmation = vi.fn();
+    return {
+      get length() {
+        return values.size;
+      },
+      clear: () => values.clear(),
+      getItem: (key: string) => values.get(key) ?? null,
+      key: (index: number) => Array.from(values.keys())[index] ?? null,
+      removeItem: (key: string) => {
+        values.delete(key);
+      },
+      setItem: (key: string, value: string) => {
+        values.set(key, value);
+      },
+    };
+  };
+
+  let storage: Storage;
+  const originalLocalStorage = window.localStorage;
+  const playTimerEndAlert = vi.fn();
+
+  beforeEach(() => {
+    storage = createStorage();
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      value: storage,
+    });
 
     TestBed.configureTestingModule({
       providers: [
         WorkoutSessionStore,
+        provideNgxLocalstorage({
+          prefix: 'solo-wrestler',
+          delimiter: '.',
+        }),
         {
           provide: CurriculumStore,
           useValue: {
-            currentWorkout: signal(workout),
-            currentWorkoutTemplate: signal(workoutTemplate),
-            currentPhase: signal(phase),
-            phases: signal([phase]),
+            currentWorkout: vi.fn(() => workout),
+            currentWorkoutTemplate: vi.fn(() => workoutTemplate),
+            currentPhase: vi.fn(() => phase),
+            phases: vi.fn(() => [phase]),
           },
         },
         {
-          provide: InProgressWorkoutStore,
+          provide: TimerEndAlertService,
           useValue: {
-            inProgressWorkout,
-            hasInProgressWorkout: computed(() => inProgressWorkout() !== null),
-            completedDrillCount: computed(
-              () => inProgressWorkout()?.completedDrillIds.length ?? 0,
-            ),
-            startOrResumeWorkout,
-            markCurrentDrillComplete,
-            skipRest,
-            addRestSeconds,
-            startCurrentTimer,
-            tickCurrentTimer,
-            pauseCurrentTimer,
-            resumeCurrentTimer,
-            resetCurrentTimer,
-            clear,
-          },
-        },
-        {
-          provide: WorkoutCancellationService,
-          useValue: {
-            isCancelWorkoutConfirmationOpen,
-            requestCancelWorkout,
-            confirmWorkoutCancellation,
-            cancelWorkout,
-            keepTraining,
-            confirmCancelWorkout,
-            dismissCancelWorkoutConfirmation,
+            playTimerEndAlert,
           },
         },
       ],
     });
-
-    return {
-      store: TestBed.inject(WorkoutSessionStore),
-      addRestSeconds,
-      cancelWorkout,
-      clear,
-      confirmCancelWorkout,
-      confirmWorkoutCancellation,
-      dismissCancelWorkoutConfirmation,
-      isCancelWorkoutConfirmationOpen,
-      keepTraining,
-      markCurrentDrillComplete,
-      pauseCurrentTimer,
-      resetCurrentTimer,
-      requestCancelWorkout,
-      resumeCurrentTimer,
-      skipRest,
-      startCurrentTimer,
-      startOrResumeWorkout,
-      tickCurrentTimer,
-    };
-  };
+  });
 
   afterEach(() => {
     TestBed.resetTestingModule();
+    playTimerEndAlert.mockReset();
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      value: originalLocalStorage,
+    });
   });
 
-  it('starts or resumes the current workout through the in-progress workout store', () => {
-    const { startOrResumeWorkout, store } = setup();
+  it('starts the current workout and exposes one semantic session', () => {
+    const store = TestBed.inject(WorkoutSessionStore);
 
     store.startOrResumeCurrentWorkout();
 
-    expect(startOrResumeWorkout).toHaveBeenCalledWith(workout, workoutTemplate);
+    expect(store.session()).toEqual(
+      expect.objectContaining({
+        workout,
+        workoutTemplate,
+        phaseTitle: 'Phase 1: Foundations',
+        progressionFocus: 'Add speed without losing clean mechanics.',
+        completedDrillCount: 0,
+        currentDrillIndex: 0,
+        currentDrill: workoutTemplate.drills[0],
+        action: 'mark-complete',
+        canFinish: false,
+      }),
+    );
+    expect(store.currentDrillTitle()).toBe('Level change drill');
+    expect(storage.getItem(storageKey)).toContain(workout.id);
   });
 
-  it('resumes a paused timer through the in-progress workout store', () => {
-    const { resumeCurrentTimer, store } = setup();
-
-    store.resumePausedTimer();
-
-    expect(resumeCurrentTimer).toHaveBeenCalledTimes(1);
-  });
-
-  it('builds display-ready drill cards for the active workout session', () => {
-    const { store } = setup(
-      signal(
-        createInProgressWorkout({
-          completedDrillIds: ['level-change'],
-          currentDrillIndex: 1,
-          timer: {
-            phase: 'work',
-            status: 'paused',
-            remainingSeconds: 125,
-            roundNumber: null,
-            totalRounds: null,
-          },
-        }),
-      ),
+  it('restores a persisted workout session on construction', () => {
+    storage.setItem(
+      storageKey,
+      JSON.stringify({
+        workoutId: workout.id,
+        workoutTemplateId: workoutTemplate.id,
+        workoutLabel: workout.label,
+        workoutTitle: workout.title,
+        weekNumber: workout.weekNumber,
+        drillIds: workoutTemplate.drills.map((drill) => drill.id),
+        completedDrillIds: ['level-change'],
+        currentDrillIndex: 1,
+        timer: {
+          phase: 'work',
+          status: 'paused',
+          remainingSeconds: 125,
+          roundNumber: null,
+          totalRounds: null,
+        },
+        restSeconds: 120,
+      }),
     );
 
-    expect(store.currentDrillTitle()).toBe('Stance motion');
-    expect(store.phaseTitle()).toBe('Phase 1: Foundations');
-    expect(store.estimatedMinutes()).toBe('25-30 min');
-    expect(store.progressionFocus()).toBe(
-      'Add speed without losing clean mechanics.',
+    const store = TestBed.inject(WorkoutSessionStore);
+
+    expect(store.session()).toEqual(
+      expect.objectContaining({
+        completedDrillCount: 1,
+        currentDrillIndex: 1,
+        currentDrill: workoutTemplate.drills[1],
+      }),
     );
     expect(store.drillCards()).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({
-          drillIndex: 0,
-          state: 'completed',
-          stateLabel: 'Complete',
-          actionLabel: 'Mark Complete',
-        }),
+        expect.objectContaining({ drillIndex: 0, state: 'completed' }),
         expect.objectContaining({
           drillIndex: 1,
           state: 'current',
-          actionEnabled: true,
-          coreTechnique: 'Stance and motion',
-          timerLabel: 'Work timer',
           timerClock: '2:05',
           showTimerControls: true,
-          restText: '2 min default rest',
         }),
       ]),
     );
   });
 
-  it('builds a between-drill rest panel', () => {
-    const { store } = setup(
-      signal(
-        createInProgressWorkout({
-          completedDrillIds: ['level-change'],
-          currentDrillIndex: 1,
-          timer: {
-            phase: 'drill-rest',
-            status: 'running',
-            remainingSeconds: 90,
-            roundNumber: null,
-            totalRounds: null,
-          },
-        }),
-      ),
-    );
+  it('performs the current drill action for reps and timed drills', () => {
+    const store = TestBed.inject(WorkoutSessionStore);
+    store.startOrResumeCurrentWorkout();
 
+    store.performCurrentDrillAction();
+
+    expect(store.session()).toEqual(
+      expect.objectContaining({
+        completedDrillCount: 1,
+        currentDrillIndex: 1,
+      }),
+    );
     expect(store.restPanel()).toEqual({
       afterDrillIndex: 0,
-      clock: '1:30',
+      clock: '2:00',
     });
-    expect(store.drillCards()[1]).toEqual(
+
+    store.skipRest();
+    store.performCurrentDrillAction();
+
+    expect(store.session()?.timer).toEqual(
       expect.objectContaining({
-        state: 'queued',
-        actionEnabled: false,
+        phase: 'work',
+        status: 'running',
+        remainingSeconds: 180,
       }),
     );
   });
 
-  it('routes drill actions to the correct in-progress workout behavior', () => {
-    const inProgressWorkout = signal(createInProgressWorkout());
-    const { markCurrentDrillComplete, startCurrentTimer, store } =
-      setup(inProgressWorkout);
+  it('pauses resumes and resets the current timer through the session seam', () => {
+    const store = TestBed.inject(WorkoutSessionStore);
+    store.startOrResumeCurrentWorkout();
+    store.performCurrentDrillAction();
+    store.skipRest();
+    store.performCurrentDrillAction();
 
-    store.handleDrillAction(0);
-    expect(markCurrentDrillComplete).toHaveBeenCalledWith(workoutTemplate);
+    store.pauseTimer();
+    expect(store.session()?.timer.status).toBe('paused');
 
-    inProgressWorkout.set(
-      createInProgressWorkout({
-        completedDrillIds: ['level-change'],
-        currentDrillIndex: 1,
+    store.resumeTimer();
+    expect(store.session()?.timer.status).toBe('running');
+
+    store.tick();
+    expect(store.session()?.timer.remainingSeconds).toBe(179);
+
+    store.resetTimer();
+    expect(store.session()?.timer).toEqual(
+      expect.objectContaining({
+        phase: 'idle',
+        status: 'stopped',
+        remainingSeconds: 180,
+      }),
+    );
+  });
+
+  it('adds and skips between-drill rest through the session seam', () => {
+    const store = TestBed.inject(WorkoutSessionStore);
+    store.startOrResumeCurrentWorkout();
+    store.performCurrentDrillAction();
+
+    store.addRest(30);
+    expect(store.restPanel()).toEqual({
+      afterDrillIndex: 0,
+      clock: '2:30',
+    });
+
+    store.skipRest();
+    expect(store.session()?.currentDrillIndex).toBe(1);
+    expect(store.session()?.timer).toEqual(
+      expect.objectContaining({
+        phase: 'idle',
+        status: 'stopped',
+        remainingSeconds: 180,
+      }),
+    );
+  });
+
+  it('ticks duration timers to finished without auto-completing the drill', () => {
+    const store = TestBed.inject(WorkoutSessionStore);
+    store.startOrResumeCurrentWorkout();
+    store.performCurrentDrillAction();
+    store.skipRest();
+    store.performCurrentDrillAction();
+
+    for (let tick = 0; tick < 180; tick += 1) {
+      store.tick();
+    }
+
+    expect(store.session()?.timer).toEqual(
+      expect.objectContaining({
+        phase: 'work',
+        status: 'finished',
+        remainingSeconds: 0,
+      }),
+    );
+    expect(store.session()?.completedDrillCount).toBe(1);
+    expect(playTimerEndAlert).toHaveBeenCalledTimes(1);
+  });
+
+  it('ticks rounds through work and rest transitions behind the session seam', () => {
+    const store = TestBed.inject(WorkoutSessionStore);
+    storage.setItem(
+      storageKey,
+      JSON.stringify({
+        workoutId: workout.id,
+        workoutTemplateId: workoutTemplate.id,
+        workoutLabel: workout.label,
+        workoutTitle: workout.title,
+        weekNumber: workout.weekNumber,
+        drillIds: workoutTemplate.drills.map((drill) => drill.id),
+        completedDrillIds: ['level-change', 'stance-motion'],
+        currentDrillIndex: 2,
         timer: {
           phase: 'idle',
           status: 'stopped',
-          remainingSeconds: 180,
-          roundNumber: null,
-          totalRounds: null,
+          remainingSeconds: 60,
+          roundNumber: 1,
+          totalRounds: 3,
         },
+        restSeconds: 120,
       }),
     );
 
-    store.handleDrillAction(1);
-    expect(startCurrentTimer).toHaveBeenCalledWith(workoutTemplate);
+    const restoredStore = TestBed.inject(WorkoutSessionStore);
+    restoredStore.performCurrentDrillAction();
 
-    inProgressWorkout.set(
-      createInProgressWorkout({
-        completedDrillIds: ['level-change'],
-        currentDrillIndex: 1,
+    for (let tick = 0; tick < 60; tick += 1) {
+      restoredStore.tick();
+    }
+
+    expect(restoredStore.session()?.timer).toEqual(
+      expect.objectContaining({
+        phase: 'round-rest',
+        status: 'running',
+        remainingSeconds: 30,
+        roundNumber: 1,
+        totalRounds: 3,
+      }),
+    );
+
+    for (let tick = 0; tick < 30; tick += 1) {
+      restoredStore.tick();
+    }
+
+    expect(restoredStore.session()?.timer).toEqual(
+      expect.objectContaining({
+        phase: 'work',
+        status: 'running',
+        remainingSeconds: 60,
+        roundNumber: 2,
+        totalRounds: 3,
+      }),
+    );
+    expect(playTimerEndAlert).toHaveBeenCalledTimes(2);
+  });
+
+  it('cancels the workout and clears persisted state', () => {
+    const store = TestBed.inject(WorkoutSessionStore);
+    store.startOrResumeCurrentWorkout();
+
+    store.cancelWorkout();
+
+    expect(store.session()).toBeNull();
+    expect(storage.getItem(storageKey)).toBeNull();
+  });
+
+  it('marks the workout finishable after the final drill completes', () => {
+    const store = TestBed.inject(WorkoutSessionStore);
+    storage.setItem(
+      storageKey,
+      JSON.stringify({
+        workoutId: workout.id,
+        workoutTemplateId: workoutTemplate.id,
+        workoutLabel: workout.label,
+        workoutTitle: workout.title,
+        weekNumber: workout.weekNumber,
+        drillIds: workoutTemplate.drills.map((drill) => drill.id),
+        completedDrillIds: ['level-change', 'stance-motion'],
+        currentDrillIndex: 2,
         timer: {
           phase: 'work',
           status: 'finished',
           remainingSeconds: 0,
-          roundNumber: null,
-          totalRounds: null,
+          roundNumber: 3,
+          totalRounds: 3,
         },
+        restSeconds: 120,
       }),
     );
 
-    store.handleDrillAction(1);
-    expect(markCurrentDrillComplete).toHaveBeenCalledTimes(2);
-  });
+    const restoredStore = TestBed.inject(WorkoutSessionStore);
+    restoredStore.performCurrentDrillAction();
 
-  it('routes timer and rest controls through the facade', () => {
-    const {
-      addRestSeconds,
-      pauseCurrentTimer,
-      resetCurrentTimer,
-      skipRest,
-      store,
-      tickCurrentTimer,
-    } = setup(
-      signal(
-        createInProgressWorkout({
-          completedDrillIds: ['level-change'],
-          currentDrillIndex: 1,
-          timer: {
-            phase: 'work',
-            status: 'running',
-            remainingSeconds: 125,
-            roundNumber: null,
-            totalRounds: null,
-          },
-        }),
-      ),
-    );
-
-    store.pauseTimer(1);
-    store.resetTimer(1);
-    store.skipRest();
-    store.addRestSeconds(30);
-    store.tickCurrentTimer();
-
-    expect(pauseCurrentTimer).toHaveBeenCalled();
-    expect(resetCurrentTimer).toHaveBeenCalledWith(workoutTemplate);
-    expect(skipRest).toHaveBeenCalledWith(workoutTemplate);
-    expect(addRestSeconds).toHaveBeenCalledWith(30);
-    expect(tickCurrentTimer).toHaveBeenCalledWith(workoutTemplate);
-  });
-
-  it('exposes the cancellation service through the facade', async () => {
-    const {
-      cancelWorkout,
-      confirmCancelWorkout,
-      confirmWorkoutCancellation,
-      dismissCancelWorkoutConfirmation,
-      isCancelWorkoutConfirmationOpen,
-      keepTraining,
-      requestCancelWorkout,
-      store,
-    } = setup(signal(createInProgressWorkout()));
-
-    expect(store.isCancelWorkoutConfirmationOpen).toBe(
-      isCancelWorkoutConfirmationOpen,
-    );
-
-    await store.requestCancelWorkout();
-    await store.confirmWorkoutCancellation();
-    store.cancelWorkout();
-    store.keepTraining();
-    store.confirmCancelWorkout();
-    store.dismissCancelWorkoutConfirmation();
-
-    expect(requestCancelWorkout).toHaveBeenCalledTimes(1);
-    expect(confirmWorkoutCancellation).toHaveBeenCalledTimes(1);
-    expect(cancelWorkout).toHaveBeenCalledTimes(1);
-    expect(keepTraining).toHaveBeenCalledTimes(1);
-    expect(confirmCancelWorkout).toHaveBeenCalledTimes(1);
-    expect(dismissCancelWorkoutConfirmation).toHaveBeenCalledTimes(1);
+    expect(restoredStore.canFinishWorkout()).toBe(true);
+    expect(restoredStore.session()?.canFinish).toBe(true);
+    expect(restoredStore.session()?.timer.phase).toBe('complete');
   });
 });

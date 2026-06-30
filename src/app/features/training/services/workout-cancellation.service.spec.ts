@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { vi } from 'vitest';
 
 import { InProgressWorkout } from '../models/training-session.model';
-import { InProgressWorkoutStore } from '../stores/in-progress-workout.store';
+import { WorkoutSessionStore } from '../stores/workout-session.store';
 import { WorkoutCancellationService } from './workout-cancellation.service';
 
 describe('WorkoutCancellationService', () => {
@@ -30,20 +30,57 @@ describe('WorkoutCancellationService', () => {
   });
 
   const setup = (workout: InProgressWorkout | null = null) => {
-    const inProgressWorkout = signal(workout);
-    const pauseCurrentTimer = vi.fn();
-    const clear = vi.fn(() => inProgressWorkout.set(null));
+    const session = signal(
+      workout === null
+        ? null
+        : {
+            workout: {
+              id: workout.workoutId,
+              weekNumber: workout.weekNumber,
+              workoutTemplateId: workout.workoutTemplateId,
+              label: workout.workoutLabel,
+              title: workout.workoutTitle,
+              status: 'current' as const,
+            },
+            workoutTemplate: {
+              id: workout.workoutTemplateId,
+              label: workout.workoutLabel,
+              title: workout.workoutTitle,
+              focus: '',
+              estimatedMinutes: { min: 0, max: 0 },
+              equipment: [],
+              drills: workout.drillIds.map((id) => ({
+                id,
+                title: id,
+                type: 'reps' as const,
+                cue: id,
+                repsConfig: { reps: 1 },
+              })),
+            },
+            phaseTitle: null,
+            progressionFocus: null,
+            completedDrillCount: workout.completedDrillIds.length,
+            currentDrillIndex: workout.currentDrillIndex,
+            currentDrill: null,
+            drills: [],
+            timer: workout.timer,
+            action: null,
+            canFinish: false,
+          },
+    );
+    const pauseTimer = vi.fn();
+    const cancelWorkout = vi.fn(() => session.set(null));
     const navigateByUrl = vi.fn().mockResolvedValue(true);
 
     TestBed.configureTestingModule({
       providers: [
         WorkoutCancellationService,
         {
-          provide: InProgressWorkoutStore,
+          provide: WorkoutSessionStore,
           useValue: {
-            inProgressWorkout,
-            pauseCurrentTimer,
-            clear,
+            session,
+            pauseTimer,
+            cancelWorkout,
           },
         },
         {
@@ -55,9 +92,9 @@ describe('WorkoutCancellationService', () => {
 
     return {
       service: TestBed.inject(WorkoutCancellationService),
-      clear,
+      cancelWorkout,
       navigateByUrl,
-      pauseCurrentTimer,
+      pauseTimer,
     };
   };
 
@@ -66,13 +103,13 @@ describe('WorkoutCancellationService', () => {
   });
 
   it('pauses a running timer before opening confirmation', async () => {
-    const { pauseCurrentTimer, service } = setup(
+    const { pauseTimer, service } = setup(
       createInProgressWorkout('running'),
     );
 
     const confirmation = service.confirmWorkoutCancellation();
 
-    expect(pauseCurrentTimer).toHaveBeenCalledTimes(1);
+    expect(pauseTimer).toHaveBeenCalledTimes(1);
     expect(service.isCancelWorkoutConfirmationOpen()).toBe(true);
 
     service.keepTraining();
@@ -93,7 +130,9 @@ describe('WorkoutCancellationService', () => {
   });
 
   it('keeps the workout when confirmation is kept or dismissed', async () => {
-    const { clear, navigateByUrl, service } = setup(createInProgressWorkout());
+    const { cancelWorkout, navigateByUrl, service } = setup(
+      createInProgressWorkout(),
+    );
 
     const keptConfirmation = service.confirmWorkoutCancellation();
     service.keepTraining();
@@ -104,29 +143,33 @@ describe('WorkoutCancellationService', () => {
     await expect(dismissedConfirmation).resolves.toBe(false);
 
     expect(service.isCancelWorkoutConfirmationOpen()).toBe(false);
-    expect(clear).not.toHaveBeenCalled();
+    expect(cancelWorkout).not.toHaveBeenCalled();
     expect(navigateByUrl).not.toHaveBeenCalled();
   });
 
   it('clears the workout and navigates to Today after button-flow confirmation', async () => {
-    const { clear, navigateByUrl, service } = setup(createInProgressWorkout());
+    const { cancelWorkout, navigateByUrl, service } = setup(
+      createInProgressWorkout(),
+    );
 
     const request = service.requestCancelWorkout();
     service.confirmCancelWorkout();
     await request;
 
-    expect(clear).toHaveBeenCalledTimes(1);
+    expect(cancelWorkout).toHaveBeenCalledTimes(1);
     expect(navigateByUrl).toHaveBeenCalledWith('/tabs/today', {
       replaceUrl: true,
     });
   });
 
   it('supports direct cancellation without navigation for guard use', () => {
-    const { clear, navigateByUrl, service } = setup(createInProgressWorkout());
+    const { cancelWorkout, navigateByUrl, service } = setup(
+      createInProgressWorkout(),
+    );
 
     service.cancelWorkout();
 
-    expect(clear).toHaveBeenCalledTimes(1);
+    expect(cancelWorkout).toHaveBeenCalledTimes(1);
     expect(navigateByUrl).not.toHaveBeenCalled();
   });
 });

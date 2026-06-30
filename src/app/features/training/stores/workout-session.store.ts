@@ -1,10 +1,14 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { LocalStorageService } from 'ngx-localstorage';
 
-import { InProgressWorkoutStore } from './in-progress-workout.store';
-import { DrillSequenceState } from '../models/training-session.model';
+import {
+  DrillSequenceState,
+  InProgressWorkout,
+} from '../models/training-session.model';
 import {
   ActiveWorkoutDrillCardView,
   ActiveWorkoutRestPanelView,
+  WorkoutSession,
 } from '../models/workout-session.model';
 import { CurriculumStore } from './curriculum.store';
 import {
@@ -13,8 +17,8 @@ import {
   WorkoutInstance,
   WorkoutTemplate,
 } from '../models/curriculum.model';
+import { TimerEndAlertService } from '../../../core/timers/timer-end-alert.service';
 import { appWorkoutConfig } from '../data/curriculum.data';
-import { WorkoutCancellationService } from '../services/workout-cancellation.service';
 import {
   coreTechnique,
   drillActionIcon,
@@ -27,154 +31,133 @@ import {
   timerLabel,
 } from '../utils/workout-session.formatters';
 
+const IN_PROGRESS_WORKOUT_KEY = 'training.in-progress-workout';
+
 @Injectable({ providedIn: 'root' })
 export class WorkoutSessionStore {
   private readonly curriculumStore = inject(CurriculumStore);
-  private readonly inProgressWorkoutStore = inject(InProgressWorkoutStore);
-  private readonly workoutCancellationService = inject(
-    WorkoutCancellationService,
-  );
+  private readonly localStorage = inject(LocalStorageService);
+  private readonly timerEndAlertService = inject(TimerEndAlertService);
   private readonly phases = this.curriculumStore.phases;
+  private readonly inProgressWorkout = signal<InProgressWorkout | null>(
+    this.readStoredWorkout(),
+  );
 
-  readonly inProgressWorkout = this.inProgressWorkoutStore.inProgressWorkout;
-  readonly hasInProgressWorkout =
-    this.inProgressWorkoutStore.hasInProgressWorkout;
-  readonly completedDrillCount =
-    this.inProgressWorkoutStore.completedDrillCount;
-  readonly isCancelWorkoutConfirmationOpen =
-    this.workoutCancellationService.isCancelWorkoutConfirmationOpen;
-  readonly currentWorkout = computed(() => {
+  readonly session = computed<WorkoutSession | null>(() => {
     const inProgressWorkout = this.inProgressWorkout();
 
     if (inProgressWorkout === null) {
-      return this.curriculumStore.currentWorkout();
+      return null;
     }
 
-    return this.findWorkout(inProgressWorkout.workoutId);
-  });
-  readonly currentWorkoutTemplate = computed(() => {
-    const inProgressWorkout = this.inProgressWorkout();
+    const workout = this.findWorkout(inProgressWorkout.workoutId);
+    const workoutTemplate = this.findWorkoutTemplate(
+      inProgressWorkout.workoutTemplateId,
+    );
 
-    if (inProgressWorkout === null) {
-      return this.curriculumStore.currentWorkoutTemplate();
-    }
-
-    return this.findWorkoutTemplate(inProgressWorkout.workoutTemplateId);
-  });
-  readonly currentPhase = computed(() => {
-    const currentWorkout = this.currentWorkout();
-
-    if (currentWorkout === null) {
-      return this.curriculumStore.currentPhase();
-    }
-
-    return this.findPhaseForWorkout(currentWorkout.id);
-  });
-  readonly currentDrillTitle = computed(() => {
-    const currentWorkoutTemplate = this.currentWorkoutTemplate();
-    const inProgressWorkout = this.inProgressWorkout();
-
-    if (currentWorkoutTemplate === null) {
-      return 'None';
-    }
-
-    const currentDrillIndex = inProgressWorkout?.currentDrillIndex ?? 0;
-
-    return currentWorkoutTemplate.drills[currentDrillIndex]?.title ?? 'None';
-  });
-  readonly drillCards = computed<ActiveWorkoutDrillCardView[]>(() => {
-    const currentWorkoutTemplate = this.currentWorkoutTemplate();
-    const inProgressWorkout = this.inProgressWorkout();
-
-    if (currentWorkoutTemplate === null) {
-      return [];
+    if (workout === null || workoutTemplate === null) {
+      return null;
     }
 
     const completedDrillIds = new Set(
-      inProgressWorkout?.completedDrillIds ?? [],
+      inProgressWorkout.completedDrillIds,
     );
-    const currentDrillIndex = inProgressWorkout?.currentDrillIndex ?? 0;
-    const timerPhase = inProgressWorkout?.timer.phase ?? 'idle';
-
-    return currentWorkoutTemplate.drills.map((drill, drillIndex) => {
-      const state = this.resolveDrillState(
+    const currentDrill = workoutTemplate.drills[inProgressWorkout.currentDrillIndex] ?? null;
+    const phase = this.findPhaseForWorkout(workout.id);
+    const drills = workoutTemplate.drills.map((drill, drillIndex) => ({
+      drill,
+      drillIndex,
+      state: this.resolveDrillState(
         drill,
         drillIndex,
-        currentDrillIndex,
+        inProgressWorkout.currentDrillIndex,
         completedDrillIds,
-        timerPhase,
-      );
+        inProgressWorkout.timer.phase,
+      ),
+    }));
 
-      return {
-        drill,
-        drillIndex,
-        state,
-        stateLabel: this.resolveStateLabel(state),
-        typeLabel: drillTypeLabel(drill.type),
-        meta: formatDrillMeta(drill),
-        coreTechnique: coreTechnique(drill),
-        actionEnabled:
-          state === 'current' &&
-          inProgressWorkout?.timer.phase !== 'drill-rest' &&
-          inProgressWorkout?.timer.phase !== 'round-rest',
-        actionLabel: this.resolveActionLabel(drill, drillIndex),
-        actionIcon: this.resolveActionIcon(drill, drillIndex),
-        timerLabel: this.resolveTimerLabel(drill, drillIndex),
-        timerClock: this.resolveTimerClock(drill, drillIndex),
-        showTimerPreview: drill.type === 'duration' || drill.type === 'rounds',
-        showTimerControls:
-          drillIndex === inProgressWorkout?.currentDrillIndex &&
-          (drill.type === 'duration' || drill.type === 'rounds') &&
-          inProgressWorkout.timer.phase !== 'drill-rest',
-        restText: restText(drill, appWorkoutConfig.defaultRestSeconds),
-      };
-    });
+    return {
+      workout,
+      workoutTemplate,
+      phaseTitle: phase?.title ?? null,
+      progressionFocus:
+        phase?.weeks.find((week) => week.number === workout.weekNumber)
+          ?.progressionFocus ?? null,
+      completedDrillCount: inProgressWorkout.completedDrillIds.length,
+      currentDrillIndex: inProgressWorkout.currentDrillIndex,
+      currentDrill,
+      drills,
+      timer: inProgressWorkout.timer,
+      action: this.resolveCurrentAction(currentDrill, inProgressWorkout.timer),
+      canFinish:
+        inProgressWorkout.completedDrillIds.length === workoutTemplate.drills.length,
+    };
+  });
+  readonly drillCards = computed<ActiveWorkoutDrillCardView[]>(() => {
+    const session = this.session();
+
+    if (session === null) {
+      return [];
+    }
+
+    return session.drills.map(({ drill, drillIndex, state }) => ({
+      drill,
+      drillIndex,
+      state,
+      stateLabel: this.resolveStateLabel(state),
+      typeLabel: drillTypeLabel(drill.type),
+      meta: formatDrillMeta(drill),
+      coreTechnique: coreTechnique(drill),
+      actionEnabled:
+        state === 'current' &&
+        session.timer.phase !== 'drill-rest' &&
+        session.timer.phase !== 'round-rest',
+      actionLabel: this.resolveActionLabel(drill, drillIndex),
+      actionIcon: this.resolveActionIcon(drill, drillIndex),
+      timerLabel: this.resolveTimerLabel(drill, drillIndex),
+      timerClock: this.resolveTimerClock(drill, drillIndex),
+      showTimerPreview: drill.type === 'duration' || drill.type === 'rounds',
+      showTimerControls:
+        drillIndex === session.currentDrillIndex &&
+        (drill.type === 'duration' || drill.type === 'rounds') &&
+        session.timer.phase !== 'drill-rest',
+      restText: restText(drill, appWorkoutConfig.defaultRestSeconds),
+    }));
   });
   readonly restPanel = computed<ActiveWorkoutRestPanelView | null>(() => {
-    const inProgressWorkout = this.inProgressWorkout();
+    const session = this.session();
 
-    if (inProgressWorkout?.timer.phase !== 'drill-rest') {
+    if (session?.timer.phase !== 'drill-rest') {
       return null;
     }
 
     return {
-      afterDrillIndex: inProgressWorkout.currentDrillIndex - 1,
-      clock: this.formatOptionalClock(inProgressWorkout.timer.remainingSeconds),
+      afterDrillIndex: session.currentDrillIndex - 1,
+      clock: this.formatOptionalClock(session.timer.remainingSeconds),
     };
   });
-  readonly canFinishWorkout = computed(() => {
-    const currentWorkoutTemplate = this.currentWorkoutTemplate();
-
-    if (currentWorkoutTemplate === null) {
-      return false;
-    }
-
-    return this.completedDrillCount() === currentWorkoutTemplate.drills.length;
-  });
+  readonly currentWorkout = computed(() => this.session()?.workout ?? null);
+  readonly currentWorkoutTemplate = computed(
+    () => this.session()?.workoutTemplate ?? null,
+  );
+  readonly completedDrillCount = computed(
+    () => this.session()?.completedDrillCount ?? 0,
+  );
+  readonly currentDrillTitle = computed(
+    () => this.session()?.currentDrill?.title ?? 'None',
+  );
+  readonly canFinishWorkout = computed(() => this.session()?.canFinish ?? false);
   readonly estimatedMinutes = computed(() => {
-    const currentWorkoutTemplate = this.currentWorkoutTemplate();
+    const workoutTemplate = this.session()?.workoutTemplate;
 
-    if (currentWorkoutTemplate === null) {
+    if (workoutTemplate === null || workoutTemplate === undefined) {
       return null;
     }
 
-    return `${currentWorkoutTemplate.estimatedMinutes.min}-${currentWorkoutTemplate.estimatedMinutes.max} min`;
+    return `${workoutTemplate.estimatedMinutes.min}-${workoutTemplate.estimatedMinutes.max} min`;
   });
-  readonly progressionFocus = computed(() => {
-    const currentPhase = this.currentPhase();
-    const currentWorkout = this.currentWorkout();
-
-    if (currentPhase === null || currentWorkout === null) {
-      return null;
-    }
-
-    return (
-      currentPhase.weeks.find(
-        (week) => week.number === currentWorkout.weekNumber,
-      )?.progressionFocus ?? null
-    );
-  });
-  readonly phaseTitle = computed(() => this.currentPhase()?.title ?? null);
+  readonly progressionFocus = computed(() => this.session()?.progressionFocus ?? null);
+  readonly phaseTitle = computed(() => this.session()?.phaseTitle ?? null);
 
   startOrResumeCurrentWorkout(): void {
     const currentWorkout = this.curriculumStore.currentWorkout();
@@ -185,142 +168,248 @@ export class WorkoutSessionStore {
       return;
     }
 
-    this.inProgressWorkoutStore.startOrResumeWorkout(
-      currentWorkout,
-      currentWorkoutTemplate,
+    if (this.inProgressWorkout() !== null) {
+      return;
+    }
+
+    this.persist(
+      this.createInProgressWorkout(currentWorkout, currentWorkoutTemplate),
     );
   }
 
-  handleDrillAction(drillIndex: number): void {
-    const currentWorkoutTemplate = this.currentWorkoutTemplate();
-    const currentWorkout = this.inProgressWorkout();
+  performCurrentDrillAction(): void {
+    const session = this.session();
 
-    if (
-      currentWorkoutTemplate === null ||
-      currentWorkout === null ||
-      currentWorkout.currentDrillIndex !== drillIndex
-    ) {
+    if (session === null || session.currentDrill === null) {
       return;
     }
 
-    const currentDrill = currentWorkoutTemplate.drills[drillIndex];
-
-    if (currentDrill?.type === 'reps') {
-      this.inProgressWorkoutStore.markCurrentDrillComplete(
-        currentWorkoutTemplate,
-      );
+    if (session.action === 'mark-complete') {
+      this.markCurrentDrillComplete(session.workoutTemplate);
       return;
     }
 
-    if (
-      currentWorkout.timer.status === 'finished' &&
-      (currentDrill?.type === 'duration' || currentDrill?.type === 'rounds')
-    ) {
-      this.inProgressWorkoutStore.markCurrentDrillComplete(
-        currentWorkoutTemplate,
-      );
-      return;
-    }
-
-    if (currentDrill?.type === 'duration' || currentDrill?.type === 'rounds') {
-      this.inProgressWorkoutStore.startCurrentTimer(currentWorkoutTemplate);
+    if (session.action === 'start') {
+      this.startCurrentTimer(session.workoutTemplate);
     }
   }
 
-  pauseTimer(drillIndex: number): void {
-    const currentWorkout = this.inProgressWorkout();
+  pauseTimer(): void {
+    const session = this.session();
 
-    if (currentWorkout?.currentDrillIndex !== drillIndex) {
+    if (session?.timer.status !== 'running') {
       return;
     }
 
-    this.inProgressWorkoutStore.pauseCurrentTimer();
+    this.persist({
+      ...this.inProgressWorkout()!,
+      timer: {
+        ...session.timer,
+        status: 'paused',
+      },
+    });
   }
 
-  resetTimer(drillIndex: number): void {
-    const currentWorkoutTemplate = this.currentWorkoutTemplate();
-    const currentWorkout = this.inProgressWorkout();
+  resumeTimer(): void {
+    const session = this.session();
 
     if (
-      currentWorkoutTemplate === null ||
-      currentWorkout?.currentDrillIndex !== drillIndex
+      session === null ||
+      session.timer.status !== 'paused' ||
+      (session.timer.phase !== 'work' &&
+        session.timer.phase !== 'round-rest' &&
+        session.timer.phase !== 'drill-rest')
     ) {
       return;
     }
 
-    this.inProgressWorkoutStore.resetCurrentTimer(currentWorkoutTemplate);
+    this.persist({
+      ...this.inProgressWorkout()!,
+      timer: {
+        ...session.timer,
+        status: 'running',
+      },
+    });
+  }
+
+  resetTimer(): void {
+    const session = this.session();
+
+    if (session === null) {
+      return;
+    }
+
+    this.persist({
+      ...this.inProgressWorkout()!,
+      timer: this.createInitialTimer(session.currentDrill),
+    });
   }
 
   skipRest(): void {
-    const currentWorkoutTemplate = this.currentWorkoutTemplate();
+    const session = this.session();
 
-    if (currentWorkoutTemplate === null) {
+    if (session === null || session.timer.phase !== 'drill-rest') {
       return;
     }
 
-    this.inProgressWorkoutStore.skipRest(currentWorkoutTemplate);
+    this.persist({
+      ...this.inProgressWorkout()!,
+      timer: this.createInitialTimer(session.currentDrill),
+    });
   }
 
-  addRestSeconds(seconds: number): void {
-    this.inProgressWorkoutStore.addRestSeconds(seconds);
-  }
+  addRest(seconds: number): void {
+    const session = this.session();
 
-  tickCurrentTimer(): void {
-    const currentWorkoutTemplate = this.currentWorkoutTemplate();
-
-    if (currentWorkoutTemplate === null) {
+    if (
+      session === null ||
+      session.timer.phase !== 'drill-rest' ||
+      session.timer.remainingSeconds === null
+    ) {
       return;
     }
 
-    this.inProgressWorkoutStore.tickCurrentTimer(currentWorkoutTemplate);
+    this.persist({
+      ...this.inProgressWorkout()!,
+      timer: {
+        ...session.timer,
+        remainingSeconds: session.timer.remainingSeconds + seconds,
+      },
+    });
   }
 
-  pauseRunningTimer(): void {
-    if (this.inProgressWorkout()?.timer.status !== 'running') {
+  tick(): void {
+    const session = this.session();
+
+    if (
+      session === null ||
+      session.timer.status !== 'running' ||
+      session.timer.remainingSeconds === null
+    ) {
       return;
     }
 
-    this.inProgressWorkoutStore.pauseCurrentTimer();
-  }
+    const currentWorkout = this.inProgressWorkout()!;
+    const nextRemainingSeconds = Math.max(session.timer.remainingSeconds - 1, 0);
 
-  resumePausedTimer(): void {
-    this.inProgressWorkoutStore.resumeCurrentTimer();
-  }
+    if (session.timer.phase === 'drill-rest') {
+      if (nextRemainingSeconds === 0) {
+        void this.timerEndAlertService.playTimerEndAlert();
+        this.persist({
+          ...currentWorkout,
+          timer: this.createInitialTimer(session.currentDrill),
+        });
+        return;
+      }
 
-  requestCancelWorkout(): Promise<void> {
-    return this.workoutCancellationService.requestCancelWorkout();
-  }
+      this.persist({
+        ...currentWorkout,
+        timer: {
+          ...session.timer,
+          remainingSeconds: nextRemainingSeconds,
+        },
+      });
+      return;
+    }
 
-  confirmWorkoutCancellation(): Promise<boolean> {
-    return this.workoutCancellationService.confirmWorkoutCancellation();
+    if (session.currentDrill?.type === 'duration') {
+      if (nextRemainingSeconds === 0) {
+        void this.timerEndAlertService.playTimerEndAlert();
+      }
+
+      this.persist({
+        ...currentWorkout,
+        timer: {
+          ...session.timer,
+          phase: 'work',
+          status: nextRemainingSeconds === 0 ? 'finished' : 'running',
+          remainingSeconds: nextRemainingSeconds,
+        },
+      });
+      return;
+    }
+
+    if (session.currentDrill?.type !== 'rounds') {
+      return;
+    }
+
+    if (session.timer.phase === 'round-rest') {
+      if (nextRemainingSeconds === 0) {
+        void this.timerEndAlertService.playTimerEndAlert();
+        this.persist({
+          ...currentWorkout,
+          timer: {
+            ...session.timer,
+            phase: 'work',
+            status: 'running',
+            remainingSeconds:
+              session.currentDrill.roundsConfig?.roundSeconds ?? null,
+            roundNumber: (session.timer.roundNumber ?? 0) + 1,
+          },
+        });
+        return;
+      }
+
+      this.persist({
+        ...currentWorkout,
+        timer: {
+          ...session.timer,
+          remainingSeconds: nextRemainingSeconds,
+        },
+      });
+      return;
+    }
+
+    if (
+      nextRemainingSeconds === 0 &&
+      session.timer.roundNumber !== null &&
+      session.timer.totalRounds !== null &&
+      session.timer.roundNumber < session.timer.totalRounds
+    ) {
+      void this.timerEndAlertService.playTimerEndAlert();
+      this.persist({
+        ...currentWorkout,
+        timer: {
+          ...session.timer,
+          phase: 'round-rest',
+          status: 'running',
+          remainingSeconds:
+            session.currentDrill.roundsConfig?.restBetweenRoundsSeconds ?? null,
+        },
+      });
+      return;
+    }
+
+    if (nextRemainingSeconds === 0) {
+      void this.timerEndAlertService.playTimerEndAlert();
+    }
+
+    this.persist({
+      ...currentWorkout,
+      timer: {
+        ...session.timer,
+        phase: 'work',
+        status: nextRemainingSeconds === 0 ? 'finished' : 'running',
+        remainingSeconds: nextRemainingSeconds,
+      },
+    });
   }
 
   cancelWorkout(): void {
-    this.workoutCancellationService.cancelWorkout();
-  }
-
-  keepTraining(): void {
-    this.workoutCancellationService.keepTraining();
-  }
-
-  confirmCancelWorkout(): void {
-    this.workoutCancellationService.confirmCancelWorkout();
-  }
-
-  dismissCancelWorkoutConfirmation(): void {
-    this.workoutCancellationService.dismissCancelWorkoutConfirmation();
+    this.inProgressWorkout.set(null);
+    this.localStorage.remove(IN_PROGRESS_WORKOUT_KEY);
   }
 
   private resolveActionLabel(drill: Drill, drillIndex: number): string {
-    const currentWorkout = this.inProgressWorkout();
+    const session = this.session();
 
     if (drill.type === 'reps') {
       return 'Mark Complete';
     }
 
     if (
-      currentWorkout?.currentDrillIndex === drillIndex &&
-      currentWorkout.timer.status === 'finished'
+      session?.currentDrillIndex === drillIndex &&
+      session.timer.status === 'finished'
     ) {
       return 'Mark Complete';
     }
@@ -329,12 +418,12 @@ export class WorkoutSessionStore {
   }
 
   private resolveActionIcon(drill: Drill, drillIndex: number): string {
-    const currentWorkout = this.inProgressWorkout();
+    const session = this.session();
 
     if (
       drill.type !== 'reps' &&
-      currentWorkout?.currentDrillIndex === drillIndex &&
-      currentWorkout.timer.status === 'finished'
+      session?.currentDrillIndex === drillIndex &&
+      session.timer.status === 'finished'
     ) {
       return 'checkmark-circle-outline';
     }
@@ -343,33 +432,63 @@ export class WorkoutSessionStore {
   }
 
   private resolveTimerLabel(drill: Drill, drillIndex: number): string {
-    const currentWorkout = this.inProgressWorkout();
+    const session = this.session();
 
     if (
-      drillIndex === currentWorkout?.currentDrillIndex &&
+      drillIndex === session?.currentDrillIndex &&
       drill.type === 'rounds' &&
-      currentWorkout.timer.roundNumber !== null &&
-      currentWorkout.timer.totalRounds !== null
+      session.timer.roundNumber !== null &&
+      session.timer.totalRounds !== null
     ) {
-      return `Round ${currentWorkout.timer.roundNumber} of ${currentWorkout.timer.totalRounds}`;
+      return `Round ${session.timer.roundNumber} of ${session.timer.totalRounds}`;
     }
 
     return timerLabel(drill);
   }
 
   private resolveTimerClock(drill: Drill, drillIndex: number): string {
-    const currentWorkout = this.inProgressWorkout();
+    const session = this.session();
 
     if (
-      drillIndex === currentWorkout?.currentDrillIndex &&
-      currentWorkout.timer.phase !== 'drill-rest' &&
-      currentWorkout.timer.remainingSeconds !== null &&
+      drillIndex === session?.currentDrillIndex &&
+      session.timer.phase !== 'drill-rest' &&
+      session.timer.remainingSeconds !== null &&
       (drill.type === 'duration' || drill.type === 'rounds')
     ) {
-      return formatClock(currentWorkout.timer.remainingSeconds);
+      return formatClock(session.timer.remainingSeconds);
     }
 
     return timerClock(drill);
+  }
+
+  private resolveCurrentAction(
+    currentDrill: Drill | null,
+    timer: InProgressWorkout['timer'],
+  ): WorkoutSession['action'] {
+    if (currentDrill === null) {
+      return null;
+    }
+
+    if (currentDrill.type === 'reps') {
+      return 'mark-complete';
+    }
+
+    if (
+      timer.status === 'finished' &&
+      (currentDrill.type === 'duration' || currentDrill.type === 'rounds')
+    ) {
+      return 'mark-complete';
+    }
+
+    if (
+      (currentDrill.type === 'duration' || currentDrill.type === 'rounds') &&
+      timer.phase !== 'drill-rest' &&
+      timer.phase !== 'round-rest'
+    ) {
+      return 'start';
+    }
+
+    return null;
   }
 
   private resolveDrillState(
@@ -447,6 +566,170 @@ export class WorkoutSessionStore {
           week.workouts.some((workout) => workout.id === workoutId),
         ),
       ) ?? null
+    );
+  }
+
+  private startCurrentTimer(workoutTemplate: WorkoutTemplate): void {
+    const currentWorkout = this.inProgressWorkout();
+
+    if (currentWorkout === null || currentWorkout.timer.phase === 'drill-rest') {
+      return;
+    }
+
+    const currentDrill = this.getCurrentDrill(workoutTemplate, currentWorkout);
+
+    if (
+      (currentDrill?.type !== 'duration' && currentDrill?.type !== 'rounds') ||
+      currentWorkout.timer.remainingSeconds === null ||
+      currentWorkout.timer.remainingSeconds <= 0
+    ) {
+      return;
+    }
+
+    this.persist({
+      ...currentWorkout,
+      timer: {
+        ...currentWorkout.timer,
+        phase: 'work',
+        status: 'running',
+      },
+    });
+  }
+
+  private markCurrentDrillComplete(workoutTemplate: WorkoutTemplate): void {
+    const currentWorkout = this.inProgressWorkout();
+
+    if (currentWorkout === null) {
+      return;
+    }
+
+    const currentDrill = workoutTemplate.drills[currentWorkout.currentDrillIndex];
+
+    if (currentDrill === undefined) {
+      return;
+    }
+
+    const completedDrillIds = currentWorkout.completedDrillIds.includes(
+      currentDrill.id,
+    )
+      ? currentWorkout.completedDrillIds
+      : [...currentWorkout.completedDrillIds, currentDrill.id];
+    const nextWorkout =
+      currentWorkout.currentDrillIndex === workoutTemplate.drills.length - 1
+        ? {
+            ...currentWorkout,
+            completedDrillIds,
+            timer: {
+              phase: 'complete' as const,
+              status: 'finished' as const,
+              remainingSeconds: 0,
+              roundNumber: null,
+              totalRounds: null,
+            },
+          }
+        : {
+            ...currentWorkout,
+            completedDrillIds,
+            currentDrillIndex: currentWorkout.currentDrillIndex + 1,
+            timer: {
+              phase: 'drill-rest' as const,
+              status: 'running' as const,
+              remainingSeconds: appWorkoutConfig.defaultRestSeconds,
+              roundNumber: null,
+              totalRounds: null,
+            },
+          };
+
+    this.persist(nextWorkout);
+  }
+
+  private createInProgressWorkout(
+    workout: WorkoutInstance,
+    workoutTemplate: WorkoutTemplate,
+  ): InProgressWorkout {
+    const firstDrill = workoutTemplate.drills[0] ?? null;
+
+    return {
+      workoutId: workout.id,
+      workoutTemplateId: workoutTemplate.id,
+      workoutLabel: workout.label,
+      workoutTitle: workout.title,
+      weekNumber: workout.weekNumber,
+      drillIds: workoutTemplate.drills.map((drill) => drill.id),
+      completedDrillIds: [],
+      currentDrillIndex: 0,
+      timer: this.createInitialTimer(firstDrill),
+      restSeconds: appWorkoutConfig.defaultRestSeconds,
+    };
+  }
+
+  private createInitialTimer(drill: Drill | null): InProgressWorkout['timer'] {
+    if (drill?.type === 'duration') {
+      return {
+        phase: 'idle',
+        status: 'stopped',
+        remainingSeconds: drill.durationConfig?.durationSeconds ?? null,
+        roundNumber: null,
+        totalRounds: null,
+      };
+    }
+
+    if (drill?.type === 'rounds') {
+      return {
+        phase: 'idle',
+        status: 'stopped',
+        remainingSeconds: drill.roundsConfig?.roundSeconds ?? null,
+        roundNumber: 1,
+        totalRounds: drill.roundsConfig?.rounds ?? null,
+      };
+    }
+
+    return {
+      phase: 'idle',
+      status: 'stopped',
+      remainingSeconds: null,
+      roundNumber: null,
+      totalRounds: null,
+    };
+  }
+
+  private readStoredWorkout(): InProgressWorkout | null {
+    const storedWorkout = this.localStorage.get<unknown>(IN_PROGRESS_WORKOUT_KEY);
+
+    return this.isInProgressWorkout(storedWorkout) ? storedWorkout : null;
+  }
+
+  private persist(inProgressWorkout: InProgressWorkout): void {
+    this.inProgressWorkout.set(inProgressWorkout);
+    this.localStorage.set(IN_PROGRESS_WORKOUT_KEY, inProgressWorkout);
+  }
+
+  private getCurrentDrill(
+    workoutTemplate: WorkoutTemplate,
+    currentWorkout: InProgressWorkout,
+  ): Drill | null {
+    return workoutTemplate.drills[currentWorkout.currentDrillIndex] ?? null;
+  }
+
+  private isInProgressWorkout(value: unknown): value is InProgressWorkout {
+    if (typeof value !== 'object' || value === null) {
+      return false;
+    }
+
+    const candidate = value as Partial<InProgressWorkout>;
+
+    return (
+      typeof candidate.workoutId === 'string' &&
+      typeof candidate.workoutTemplateId === 'string' &&
+      typeof candidate.workoutLabel === 'string' &&
+      typeof candidate.workoutTitle === 'string' &&
+      typeof candidate.weekNumber === 'number' &&
+      Array.isArray(candidate.drillIds) &&
+      Array.isArray(candidate.completedDrillIds) &&
+      typeof candidate.currentDrillIndex === 'number' &&
+      typeof candidate.restSeconds === 'number' &&
+      typeof candidate.timer === 'object' &&
+      candidate.timer !== null
     );
   }
 }

@@ -5,8 +5,6 @@ import { provideIonicAngular } from '@ionic/angular/standalone';
 import { vi } from 'vitest';
 
 import { InProgressWorkout } from '../../models/training-session.model';
-import { CurriculumStore } from '../../stores/curriculum.store';
-import { InProgressWorkoutStore } from '../../stores/in-progress-workout.store';
 import {
   CurriculumPhase,
   WorkoutInstance,
@@ -15,6 +13,7 @@ import {
 import { ActiveWorkoutPage } from './active-workout';
 import { WorkoutCancellationService } from '../../services/workout-cancellation.service';
 import { TechniqueVideoPlayerService } from '../../../../core/video/technique-video-player.service';
+import { WorkoutSessionStore } from '../../stores/workout-session.store';
 import {
   buildTechniqueVideoEmbedUrl,
   extractYouTubeVideoId,
@@ -133,9 +132,6 @@ describe('ActiveWorkoutPage', () => {
     inProgressWorkout = signal<InProgressWorkout | null>(null),
   ) => {
     const startOrResumeWorkout = vi.fn(() => inProgressWorkout());
-    const completedDrillCount = computed(
-      () => inProgressWorkout()?.completedDrillIds.length ?? 0,
-    );
     const markCurrentDrillComplete = vi.fn();
     const skipRest = vi.fn();
     const addRestSeconds = vi.fn();
@@ -162,6 +158,129 @@ describe('ActiveWorkoutPage', () => {
       }
     });
     const closeWebModal = vi.fn(() => webEmbedUrl.set(null));
+    const session = computed(() => {
+      const current = inProgressWorkout();
+
+      if (current === null) {
+        return null;
+      }
+
+      const currentDrill = workoutTemplate.drills[current.currentDrillIndex] ?? null;
+      const completedIds = new Set(current.completedDrillIds);
+      const drills = workoutTemplate.drills.map((drill, drillIndex) => ({
+        drill,
+        drillIndex,
+        state: completedIds.has(drill.id)
+          ? 'completed'
+          : current.timer.phase === 'drill-rest'
+            ? 'queued'
+            : drillIndex === current.currentDrillIndex
+              ? 'current'
+              : 'queued',
+      }));
+
+      return {
+        workout,
+        workoutTemplate,
+        phaseTitle: phase.title,
+        progressionFocus: phase.weeks[0]?.progressionFocus ?? null,
+        completedDrillCount: current.completedDrillIds.length,
+        currentDrillIndex: current.currentDrillIndex,
+        currentDrill,
+        drills,
+        timer: current.timer,
+        action: null,
+        canFinish: current.completedDrillIds.length === workoutTemplate.drills.length,
+      };
+    });
+    const drillCards = computed(() => {
+      const current = inProgressWorkout();
+
+      return workoutTemplate.drills.map((drill, drillIndex) => ({
+        drill,
+        drillIndex,
+        state: current?.completedDrillIds.includes(drill.id)
+          ? 'completed'
+          : current?.timer.phase === 'drill-rest'
+            ? 'queued'
+            : drillIndex === (current?.currentDrillIndex ?? 0)
+              ? 'current'
+              : 'queued',
+        stateLabel:
+          current?.completedDrillIds.includes(drill.id)
+            ? 'Complete'
+            : current?.timer.phase === 'drill-rest'
+              ? 'Queued'
+              : drillIndex === (current?.currentDrillIndex ?? 0)
+                ? 'Current'
+                : 'Queued',
+        typeLabel:
+          drill.type === 'reps'
+            ? 'Reps'
+            : drill.type === 'duration'
+              ? 'Duration'
+              : 'Rounds',
+        meta:
+          drill.prescription ??
+          (drill.type === 'duration'
+            ? `${Math.floor((drill.durationConfig?.durationSeconds ?? 0) / 60)} min`
+            : drill.type === 'rounds'
+              ? `${drill.roundsConfig?.rounds ?? 0} rounds`
+              : null),
+        coreTechnique: drill.coreTechnique ?? drill.title,
+        actionEnabled:
+          drillIndex === current?.currentDrillIndex &&
+          current.timer.phase !== 'drill-rest' &&
+          current.timer.phase !== 'round-rest',
+        actionLabel:
+          drill.type === 'reps' ||
+          (drillIndex === current?.currentDrillIndex &&
+            current.timer.status === 'finished')
+            ? 'Mark Complete'
+            : 'Start',
+        actionIcon:
+          drill.type !== 'reps' &&
+          drillIndex === current?.currentDrillIndex &&
+          current.timer.status === 'finished'
+            ? 'checkmark-circle-outline'
+            : drill.type === 'reps'
+              ? 'checkmark-circle-outline'
+              : 'play-outline',
+        timerLabel:
+          drill.type === 'rounds'
+            ? `Round ${current?.timer.roundNumber ?? 1} of ${current?.timer.totalRounds ?? 3}`
+            : 'Work timer',
+        timerClock:
+          drillIndex === current?.currentDrillIndex &&
+          current.timer.phase !== 'drill-rest' &&
+          current.timer.remainingSeconds !== null
+            ? `${Math.floor(current.timer.remainingSeconds / 60)}:${String(current.timer.remainingSeconds % 60).padStart(2, '0')}`
+            : drill.type === 'duration'
+              ? '3:00'
+              : drill.type === 'rounds'
+                ? '1:00'
+                : '0:00',
+        showTimerPreview: drill.type === 'duration' || drill.type === 'rounds',
+        showTimerControls:
+          drillIndex === current?.currentDrillIndex &&
+          (drill.type === 'duration' || drill.type === 'rounds') &&
+          current.timer.phase !== 'drill-rest',
+        restText:
+          drill.type === 'rounds' ? 'Rest 0:30' : '2 min default rest',
+      }));
+    });
+    const restPanel = computed(() => {
+      const current = inProgressWorkout();
+
+      if (current?.timer.phase !== 'drill-rest') {
+        return null;
+      }
+
+      return {
+        afterDrillIndex: current.currentDrillIndex - 1,
+        clock: `${Math.floor((current.timer.remainingSeconds ?? 0) / 60)}:${String((current.timer.remainingSeconds ?? 0) % 60).padStart(2, '0')}`,
+      };
+    });
 
     await TestBed.configureTestingModule({
       imports: [ActiveWorkoutPage],
@@ -169,30 +288,52 @@ describe('ActiveWorkoutPage', () => {
         provideIonicAngular({}),
         provideRouter([]),
         {
-          provide: CurriculumStore,
+          provide: WorkoutSessionStore,
           useValue: {
-            currentWorkout: signal(workout),
-            currentWorkoutTemplate: signal(workoutTemplate),
-            currentPhase: signal(phase),
-            phases: signal([phase]),
-          },
-        },
-        {
-          provide: InProgressWorkoutStore,
-          useValue: {
-            inProgressWorkout,
-            hasInProgressWorkout: computed(() => inProgressWorkout() !== null),
-            completedDrillCount,
-            startOrResumeWorkout,
-            markCurrentDrillComplete,
+            session,
+            currentWorkout: computed(() => session()?.workout ?? null),
+            currentWorkoutTemplate: computed(
+              () => session()?.workoutTemplate ?? null,
+            ),
+            completedDrillCount: computed(
+              () => session()?.completedDrillCount ?? 0,
+            ),
+            currentDrillTitle: computed(
+              () => session()?.currentDrill?.title ?? 'None',
+            ),
+            drillCards,
+            restPanel,
+            canFinishWorkout: computed(() => session()?.canFinish ?? false),
+            estimatedMinutes: computed(() => '25-30 min'),
+            progressionFocus: computed(
+              () => phase.weeks[0]?.progressionFocus ?? null,
+            ),
+            phaseTitle: computed(() => phase.title),
+            startOrResumeCurrentWorkout: startOrResumeWorkout,
+            performCurrentDrillAction: vi.fn(() => {
+              const current = inProgressWorkout();
+              const currentDrill =
+                current === null
+                  ? null
+                  : workoutTemplate.drills[current.currentDrillIndex] ?? null;
+
+              if (
+                currentDrill?.type === 'reps' ||
+                current?.timer.status === 'finished'
+              ) {
+                markCurrentDrillComplete();
+                return;
+              }
+
+              startCurrentTimer();
+            }),
             skipRest,
-            addRestSeconds,
-            startCurrentTimer,
-            tickCurrentTimer,
-            pauseCurrentTimer,
-            resumeCurrentTimer,
-            resetCurrentTimer,
-            clear,
+            addRest: addRestSeconds,
+            tick: tickCurrentTimer,
+            pauseTimer: pauseCurrentTimer,
+            resumeTimer: resumeCurrentTimer,
+            resetTimer: resetCurrentTimer,
+            cancelWorkout: clear,
           },
         },
         {
@@ -576,7 +717,7 @@ describe('ActiveWorkoutPage', () => {
     const restPanel = fixture.nativeElement.querySelector('.rest-panel');
     const text = normalizeText(fixture.nativeElement.textContent);
 
-    expect(markCurrentDrillComplete).toHaveBeenCalledWith(workoutTemplate);
+    expect(markCurrentDrillComplete).toHaveBeenCalled();
     expect(text).toContain('1 of 3 drills complete');
     expect(text).toContain('Rest');
     expect(text).toContain('2:00');
@@ -627,7 +768,7 @@ describe('ActiveWorkoutPage', () => {
     buttons[0].click();
 
     expect(addRestSeconds).toHaveBeenCalledWith(30);
-    expect(skipRest).toHaveBeenCalledWith(workoutTemplate);
+    expect(skipRest).toHaveBeenCalled();
   });
 
   it('uses the stored duration timer state and timer controls for the current drill', async () => {
@@ -673,9 +814,9 @@ describe('ActiveWorkoutPage', () => {
     timerButtons[0].click();
     timerButtons[1].click();
 
-    expect(startCurrentTimer).toHaveBeenCalledWith(workoutTemplate);
+    expect(startCurrentTimer).toHaveBeenCalled();
     expect(pauseCurrentTimer).toHaveBeenCalled();
-    expect(resetCurrentTimer).toHaveBeenCalledWith(workoutTemplate);
+    expect(resetCurrentTimer).toHaveBeenCalled();
   });
 
   it('uses the stored rounds timer state and timer controls for the current drill', async () => {
@@ -724,9 +865,9 @@ describe('ActiveWorkoutPage', () => {
     timerButtons[0].click();
     timerButtons[1].click();
 
-    expect(startCurrentTimer).toHaveBeenCalledWith(workoutTemplate);
+    expect(startCurrentTimer).toHaveBeenCalled();
     expect(pauseCurrentTimer).toHaveBeenCalled();
-    expect(resetCurrentTimer).toHaveBeenCalledWith(workoutTemplate);
+    expect(resetCurrentTimer).toHaveBeenCalled();
   });
 
   it('disables the rounds action button during between-round rest', async () => {
@@ -841,9 +982,8 @@ describe('ActiveWorkoutPage', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      expect(startCurrentTimer).toHaveBeenCalledWith(workoutTemplate);
+      expect(startCurrentTimer).toHaveBeenCalled();
       expect(tickCurrentTimer).toHaveBeenCalledTimes(2);
-      expect(tickCurrentTimer).toHaveBeenCalledWith(workoutTemplate);
       expect(
         normalizeText(durationCard.querySelector('.timer strong')?.textContent),
       ).toBe('2:03');
@@ -882,7 +1022,6 @@ describe('ActiveWorkoutPage', () => {
       await vi.advanceTimersByTimeAsync(3000);
 
       expect(tickCurrentTimer).toHaveBeenCalledTimes(3);
-      expect(tickCurrentTimer).toHaveBeenCalledWith(workoutTemplate);
     } finally {
       vi.useRealTimers();
     }

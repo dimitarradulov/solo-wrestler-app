@@ -1,11 +1,11 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { InProgressWorkoutStore } from '../stores/in-progress-workout.store';
+import { WorkoutSessionStore } from '../stores/workout-session.store';
 
 @Injectable({ providedIn: 'root' })
 export class WorkoutCancellationService {
-  private readonly inProgressWorkoutStore = inject(InProgressWorkoutStore);
+  private readonly workoutSessionStore = inject(WorkoutSessionStore);
   private readonly router = inject(Router);
   private readonly cancelWorkoutConfirmationOpen = signal(false);
   private cancelWorkoutConfirmationResolver:
@@ -43,7 +43,7 @@ export class WorkoutCancellationService {
   }
 
   cancelWorkout(): void {
-    this.inProgressWorkoutStore.clear();
+    this.workoutSessionStore.cancelWorkout();
   }
 
   keepTraining(): void {
@@ -59,14 +59,7 @@ export class WorkoutCancellationService {
   }
 
   private pauseRunningTimer(): void {
-    if (
-      this.inProgressWorkoutStore.inProgressWorkout()?.timer.status !==
-      'running'
-    ) {
-      return;
-    }
-
-    this.inProgressWorkoutStore.pauseCurrentTimer();
+    this.workoutSessionStore.pauseTimer();
   }
 
   private resolveCancelWorkoutConfirmation(shouldCancelWorkout: boolean): void {
