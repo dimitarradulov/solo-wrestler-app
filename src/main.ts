@@ -1,10 +1,12 @@
+import { isDevMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import {
   RouteReuseStrategy,
+  PreloadAllModules,
   provideRouter,
   withPreloading,
-  PreloadAllModules,
 } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 import {
   IonicRouteStrategy,
   provideIonicAngular,
@@ -23,5 +25,9 @@ bootstrapApplication(AppComponent, {
       delimiter: '.',
     }),
     provideRouter(routes, withPreloading(PreloadAllModules)),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 });
