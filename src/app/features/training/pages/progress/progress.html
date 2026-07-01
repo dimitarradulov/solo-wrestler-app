@@ -1,7 +1,54 @@
 <ion-content class="sw-safe-area-content">
-  <h1>Progress</h1>
+  <main class="progress-shell">
+    <h1>Progress</h1>
 
-  <ion-button routerLink="/completed-workout-detail" routerDirection="forward">
-    Completed workout
-  </ion-button>
+    @if (hasCompletedWorkouts()) {
+      <div
+        class="progress-list"
+        role="list"
+        aria-label="Completed workouts"
+      >
+        @for (workout of completedWorkouts(); track workout.workoutId) {
+          <a
+            class="progress-entry"
+            [routerLink]="workout.detailLink"
+            role="listitem"
+          >
+            <div class="progress-entry__copy">
+              <h2>{{ workout.workoutTitle }}</h2>
+              <p class="progress-entry__meta">{{ workout.workoutMeta }}</p>
+
+              <div class="progress-entry__footer">
+                <span class="progress-entry__date">
+                  {{ workout.completedAt | date: 'mediumDate' }}
+                </span>
+                <span class="progress-entry__badge">
+                  {{ workout.difficultyLabel }}
+                </span>
+              </div>
+            </div>
+
+            <ion-icon
+              class="progress-entry__chevron"
+              name="chevron-forward-outline"
+              aria-hidden="true"
+            ></ion-icon>
+          </a>
+        }
+      </div>
+    } @else {
+      <section class="progress-empty">
+        <p class="progress-empty__message">No completed workouts yet</p>
+
+        <ion-button
+          class="progress-empty__action"
+          routerLink="/tabs/today"
+          routerDirection="forward"
+          expand="block"
+        >
+          Go to Today
+        </ion-button>
+      </section>
+    }
+  </main>
 </ion-content>

@@ -1,0 +1,113 @@
+:host {
+  display: block;
+}
+
+.completed-workout-detail-content {
+  --background: var(--sw-color-canvas);
+  --padding-bottom: max(var(--sw-space-4), var(--ion-safe-area-bottom));
+  --padding-end: max(var(--sw-space-4), var(--ion-safe-area-right));
+  --padding-start: max(var(--sw-space-4), var(--ion-safe-area-left));
+  --padding-top: max(var(--sw-space-4), var(--ion-safe-area-top));
+}
+
+.completed-workout-detail-shell {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: var(--sw-content-max-width);
+  min-height: 100%;
+}
+
+.completed-workout-detail-card {
+  background: var(--sw-color-surface);
+  border: 1px solid var(--sw-color-border);
+  border-radius: var(--sw-radius-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sw-space-4);
+  padding: var(--sw-space-4);
+}
+
+.completed-workout-detail-card--empty {
+  justify-content: flex-start;
+}
+
+.completed-workout-detail__back {
+  --border-radius: var(--sw-radius-control);
+
+  margin: 0;
+  min-height: var(--sw-touch-target-min);
+  text-transform: none;
+}
+
+.completed-workout-detail__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sw-space-2);
+  color: var(--sw-color-text-muted);
+  font-size: var(--sw-text-body);
+}
+
+.completed-workout-detail__summary {
+  align-items: center;
+  color: var(--sw-color-text-medium);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sw-space-2);
+  font-size: var(--sw-text-body);
+}
+
+.completed-workout-detail__badge {
+  border: 1px solid var(--sw-color-text-muted);
+  border-radius: 999px;
+  color: var(--sw-color-text-muted);
+  display: inline-flex;
+  font-size: var(--sw-text-body);
+  font-weight: 600;
+  letter-spacing: var(--sw-tracking-action);
+  padding: 0.25rem 0.625rem;
+  text-transform: uppercase;
+}
+
+.completed-workout-detail__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sw-space-2);
+  color: var(--sw-color-text-medium);
+  font-size: var(--sw-text-body);
+}
+
+.completed-workout-detail__drills {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sw-space-2);
+}
+
+.completed-workout-detail__drill {
+  align-items: flex-start;
+  background: var(--sw-color-surface-recessed);
+  border-radius: var(--sw-radius-control);
+  display: flex;
+  gap: var(--sw-space-2);
+  padding: var(--sw-space-3);
+}
+
+.completed-workout-detail__drill-number {
+  color: var(--sw-color-text-muted);
+  font-family: var(--sw-font-display);
+  font-size: var(--sw-text-body);
+  font-weight: 700;
+  line-height: var(--sw-leading-tight);
+  min-width: 1.25rem;
+}
+
+.completed-workout-detail__drill-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--sw-space-1);
+  min-width: 0;
+  color: var(--sw-color-text-muted);
+  font-size: 0.729rem;
+  line-height: var(--sw-leading-tight);
+}

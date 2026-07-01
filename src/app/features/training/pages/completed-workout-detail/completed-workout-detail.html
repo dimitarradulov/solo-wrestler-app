@@ -1,7 +1,88 @@
-<ion-content class="sw-safe-area-content">
-  <h1>Completed Workout Detail</h1>
+<ion-content class="completed-workout-detail-content sw-safe-area-content">
+  <main class="completed-workout-detail-shell">
+    @if (completedWorkout(); as workout) {
+      <section class="completed-workout-detail-card">
+        <ion-button
+          class="completed-workout-detail__back"
+          routerLink="/tabs/progress"
+          routerDirection="back"
+          expand="block"
+          fill="outline"
+        >
+          Back to Progress
+        </ion-button>
 
-  <ion-button routerLink="/tabs/progress" routerDirection="back">
-    Back to Progress
-  </ion-button>
+        <header class="completed-workout-detail__header">
+          <p class="completed-workout-detail__meta">{{ workout.workoutMeta }}</p>
+          <h1>{{ workout.workoutTitle }}</h1>
+
+          <div class="completed-workout-detail__summary">
+            <span>{{ workout.completedAt | date: 'mediumDate' }}</span>
+            <span class="completed-workout-detail__badge">
+              {{ workout.difficultyLabel }}
+            </span>
+          </div>
+        </header>
+
+        <section
+          class="completed-workout-detail__section"
+          aria-labelledby="completed-workout-notes"
+        >
+          <h2 id="completed-workout-notes">Notes</h2>
+
+          @if (workout.note; as note) {
+            <p class="completed-workout-detail__copy">{{ note }}</p>
+          } @else {
+            <p class="completed-workout-detail__copy">No notes added.</p>
+          }
+        </section>
+
+        <section
+          class="completed-workout-detail__section"
+          aria-labelledby="completed-workout-drills"
+        >
+          <h2 id="completed-workout-drills">Drills</h2>
+
+          <div
+            class="completed-workout-detail__drills"
+            role="list"
+            [attr.aria-label]="workout.workoutTitle + ' drills'"
+          >
+            @for (drill of workout.drills; track drill.number) {
+              <article
+                class="completed-workout-detail__drill"
+                role="listitem"
+              >
+                <span class="completed-workout-detail__drill-number">
+                  {{ drill.number }}
+                </span>
+
+                <div class="completed-workout-detail__drill-copy">
+                  <h3>{{ drill.title }}</h3>
+
+                  @if (drill.meta; as meta) {
+                    <p>{{ meta }}</p>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      </section>
+    } @else {
+      <section class="completed-workout-detail-card completed-workout-detail-card--empty">
+        <h1>Completed workout not found</h1>
+
+        <ion-button
+          class="completed-workout-detail__back"
+          routerLink="/tabs/progress"
+          routerDirection="back"
+          expand="block"
+          fill="outline"
+        >
+          Back to Progress
+        </ion-button>
+      </section>
+    }
+  </main>
 </ion-content>
