@@ -1,0 +1,39 @@
+@if (installPrompt.shouldShow()) {
+  <section class="install-prompt" aria-label="Install app prompt">
+    <ion-icon
+      class="install-prompt__icon"
+      name="download-outline"
+      aria-hidden="true"
+    />
+
+    <div class="install-prompt__content">
+      <p class="install-prompt__title">Install the app</p>
+      @if (installPrompt.platform() === 'ios') {
+        <p class="install-prompt__text">
+          In Safari, tap Share, then Add to Home Screen.
+        </p>
+      } @else if (installPrompt.nativePromptAvailable()) {
+        <p class="install-prompt__text">
+          Add Solo Wrestler to your home screen for faster access.
+        </p>
+      } @else {
+        <p class="install-prompt__text">
+          Open your browser menu, then choose Install app or Add to Home screen.
+        </p>
+      }
+    </div>
+
+    @if (
+      installPrompt.platform() !== 'ios' &&
+      installPrompt.nativePromptAvailable()
+    ) {
+      <button
+        class="install-prompt__button"
+        type="button"
+        (click)="installPrompt.install()"
+      >
+        Install
+      </button>
+    }
+  </section>
+}
