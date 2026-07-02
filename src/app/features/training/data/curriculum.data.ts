@@ -57,7 +57,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         type: 'reps',
         prescription: '3 sets x 10 reps',
         cue: 'Drop your hips. Stay tall.',
-        videoUrl: 'https://www.youtube.com/watch?v=3fAryvfNF8U',
+        videoUrl: 'https://www.youtube.com/shorts/OSwgMe_1glk',
         estimatedDuration: { seconds: 300 },
         repsConfig: {
           sets: 3,
