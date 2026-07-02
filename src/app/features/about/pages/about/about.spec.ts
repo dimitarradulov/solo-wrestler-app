@@ -30,7 +30,7 @@ describe('AboutPage', () => {
       'Solo Wrestler is a personal wrestling curriculum app based on the USA Wrestling Core Curriculum and adapted for solo training with minimal equipment.',
     );
     expect(text).toContain(
-      'The goal is to build wrestling fundamentals step by step, with a focus on self-defense first and BJJ preparation second.',
+      'The goal is to build wrestling fundamentals step by step, with a focus on self-defense.',
     );
     expect(text).toContain(
       'Technique videos and curriculum inspiration come from USA Wrestling’s public curriculum resources.',

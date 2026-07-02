@@ -196,7 +196,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         options: [
           'Land on top -> hands posted -> stand up and back away.',
           'Land on top -> knee on belly or control for 2 seconds -> disengage.',
-          'Land on top -> move to safe side control position for BJJ.',
+          'Land on top -> move to a safe side control position.',
         ],
         estimatedDuration: { seconds: 600 },
         durationConfig: { durationSeconds: 600 },

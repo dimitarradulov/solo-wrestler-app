@@ -32,7 +32,7 @@ describe('IntroPage', () => {
       'Follow a real wrestling curriculum, adapted for solo training.',
     );
     expect(text).toContain(
-      'Build wrestling fundamentals step by step using a curriculum based on USA Wrestling and adapted for solo practice, self-defense, and BJJ preparation.',
+      'Build wrestling fundamentals step by step using a curriculum based on USA Wrestling and adapted for solo practice and self-defense.',
     );
 
     const continueButton = fixture.nativeElement.querySelector('ion-button');

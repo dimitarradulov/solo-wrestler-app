@@ -5,7 +5,7 @@
 **Product name:** Solo Wrestler
 **Tagline:** Follow a real wrestling curriculum, adapted for solo training.
 
-Solo Wrestler is a personal mobile app built with Ionic, Capacitor, and Angular. The app helps the user follow a locked, phase-based solo wrestling curriculum based on the USA Wrestling Core Curriculum and adapted for self-defense and BJJ preparation.
+Solo Wrestler is a personal mobile app built with Ionic, Capacitor, and Angular. The app helps the user follow a locked, phase-based solo wrestling curriculum based on the USA Wrestling Core Curriculum and adapted for self-defense.
 
 The MVP focuses on one curriculum path, starting with **Phase 1: Foundations**. The user completes workouts in order, follows drill cards, watches embedded technique videos, uses timers where needed, marks drills complete, and logs workout difficulty and optional notes.
 
@@ -33,7 +33,6 @@ A beginner wrestling learner training alone with minimal equipment.
 - Trains at home or alone
 - Has a mat and wrestling dummy
 - Main goal: self-defense
-- Secondary goal: BJJ preparation
 - Does not want a complicated wrestling encyclopedia
 - Wants a structured path to follow
 
@@ -146,7 +145,7 @@ Introduce the app and show the safety disclaimer once.
 **Solo Wrestler**
 Follow a real wrestling curriculum, adapted for solo training.
 
-Build wrestling fundamentals step by step using a curriculum based on USA Wrestling and adapted for solo practice, self-defense, and BJJ preparation.
+Build wrestling fundamentals step by step using a curriculum based on USA Wrestling and adapted for solo practice and self-defense.
 
 Button:
 
@@ -587,7 +586,7 @@ Explain what the app is, credit USA Wrestling, show equipment, and include safet
 
 Solo Wrestler is a personal wrestling curriculum app based on the USA Wrestling Core Curriculum and adapted for solo training with minimal equipment.
 
-The goal is to build wrestling fundamentals step by step, with a focus on self-defense first and BJJ preparation second.
+The goal is to build wrestling fundamentals step by step, with a focus on self-defense.
 
 Technique videos and curriculum inspiration come from USA Wrestling’s public curriculum resources.
 
@@ -908,7 +907,7 @@ Drills:
    10 minutes
    Cue: Finish safe, then leave or control.
    Option instruction: Choose one exit and practice that.
-   Options: land on top -> hands posted -> stand up and back away; land on top -> knee on belly or control for 2 seconds -> disengage; land on top -> move to safe side control position for BJJ.
+   Options: land on top -> hands posted -> stand up and back away; land on top -> knee on belly or control for 2 seconds -> disengage; land on top -> move to a safe side control position.
 
 ### Weekly Progression Focus
 
