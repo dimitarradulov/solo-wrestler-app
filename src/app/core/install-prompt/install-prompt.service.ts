@@ -1,22 +1,31 @@
-import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
+import {
+  DestroyRef,
+  Injectable,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { Capacitor } from '@capacitor/core';
-
-export type InstallPromptPlatform = 'ios' | 'other';
-
-export interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
-}
+import {
+  BeforeInstallPromptEvent,
+  InstallPromptPlatform,
+} from './install-prompt.model';
 
 @Injectable({ providedIn: 'root' })
 export class InstallPromptService {
   private readonly destroyRef = inject(DestroyRef);
   private readonly installed = signal(this.detectStandaloneMode());
-  private readonly deferredPrompt = signal<BeforeInstallPromptEvent | null>(null);
+  private readonly deferredPrompt = signal<BeforeInstallPromptEvent | null>(
+    null,
+  );
   private readonly nativeApp = Capacitor.isNativePlatform();
 
-  readonly platform = signal<InstallPromptPlatform>(this.detectPlatform()).asReadonly();
-  readonly nativePromptAvailable = computed(() => this.deferredPrompt() !== null);
+  readonly platform = signal<InstallPromptPlatform>(
+    this.detectPlatform(),
+  ).asReadonly();
+  readonly nativePromptAvailable = computed(
+    () => this.deferredPrompt() !== null,
+  );
   readonly shouldShow = computed(() => !this.nativeApp && !this.installed());
 
   constructor() {
