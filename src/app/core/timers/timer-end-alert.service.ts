@@ -8,57 +8,65 @@ export class TimerEndAlertService {
   }
 
   private async playHaptic(): Promise<void> {
-    try {
-      await Haptics.notification({ type: NotificationType.Success });
-    } catch {
-      // Best-effort feedback only.
-    }
+    await Haptics.notification({ type: NotificationType.Success });
   }
 
   private async playBeep(): Promise<void> {
-    const AudioContextCtor =
-      globalThis.AudioContext ??
-      (
-        globalThis as typeof globalThis & {
-          webkitAudioContext?: typeof AudioContext;
-        }
-      ).webkitAudioContext;
+    const AudioContextCtor = this.getAudioContextConstructor();
 
     if (AudioContextCtor === undefined) {
       return;
     }
 
-    let audioContext: AudioContext | null = null;
+    const audioContext = new AudioContextCtor();
+    const oscillator = this.createBeepOscillator(audioContext);
 
-    try {
-      audioContext = new AudioContextCtor();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+    this.startBeep(oscillator, audioContext.currentTime);
+    await this.waitForBeepToEnd(oscillator);
+    await audioContext.close();
+  }
 
-      oscillator.type = 'sine';
-      oscillator.frequency.value = 880;
-      gainNode.gain.setValueAtTime(0.0001, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.08,
-        audioContext.currentTime + 0.01,
-      );
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.0001,
-        audioContext.currentTime + 0.18,
-      );
+  private getAudioContextConstructor(): typeof AudioContext | undefined {
+    return (
+      globalThis.AudioContext ??
+      (
+        globalThis as typeof globalThis & {
+          webkitAudioContext?: typeof AudioContext;
+        }
+      ).webkitAudioContext
+    );
+  }
 
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.18);
+  private createBeepOscillator(audioContext: AudioContext): OscillatorNode {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
 
-      await new Promise<void>((resolve) => {
-        oscillator.onended = () => resolve();
-      });
-    } catch {
-      // Best-effort feedback only.
-    } finally {
-      await audioContext?.close();
-    }
+    oscillator.type = 'sine';
+    oscillator.frequency.value = 880;
+    gainNode.gain.setValueAtTime(0.0001, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.08,
+      audioContext.currentTime + 0.01,
+    );
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.0001,
+      audioContext.currentTime + 0.18,
+    );
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    return oscillator;
+  }
+
+  private startBeep(oscillator: OscillatorNode, startTime: number): void {
+    oscillator.start(startTime);
+    oscillator.stop(startTime + 0.18);
+  }
+
+  private async waitForBeepToEnd(oscillator: OscillatorNode): Promise<void> {
+    await new Promise<void>((resolve) => {
+      oscillator.onended = () => resolve();
+    });
   }
 }
