@@ -8,11 +8,7 @@ export class TimerEndAlertService {
   }
 
   private async playHaptic(): Promise<void> {
-    try {
-      await Haptics.notification({ type: NotificationType.Success });
-    } catch {
-      // Best-effort feedback only.
-    }
+    await Haptics.notification({ type: NotificationType.Success });
   }
 
   private async playBeep(): Promise<void> {
@@ -30,35 +26,31 @@ export class TimerEndAlertService {
 
     let audioContext: AudioContext | null = null;
 
-    try {
-      audioContext = new AudioContextCtor();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+    audioContext = new AudioContextCtor();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
 
-      oscillator.type = 'sine';
-      oscillator.frequency.value = 880;
-      gainNode.gain.setValueAtTime(0.0001, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.08,
-        audioContext.currentTime + 0.01,
-      );
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.0001,
-        audioContext.currentTime + 0.18,
-      );
+    oscillator.type = 'sine';
+    oscillator.frequency.value = 880;
+    gainNode.gain.setValueAtTime(0.0001, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.08,
+      audioContext.currentTime + 0.01,
+    );
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.0001,
+      audioContext.currentTime + 0.18,
+    );
 
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.18);
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.18);
 
-      await new Promise<void>((resolve) => {
-        oscillator.onended = () => resolve();
-      });
-    } catch {
-      // Best-effort feedback only.
-    } finally {
-      await audioContext?.close();
-    }
+    await new Promise<void>((resolve) => {
+      oscillator.onended = () => resolve();
+    });
+
+    await audioContext?.close();
   }
 }
