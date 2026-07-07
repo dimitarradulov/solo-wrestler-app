@@ -12,21 +12,32 @@ export class TimerEndAlertService {
   }
 
   private async playBeep(): Promise<void> {
-    const AudioContextCtor =
-      globalThis.AudioContext ??
-      (
-        globalThis as typeof globalThis & {
-          webkitAudioContext?: typeof AudioContext;
-        }
-      ).webkitAudioContext;
+    const AudioContextCtor = this.getAudioContextConstructor();
 
     if (AudioContextCtor === undefined) {
       return;
     }
 
-    let audioContext: AudioContext | null = null;
+    const audioContext = new AudioContextCtor();
+    const oscillator = this.createBeepOscillator(audioContext);
 
-    audioContext = new AudioContextCtor();
+    this.startBeep(oscillator, audioContext.currentTime);
+    await this.waitForBeepToEnd(oscillator);
+    await audioContext.close();
+  }
+
+  private getAudioContextConstructor(): typeof AudioContext | undefined {
+    return (
+      globalThis.AudioContext ??
+      (
+        globalThis as typeof globalThis & {
+          webkitAudioContext?: typeof AudioContext;
+        }
+      ).webkitAudioContext
+    );
+  }
+
+  private createBeepOscillator(audioContext: AudioContext): OscillatorNode {
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
 
@@ -44,13 +55,18 @@ export class TimerEndAlertService {
 
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.18);
 
+    return oscillator;
+  }
+
+  private startBeep(oscillator: OscillatorNode, startTime: number): void {
+    oscillator.start(startTime);
+    oscillator.stop(startTime + 0.18);
+  }
+
+  private async waitForBeepToEnd(oscillator: OscillatorNode): Promise<void> {
     await new Promise<void>((resolve) => {
       oscillator.onended = () => resolve();
     });
-
-    await audioContext?.close();
   }
 }
