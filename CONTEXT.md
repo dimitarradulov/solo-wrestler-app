@@ -1,6 +1,6 @@
 # Solo Wrestler
 
-Solo Wrestler is a personal solo wrestling curriculum app. Its language describes a locked training path, the user's current place in that path, and the state of drills and workouts during training.
+Solo Wrestler is a personal solo wrestling curriculum app, not a general self-defense or mixed-combat training app. Its language describes a locked training path, the user's current place in that path, and the state of drills and workouts during training.
 
 ## Language
 
@@ -44,6 +44,10 @@ _Avoid_: Long description, tutorial
 An optional video demonstration attached to a drill that helps the user understand its technique.
 _Avoid_: Instructional video, tutorial
 
+**Video Note**:
+Optional guidance that narrows which part of a Technique Video applies to its drill.
+_Avoid_: Disclaimer, video description
+
 **Estimated Duration**:
 The expected time a drill or workout should take, separate from the work required to complete it.
 _Avoid_: Timer, time limit
@@ -51,6 +55,22 @@ _Avoid_: Timer, time limit
 **Phase**:
 A major section of the curriculum that contains weeks in sequence.
 _Avoid_: Level, module
+
+**Phase 1: Foundations**:
+The opening phase in which neutral movement, the Core Attack, and Neutral Defense are all required foundations. Required coverage does not imply equal training time.
+_Avoid_: Double-leg phase, offense phase
+
+**Supported Wrestling Styles**:
+Folkstyle and freestyle wrestling, using fundamentals shared by both. Greco-Roman wrestling is outside the current curriculum.
+_Avoid_: Style-neutral, all wrestling styles
+
+**Core Attack**:
+The double-leg takedown system that the curriculum develops in depth, including its setups, entries, finishes, and recovery from defense. Other takedowns are not parallel learning paths.
+_Avoid_: Technique catalog, takedown collection
+
+**Neutral Defense**:
+The Phase 1 defensive sequence of down-blocking, sprawling, and re-squaring into stance. It ends in a safe neutral position rather than counteroffense.
+_Avoid_: Defensive movements, counteroffense
 
 **Phase Principle**:
 A concise motto-like principle that defines what safe, correct training means throughout a phase.
@@ -63,6 +83,10 @@ _Avoid_: Stage, block
 **Progression Focus**:
 The training emphasis for a week that tells the user how to perform repeated workouts at that point in the phase.
 _Avoid_: Difficulty, level, modifier
+
+**Curriculum Revision**:
+A coherent edition of the curriculum to which workout progress, in-progress training, and completed workout history belong.
+_Avoid_: App version, content update
 
 **Completed**:
 A drill or workout the user has finished.
