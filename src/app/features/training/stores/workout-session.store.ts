@@ -154,7 +154,9 @@ export class WorkoutSessionStore {
       return null;
     }
 
-    return `${workoutTemplate.estimatedMinutes.min}-${workoutTemplate.estimatedMinutes.max} min`;
+    const { min, max } = workoutTemplate.estimatedMinutes;
+
+    return min === max ? `${min} min` : `${min}-${max} min`;
   });
   readonly progressionFocus = computed(() => this.session()?.progressionFocus ?? null);
   readonly phaseTitle = computed(() => this.session()?.phaseTitle ?? null);

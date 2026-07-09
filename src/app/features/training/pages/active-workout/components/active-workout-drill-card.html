@@ -100,7 +100,11 @@
     {{ drillCard().restText }}
   </span>
   @if (drillCard().drill.videoUrl; as videoUrl) {
-    <button class="video" type="button" (click)="watchVideo.emit(videoUrl)">
+    <button
+      class="video"
+      type="button"
+      (click)="watchVideo.emit(drillCard().drill)"
+    >
       <ion-icon name="videocam-outline" aria-hidden="true"></ion-icon>
       Watch
     </button>

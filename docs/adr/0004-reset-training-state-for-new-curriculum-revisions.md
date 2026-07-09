@@ -1,0 +1,3 @@
+# Reset training state for new curriculum revisions
+
+Workout progress, in-progress training, and completed workout history belong to a specific Curriculum Revision and cannot be safely reinterpreted when that revision changes. Solo Wrestler will use a persisted curriculum revision to perform a one-time reset of those three forms of training state when adopting a new revision, preserving onboarding state and showing a one-time explanation after the reset. We accepted deletion of prior workout history and notes instead of adding migration and historical-template snapshotting for the replaced curriculum.

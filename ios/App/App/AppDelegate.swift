@@ -82,10 +82,12 @@ public class TechniqueVideoPlayerPlugin: CAPPlugin, CAPBridgedPlugin {
         }
 
         activeCall = call
+        let videoNote = call.getString("videoNote")?.trimmingCharacters(in: .whitespacesAndNewlines)
 
         DispatchQueue.main.async { [weak self] in
             let controller = TechniqueVideoPlayerViewController(
                 videoId: videoId,
+                videoNote: videoNote?.isEmpty == false ? videoNote : nil,
                 bundleIdentifier: Bundle.main.bundleIdentifier ?? "app",
                 onClose: { [weak self] in
                     self?.activeCall?.resolve()
@@ -112,6 +114,7 @@ private final class TechniqueVideoPlayerViewController:
     WKUIDelegate
 {
     private let videoId: String
+    private let videoNote: String?
     private let bundleIdentifier: String
     private let onClose: () -> Void
     private let webView: WKWebView
@@ -126,8 +129,14 @@ private final class TechniqueVideoPlayerViewController:
     private var isReady = false
     private let leakAvoider = LeakAvoider()
 
-    init(videoId: String, bundleIdentifier: String, onClose: @escaping () -> Void) {
+    init(
+        videoId: String,
+        videoNote: String?,
+        bundleIdentifier: String,
+        onClose: @escaping () -> Void
+    ) {
         self.videoId = videoId
+        self.videoNote = videoNote
         self.bundleIdentifier = bundleIdentifier
         self.onClose = onClose
 
@@ -226,6 +235,15 @@ private final class TechniqueVideoPlayerViewController:
         bar.addSubview(titleLabel)
         bar.addSubview(closeButton)
 
+        let noteLabel = UILabel()
+        noteLabel.translatesAutoresizingMaskIntoConstraints = false
+        noteLabel.text = videoNote
+        noteLabel.textColor = UIColor(red: 226 / 255, green: 232 / 255, blue: 240 / 255, alpha: 1)
+        noteLabel.font = .systemFont(ofSize: 16)
+        noteLabel.numberOfLines = 0
+        noteLabel.isHidden = videoNote == nil
+        view.addSubview(noteLabel)
+
         playerContainer.translatesAutoresizingMaskIntoConstraints = false
         playerContainer.backgroundColor = .black
         playerContainer.layer.cornerRadius = 12
@@ -311,7 +329,14 @@ private final class TechniqueVideoPlayerViewController:
             closeButton.trailingAnchor.constraint(equalTo: bar.trailingAnchor),
             closeButton.bottomAnchor.constraint(equalTo: bar.bottomAnchor),
 
-            playerContainer.topAnchor.constraint(equalTo: bar.bottomAnchor, constant: 16),
+            noteLabel.topAnchor.constraint(equalTo: bar.bottomAnchor, constant: 16),
+            noteLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            noteLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+
+            playerContainer.topAnchor.constraint(
+                equalTo: videoNote == nil ? bar.bottomAnchor : noteLabel.bottomAnchor,
+                constant: videoNote == nil ? 16 : 12
+            ),
             playerContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             playerContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             playerContainer.heightAnchor.constraint(

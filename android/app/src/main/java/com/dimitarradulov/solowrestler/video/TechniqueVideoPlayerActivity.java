@@ -32,6 +32,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class TechniqueVideoPlayerActivity extends AppCompatActivity {
     static final String EXTRA_VIDEO_ID = "videoId";
+    static final String EXTRA_VIDEO_NOTE = "videoNote";
 
     private static final long LOAD_TIMEOUT_MS = 15_000L;
     private static final String BASE_URL_TEMPLATE = "https://%s.app";
@@ -57,6 +58,8 @@ public class TechniqueVideoPlayerActivity extends AppCompatActivity {
 
     @Nullable
     private String videoId;
+    @Nullable
+    private String videoNote;
     private boolean hasFinished = false;
     private boolean isReady = false;
     private boolean isClosing = false;
@@ -66,6 +69,7 @@ public class TechniqueVideoPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         videoId = getIntent().getStringExtra(EXTRA_VIDEO_ID);
+        videoNote = getIntent().getStringExtra(EXTRA_VIDEO_NOTE);
 
         if (videoId == null) {
             TechniqueVideoPlayerPlugin.notifyOpenFailed("Missing YouTube video ID.");
@@ -235,6 +239,20 @@ public class TechniqueVideoPlayerActivity extends AppCompatActivity {
         ));
 
         root.addView(bar);
+        if (videoNote != null && !videoNote.isBlank()) {
+            TextView note = new TextView(this);
+            note.setText(videoNote);
+            note.setTextColor(Color.parseColor("#E2E8F0"));
+            note.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            LinearLayout.LayoutParams noteParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            noteParams.topMargin = dp(16);
+            note.setLayoutParams(noteParams);
+            root.addView(note);
+            frameParams.topMargin = dp(12);
+        }
         root.addView(playerFrame);
         root.addView(fullscreenContainer);
         ViewCompat.requestApplyInsets(root);

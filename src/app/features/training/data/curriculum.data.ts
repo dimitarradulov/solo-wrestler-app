@@ -16,9 +16,9 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
     label: 'Workout A',
     title: 'Mechanics',
     focus:
-      'Stance, motion, level change, penetration step, shadow double leg, dummy finish.',
+      'Stance, motion, level change, penetration step, down-block, shadow double leg, dummy finish.',
     estimatedMinutes: {
-      min: 35,
+      min: 45,
       max: 45,
     },
     equipment: ['Mat', 'Wrestling dummy'],
@@ -31,7 +31,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         details: [
           'Light bouncing.',
           'Hip circles.',
-          'Low-impact sprawls.',
+          'Bodyweight squats.',
           'Shoulder rolls.',
         ],
         estimatedDuration: { seconds: 300 },
@@ -50,6 +50,22 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         ],
         estimatedDuration: { seconds: 300 },
         durationConfig: { durationSeconds: 300 },
+      },
+      {
+        id: 'down-block',
+        title: 'Down-block',
+        type: 'reps',
+        prescription: '3 sets × 10 reps',
+        cue: 'Hands first. Hips back. Return to stance.',
+        videoUrl: 'https://www.youtube.com/watch?v=1gk5t5Kqc8w',
+        details: [
+          'Start in stance.',
+          'Block down as you pull your lead leg away.',
+          'Keep your head and chest up.',
+          'Re-square and return to stance.',
+        ],
+        estimatedDuration: { seconds: 180 },
+        repsConfig: { sets: 3, reps: 10 },
       },
       {
         id: 'level-change-drill',
@@ -121,10 +137,10 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
     label: 'Workout B',
     title: 'Application',
     focus:
-      'Boxing-to-shot entry, double leg on dummy, safe finish, self-defense exit.',
+      'Entry from motion, shadow double leg, double leg on dummy, sprawl, return to stance.',
     estimatedMinutes: {
-      min: 35,
-      max: 45,
+      min: 37,
+      max: 37,
     },
     equipment: ['Mat', 'Wrestling dummy'],
     drills: [
@@ -136,7 +152,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         details: [
           'Light bouncing.',
           'Hip circles.',
-          'Low-impact sprawls.',
+          'Bodyweight squats.',
           'Shoulder rolls.',
         ],
         estimatedDuration: { seconds: 300 },
@@ -153,20 +169,24 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         durationConfig: { durationSeconds: 300 },
       },
       {
-        id: 'boxing-to-shot-entry',
-        title: 'Boxing-to-shot entry',
-        type: 'duration',
-        cue: 'Enter safely behind your hands.',
-        optionInstruction:
-          'Practice simple entries. Keep the strike as a distraction, not a combination.',
-        options: [
-          'Jab feint -> level change -> double leg',
-          'Jab-cross cover -> step in -> double leg',
-          'Hands high shell -> level change -> double leg',
+        id: 'shadow-double-leg',
+        title: 'Shadow double leg',
+        type: 'rounds',
+        cue: 'Level change first. Head up.',
+        videoUrl: 'https://www.youtube.com/watch?v=8FyeXO4rviw',
+        details: [
+          'Move around the mat.',
+          'Feint with your hands.',
+          'Level change.',
+          'Penetration step.',
+          'Finish by turning the corner.',
         ],
-        details: ['No fancy combinations.'],
-        estimatedDuration: { seconds: 600 },
-        durationConfig: { durationSeconds: 600 },
+        estimatedDuration: { seconds: 420 },
+        roundsConfig: {
+          rounds: 5,
+          roundSeconds: 60,
+          restBetweenRoundsSeconds: 30,
+        },
       },
       {
         id: 'double-leg-on-dummy',
@@ -188,18 +208,22 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         },
       },
       {
-        id: 'self-defense-exit-drill',
-        title: 'Self-defense exit drill',
-        type: 'duration',
-        cue: 'Finish safe, then leave or control.',
-        optionInstruction: 'Choose one exit and practice that.',
-        options: [
-          'Land on top -> hands posted -> stand up and back away.',
-          'Land on top -> knee on belly or control for 2 seconds -> disengage.',
-          'Land on top -> move to a safe side control position.',
+        id: 'sprawl-and-return-to-stance',
+        title: 'Sprawl and return to stance',
+        type: 'reps',
+        prescription: '3 sets × 5 reps',
+        cue: 'Legs back. Hips down. Chest up.',
+        videoUrl: 'https://www.youtube.com/watch?v=pfNtYzw97Ew',
+        videoNote:
+          'Focus on the sprawl mechanics. The video continues into a go-behind, which is outside this phase.',
+        details: [
+          'Start in stance.',
+          'Block down and kick both legs back.',
+          'Drive your hips down without landing on your knees.',
+          'Re-square and return to stance.',
         ],
-        estimatedDuration: { seconds: 600 },
-        durationConfig: { durationSeconds: 600 },
+        estimatedDuration: { seconds: 300 },
+        repsConfig: { sets: 3, reps: 5 },
       },
     ],
   },
@@ -210,15 +234,16 @@ export const curriculumPhases: CurriculumPhase[] = [
     id: 'phase-1',
     title: 'Phase 1: Foundations',
     description:
-      'Phase 1 builds the base for a safe, controlled double-leg takedown: stance, motion, level change, penetration step, double-leg entry, finish, and safe disengagement.',
+      'Phase 1 builds balanced neutral foundations for folkstyle and freestyle wrestling: stance and motion, the double-leg attack, down-blocking, sprawling, and returning to stance.',
     principle:
-      'Enter safely, change levels, keep posture, control both legs, turn the corner, finish on top.',
+      'Move in stance, attack with clean mechanics, defend in layers, and return to position.',
     meta: '6 weeks · 2 workouts/week · 12 total workouts',
     workoutTemplates: phaseOneWorkoutTemplates,
     weeks: [
       {
         number: 1,
-        progressionFocus: 'Slow mechanics only. Make every rep clean.',
+        progressionFocus:
+          'Slow mechanics only. Make every offensive and defensive rep clean.',
         workouts: [
           {
             id: 'phase-1-week-1-workout-a',
@@ -240,7 +265,8 @@ export const curriculumPhases: CurriculumPhase[] = [
       },
       {
         number: 2,
-        progressionFocus: 'Slow mechanics only. Make every rep clean.',
+        progressionFocus:
+          'Slow mechanics only. Make every offensive and defensive rep clean.',
         workouts: [
           {
             id: 'phase-1-week-2-workout-a',
@@ -263,7 +289,7 @@ export const curriculumPhases: CurriculumPhase[] = [
       {
         number: 3,
         progressionFocus:
-          'Add boxing feints and faster entries. No wild blasting.',
+          'Start every rep from stance and motion. Connect each movement without rushing.',
         workouts: [
           {
             id: 'phase-1-week-3-workout-a',
@@ -286,7 +312,7 @@ export const curriculumPhases: CurriculumPhase[] = [
       {
         number: 4,
         progressionFocus:
-          'Add boxing feints and faster entries. No wild blasting.',
+          'Start every rep from stance and motion. Connect each movement without rushing.',
         workouts: [
           {
             id: 'phase-1-week-4-workout-a',
@@ -309,7 +335,7 @@ export const curriculumPhases: CurriculumPhase[] = [
       {
         number: 5,
         progressionFocus:
-          'Start from movement, finish quickly, then disengage.',
+          'Increase pace with control. Finish each rep in a strong position.',
         workouts: [
           {
             id: 'phase-1-week-5-workout-a',
@@ -332,7 +358,7 @@ export const curriculumPhases: CurriculumPhase[] = [
       {
         number: 6,
         progressionFocus:
-          'Start from movement, finish quickly, then disengage.',
+          'Increase pace with control. Finish each rep in a strong position.',
         workouts: [
           {
             id: 'phase-1-week-6-workout-a',

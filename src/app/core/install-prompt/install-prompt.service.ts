@@ -11,6 +11,8 @@ import {
   InstallPromptPlatform,
 } from './install-prompt.model';
 
+export type { BeforeInstallPromptEvent };
+
 @Injectable({ providedIn: 'root' })
 export class InstallPromptService {
   private readonly destroyRef = inject(DestroyRef);

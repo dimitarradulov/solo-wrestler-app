@@ -88,6 +88,9 @@
         </div>
 
         @if (selectedVideoEmbedUrl(); as videoUrl) {
+          @if (selectedVideoNote(); as videoNote) {
+            <p class="video-modal__note">{{ videoNote }}</p>
+          }
           <iframe
             class="video-modal__frame"
             title="Technique video"

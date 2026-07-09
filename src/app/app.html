@@ -1,4 +1,11 @@
 <ion-app>
   <ion-router-outlet></ion-router-outlet>
   <app-install-prompt />
+  <ion-alert
+    header="Curriculum updated"
+    message="Phase 1 now balances double-leg offense with neutral defense. Your previous progress and workout history, including notes, were reset for the new curriculum."
+    [isOpen]="shouldShowCurriculumResetNotice()"
+    [buttons]="['Dismiss']"
+    (didDismiss)="dismissCurriculumResetNotice()"
+  />
 </ion-app>

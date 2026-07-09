@@ -135,7 +135,9 @@ export class TodayPage {
       return null;
     }
 
-    return `${template.estimatedMinutes.min}-${template.estimatedMinutes.max} min`;
+    const { min, max } = template.estimatedMinutes;
+
+    return min === max ? `${min} min` : `${min}-${max} min`;
   });
 
   readonly drillCountLabel = computed(() => {

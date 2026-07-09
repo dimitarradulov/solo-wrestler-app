@@ -76,6 +76,12 @@
   width: 100%;
 }
 
+.video-modal__note {
+  color: var(--sw-color-text-medium);
+  line-height: var(--sw-leading-body);
+  margin: 0 0 var(--sw-space-3);
+}
+
 .cancel-modal {
   --background: rgb(0 0 0 / 0.4);
   --padding-bottom: max(var(--sw-space-4), var(--ion-safe-area-bottom));

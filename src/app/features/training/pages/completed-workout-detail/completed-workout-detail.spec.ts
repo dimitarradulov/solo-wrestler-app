@@ -1,6 +1,10 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import {
+  ActivatedRoute,
+  convertToParamMap,
+  provideRouter,
+} from '@angular/router';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 
 import { CompletedWorkoutLogEntry } from '../../models/training-session.model';
@@ -53,6 +57,7 @@ describe('CompletedWorkoutDetailPage', () => {
         completedDrillIds: [
           'warm-up',
           'stance-and-motion',
+          'down-block',
           'level-change-drill',
           'penetration-step-drill',
           'shadow-double-leg',
@@ -82,6 +87,7 @@ describe('CompletedWorkoutDetailPage', () => {
     expect(drillTitles).toEqual([
       'Warm-up',
       'Stance and motion',
+      'Down-block',
       'Level change drill',
       'Penetration step drill',
       'Shadow double leg',

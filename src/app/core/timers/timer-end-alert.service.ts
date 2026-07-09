@@ -4,7 +4,10 @@ import { Haptics, NotificationType } from '@capacitor/haptics';
 @Injectable({ providedIn: 'root' })
 export class TimerEndAlertService {
   async playTimerEndAlert(): Promise<void> {
-    await Promise.all([this.playHaptic(), this.playBeep()]);
+    await Promise.all([
+      this.playHaptic().catch(() => undefined),
+      this.playBeep().catch(() => undefined),
+    ]);
   }
 
   private async playHaptic(): Promise<void> {
@@ -18,12 +21,16 @@ export class TimerEndAlertService {
       return;
     }
 
-    const audioContext = new AudioContextCtor();
-    const oscillator = this.createBeepOscillator(audioContext);
+    try {
+      const audioContext = new AudioContextCtor();
+      const oscillator = this.createBeepOscillator(audioContext);
 
-    this.startBeep(oscillator, audioContext.currentTime);
-    await this.waitForBeepToEnd(oscillator);
-    await audioContext.close();
+      this.startBeep(oscillator, audioContext.currentTime);
+      await this.waitForBeepToEnd(oscillator);
+      await audioContext.close();
+    } catch {
+      return;
+    }
   }
 
   private getAudioContextConstructor(): typeof AudioContext | undefined {

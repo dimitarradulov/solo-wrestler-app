@@ -317,7 +317,6 @@ describe('WorkoutSessionStore', () => {
   });
 
   it('ticks rounds through work and rest transitions behind the session seam', () => {
-    const store = TestBed.inject(WorkoutSessionStore);
     storage.setItem(
       storageKey,
       JSON.stringify({
@@ -384,7 +383,6 @@ describe('WorkoutSessionStore', () => {
   });
 
   it('marks the workout finishable after the final drill completes', () => {
-    const store = TestBed.inject(WorkoutSessionStore);
     storage.setItem(
       storageKey,
       JSON.stringify({

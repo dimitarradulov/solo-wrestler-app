@@ -10,6 +10,7 @@ import {
   ActiveWorkoutDrillCardView,
   ActiveWorkoutRestPanelView,
 } from '../../../models/workout-session.model';
+import { Drill } from '../../../models/curriculum.model';
 import { ActiveWorkoutDrillCardComponent } from './active-workout-drill-card';
 
 @Component({
@@ -27,5 +28,5 @@ export class ActiveWorkoutDrillListComponent {
   resetTimer = output<number>();
   skipRest = output<void>();
   addRestSeconds = output<number>();
-  watchVideo = output<string>();
+  watchVideo = output<Drill>();
 }

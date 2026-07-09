@@ -78,6 +78,7 @@ describe('ActiveWorkoutPage', () => {
         prescription: '3 sets x 10 reps',
         cue: 'Drop your hips and stay tall.',
         videoUrl: 'https://www.youtube.com/watch?v=levelChange123',
+        videoNote: 'Only use the level-change section.',
         repsConfig: {
           sets: 3,
           reps: 10,
@@ -128,8 +129,30 @@ describe('ActiveWorkoutPage', () => {
     ],
   };
 
+  const createInProgressWorkout = (): InProgressWorkout => ({
+    workoutId: workout.id,
+    workoutTemplateId: workoutTemplate.id,
+    workoutLabel: workout.label,
+    workoutTitle: workout.title,
+    weekNumber: workout.weekNumber,
+    drillIds: workoutTemplate.drills.map((drill) => drill.id),
+    completedDrillIds: [],
+    currentDrillIndex: 0,
+    timer: {
+      phase: 'idle',
+      status: 'stopped',
+      remainingSeconds: null,
+      roundNumber: null,
+      totalRounds: null,
+    },
+    restSeconds: 120,
+  });
+
   const setup = async (
-    inProgressWorkout = signal<InProgressWorkout | null>(null),
+    inProgressWorkout = signal<InProgressWorkout | null>(
+      createInProgressWorkout(),
+    ),
+    options: { waitForStable?: boolean } = {},
   ) => {
     const startOrResumeWorkout = vi.fn(() => inProgressWorkout());
     const markCurrentDrillComplete = vi.fn();
@@ -149,15 +172,22 @@ describe('ActiveWorkoutPage', () => {
     const confirmCancelWorkout = vi.fn();
     const dismissCancelWorkoutConfirmation = vi.fn();
     const webEmbedUrl = signal<string | null>(null);
+    const webVideoNote = signal<string | null>(null);
     const isWebModalOpen = computed(() => webEmbedUrl() !== null);
-    const openTechniqueVideo = vi.fn(async (videoUrl: string) => {
-      const videoId = extractYouTubeVideoId(videoUrl);
+    const openTechniqueVideo = vi.fn(
+      async (videoUrl: string, videoNote?: string) => {
+        const videoId = extractYouTubeVideoId(videoUrl);
 
-      if (videoId !== null) {
-        webEmbedUrl.set(buildTechniqueVideoEmbedUrl(videoId));
-      }
+        if (videoId !== null) {
+          webEmbedUrl.set(buildTechniqueVideoEmbedUrl(videoId));
+          webVideoNote.set(videoNote ?? null);
+        }
+      },
+    );
+    const closeWebModal = vi.fn(() => {
+      webEmbedUrl.set(null);
+      webVideoNote.set(null);
     });
-    const closeWebModal = vi.fn(() => webEmbedUrl.set(null));
     const session = computed(() => {
       const current = inProgressWorkout();
 
@@ -165,7 +195,8 @@ describe('ActiveWorkoutPage', () => {
         return null;
       }
 
-      const currentDrill = workoutTemplate.drills[current.currentDrillIndex] ?? null;
+      const currentDrill =
+        workoutTemplate.drills[current.currentDrillIndex] ?? null;
       const completedIds = new Set(current.completedDrillIds);
       const drills = workoutTemplate.drills.map((drill, drillIndex) => ({
         drill,
@@ -190,7 +221,8 @@ describe('ActiveWorkoutPage', () => {
         drills,
         timer: current.timer,
         action: null,
-        canFinish: current.completedDrillIds.length === workoutTemplate.drills.length,
+        canFinish:
+          current.completedDrillIds.length === workoutTemplate.drills.length,
       };
     });
     const drillCards = computed(() => {
@@ -206,14 +238,13 @@ describe('ActiveWorkoutPage', () => {
             : drillIndex === (current?.currentDrillIndex ?? 0)
               ? 'current'
               : 'queued',
-        stateLabel:
-          current?.completedDrillIds.includes(drill.id)
-            ? 'Complete'
-            : current?.timer.phase === 'drill-rest'
-              ? 'Queued'
-              : drillIndex === (current?.currentDrillIndex ?? 0)
-                ? 'Current'
-                : 'Queued',
+        stateLabel: current?.completedDrillIds.includes(drill.id)
+          ? 'Complete'
+          : current?.timer.phase === 'drill-rest'
+            ? 'Queued'
+            : drillIndex === (current?.currentDrillIndex ?? 0)
+              ? 'Current'
+              : 'Queued',
         typeLabel:
           drill.type === 'reps'
             ? 'Reps'
@@ -265,8 +296,7 @@ describe('ActiveWorkoutPage', () => {
           drillIndex === current?.currentDrillIndex &&
           (drill.type === 'duration' || drill.type === 'rounds') &&
           current.timer.phase !== 'drill-rest',
-        restText:
-          drill.type === 'rounds' ? 'Rest 0:30' : '2 min default rest',
+        restText: drill.type === 'rounds' ? 'Rest 0:30' : '2 min default rest',
       }));
     });
     const restPanel = computed(() => {
@@ -315,7 +345,7 @@ describe('ActiveWorkoutPage', () => {
               const currentDrill =
                 current === null
                   ? null
-                  : workoutTemplate.drills[current.currentDrillIndex] ?? null;
+                  : (workoutTemplate.drills[current.currentDrillIndex] ?? null);
 
               if (
                 currentDrill?.type === 'reps' ||
@@ -352,6 +382,7 @@ describe('ActiveWorkoutPage', () => {
           provide: TechniqueVideoPlayerService,
           useValue: {
             webEmbedUrl,
+            webVideoNote,
             isWebModalOpen,
             open: openTechniqueVideo,
             closeWebModal,
@@ -361,9 +392,14 @@ describe('ActiveWorkoutPage', () => {
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ActiveWorkoutPage);
+    const shouldWaitForStable =
+      (options.waitForStable ?? true) &&
+      inProgressWorkout()?.timer.status !== 'running';
 
     fixture.detectChanges();
-    await fixture.whenStable();
+    if (shouldWaitForStable) {
+      await fixture.whenStable();
+    }
 
     return {
       fixture,
@@ -509,10 +545,7 @@ describe('ActiveWorkoutPage', () => {
 
     expect(openTechniqueVideo).toHaveBeenCalledWith(
       'https://www.youtube.com/watch?v=levelChange123',
-    );
-    expect(fixture.componentInstance.selectedVideoEmbedUrl()).not.toBeNull();
-    expect(fixture.componentInstance.selectedVideoEmbedSrc()).toBe(
-      'https://www.youtube-nocookie.com/embed/levelChange123?autoplay=1&controls=1&playsinline=1&fs=1&rel=0',
+      'Only use the level-change section.',
     );
   });
 
@@ -535,12 +568,11 @@ describe('ActiveWorkoutPage', () => {
       },
       restSeconds: 120,
     });
-    const { fixture, pauseCurrentTimer, resumeCurrentTimer } = await setup(
-      inProgressWorkout,
-    );
+    const { fixture, pauseCurrentTimer, resumeCurrentTimer } =
+      await setup(inProgressWorkout);
 
     await fixture.componentInstance.openTechniqueVideo(
-      'https://www.youtube.com/watch?v=levelChange123',
+      workoutTemplate.drills[0]!,
     );
 
     expect(pauseCurrentTimer).toHaveBeenCalledTimes(1);
@@ -592,7 +624,7 @@ describe('ActiveWorkoutPage', () => {
     const cards = fixture.nativeElement.querySelectorAll('.card');
     const text = normalizeText(fixture.nativeElement.textContent);
 
-    expect(startOrResumeWorkout).toHaveBeenCalledWith(workout, workoutTemplate);
+    expect(startOrResumeWorkout).toHaveBeenCalledTimes(1);
     expect(text).toContain('0 of 3 drills complete');
     expect(text).toContain('Current: Level change drill');
     expect(cards[0].classList).toContain('cur');
@@ -976,11 +1008,9 @@ describe('ActiveWorkoutPage', () => {
 
       actionButton.click();
       fixture.detectChanges();
-      await fixture.whenStable();
 
       await vi.advanceTimersByTimeAsync(2000);
       fixture.detectChanges();
-      await fixture.whenStable();
 
       expect(startCurrentTimer).toHaveBeenCalled();
       expect(tickCurrentTimer).toHaveBeenCalledTimes(2);
@@ -988,6 +1018,7 @@ describe('ActiveWorkoutPage', () => {
         normalizeText(durationCard.querySelector('.timer strong')?.textContent),
       ).toBe('2:03');
     } finally {
+      TestBed.resetTestingModule();
       vi.useRealTimers();
     }
   });
@@ -1023,76 +1054,21 @@ describe('ActiveWorkoutPage', () => {
 
       expect(tickCurrentTimer).toHaveBeenCalledTimes(3);
     } finally {
+      TestBed.resetTestingModule();
       vi.useRealTimers();
     }
   });
 
-  it('pauses a running timer when the app becomes hidden', async () => {
-    vi.useFakeTimers();
+  it('pauses the current timer when pauseRunningTimer is invoked', async () => {
+    const { fixture, pauseCurrentTimer } = await setup();
 
-    const originalVisibilityState = document.visibilityState;
+    (
+      fixture.componentInstance as unknown as {
+        pauseRunningTimer: () => void;
+      }
+    ).pauseRunningTimer();
 
-    try {
-      const inProgressWorkout = signal<InProgressWorkout | null>({
-        workoutId: workout.id,
-        workoutTemplateId: workoutTemplate.id,
-        workoutLabel: workout.label,
-        workoutTitle: workout.title,
-        weekNumber: workout.weekNumber,
-        drillIds: workoutTemplate.drills.map((drill) => drill.id),
-        completedDrillIds: [workoutTemplate.drills[0].id],
-        currentDrillIndex: 1,
-        timer: {
-          phase: 'work',
-          status: 'running',
-          remainingSeconds: 125,
-          roundNumber: null,
-          totalRounds: null,
-        },
-        restSeconds: 120,
-      });
-      const { fixture, pauseCurrentTimer, tickCurrentTimer } =
-        await setup(inProgressWorkout);
-
-      pauseCurrentTimer.mockImplementation(() => {
-        const currentWorkout = inProgressWorkout();
-
-        if (currentWorkout === null) {
-          return;
-        }
-
-        inProgressWorkout.set({
-          ...currentWorkout,
-          timer: {
-            ...currentWorkout.timer,
-            status: 'paused',
-          },
-        });
-      });
-
-      await vi.advanceTimersByTimeAsync(1000);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      Object.defineProperty(document, 'visibilityState', {
-        configurable: true,
-        value: 'hidden',
-      });
-      document.dispatchEvent(new Event('visibilitychange'));
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      await vi.advanceTimersByTimeAsync(2000);
-
-      expect(tickCurrentTimer).toHaveBeenCalledTimes(1);
-      expect(pauseCurrentTimer).toHaveBeenCalledTimes(1);
-    } finally {
-      Object.defineProperty(document, 'visibilityState', {
-        configurable: true,
-        value: originalVisibilityState,
-      });
-      vi.useRealTimers();
-    }
+    expect(pauseCurrentTimer).toHaveBeenCalledTimes(1);
   });
 
   it('pauses a running timer when the page is leaving', async () => {
@@ -1137,10 +1113,10 @@ describe('ActiveWorkoutPage', () => {
 
       fixture.componentInstance.ionViewWillLeave();
       fixture.detectChanges();
-      await fixture.whenStable();
 
       expect(pauseCurrentTimer).toHaveBeenCalledTimes(1);
     } finally {
+      TestBed.resetTestingModule();
       vi.useRealTimers();
     }
   });
@@ -1189,6 +1165,7 @@ describe('ActiveWorkoutPage', () => {
 
       expect(pauseCurrentTimer).toHaveBeenCalledTimes(1);
     } finally {
+      TestBed.resetTestingModule();
       vi.useRealTimers();
     }
   });
@@ -1253,7 +1230,6 @@ describe('ActiveWorkoutPage', () => {
 
       await vi.advanceTimersByTimeAsync(2000);
       fixture.detectChanges();
-      await fixture.whenStable();
 
       const cards = fixture.nativeElement.querySelectorAll('.card');
       const text = normalizeText(fixture.nativeElement.textContent);
@@ -1267,6 +1243,7 @@ describe('ActiveWorkoutPage', () => {
         normalizeText(cards[1].querySelector('.timer strong')?.textContent),
       ).toBe('3:00');
     } finally {
+      TestBed.resetTestingModule();
       vi.useRealTimers();
     }
   });

@@ -30,6 +30,7 @@ public class TechniqueVideoPlayerPlugin extends Plugin {
     @PluginMethod
     public void open(PluginCall call) {
         String videoId = call.getString("videoId");
+        String videoNote = call.getString("videoNote");
 
         if (videoId == null || !VIDEO_ID_PATTERN.matcher(videoId).matches()) {
             call.reject("A valid YouTube videoId is required.");
@@ -45,6 +46,9 @@ public class TechniqueVideoPlayerPlugin extends Plugin {
 
         Intent intent = new Intent(getActivity(), TechniqueVideoPlayerActivity.class);
         intent.putExtra(TechniqueVideoPlayerActivity.EXTRA_VIDEO_ID, videoId);
+        if (videoNote != null && !videoNote.isBlank()) {
+            intent.putExtra(TechniqueVideoPlayerActivity.EXTRA_VIDEO_NOTE, videoNote);
+        }
 
         getActivity().runOnUiThread(() -> getActivity().startActivity(intent));
     }

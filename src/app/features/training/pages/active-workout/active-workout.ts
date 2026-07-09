@@ -32,6 +32,7 @@ import {
   videocamOutline,
 } from 'ionicons/icons';
 import { WorkoutSessionStore } from '../../stores/workout-session.store';
+import { Drill } from '../../models/curriculum.model';
 import { TechniqueVideoPlayerService } from '../../../../core/video/technique-video-player.service';
 import { WorkoutCancellationService } from '../../services/workout-cancellation.service';
 import { ActiveWorkoutDrillListComponent } from './components/active-workout-drill-list';
@@ -80,6 +81,7 @@ export class ActiveWorkoutPage
     this.workoutCancellationService.isCancelWorkoutConfirmationOpen;
   readonly isTechniqueVideoOpen =
     this.techniqueVideoPlayerService.isWebModalOpen;
+  readonly selectedVideoNote = this.techniqueVideoPlayerService.webVideoNote;
   readonly selectedVideoEmbedSrc = this.techniqueVideoPlayerService.webEmbedUrl;
   readonly selectedVideoEmbedUrl = computed<SafeResourceUrl | null>(() => {
     const embedUrl = this.selectedVideoEmbedSrc();
@@ -217,7 +219,7 @@ export class ActiveWorkoutPage
     this.workoutCancellationService.dismissCancelWorkoutConfirmation();
   }
 
-  async openTechniqueVideo(videoUrl: string): Promise<void> {
+  async openTechniqueVideo(drill: Drill): Promise<void> {
     const shouldResumeTimer = this.shouldPauseTimerForTechniqueVideo();
 
     if (shouldResumeTimer) {
@@ -226,7 +228,12 @@ export class ActiveWorkoutPage
     }
 
     try {
-      await this.techniqueVideoPlayerService.open(videoUrl);
+      if (drill.videoUrl) {
+        await this.techniqueVideoPlayerService.open(
+          drill.videoUrl,
+          drill.videoNote,
+        );
+      }
     } finally {
       if (!shouldResumeTimer) {
         return;

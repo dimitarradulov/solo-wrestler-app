@@ -41,6 +41,7 @@ export interface Drill {
   optionInstruction?: string;
   coreTechnique?: string;
   videoUrl?: string;
+  videoNote?: string;
   estimatedDuration?: DrillEstimateSeconds;
   repsConfig?: RepsDrillConfig;
   durationConfig?: DurationDrillConfig;
