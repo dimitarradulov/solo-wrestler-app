@@ -37,3 +37,9 @@ ion-content.sw-safe-area-content {
   --padding-bottom: max(var(--sw-space-4), var(--ion-safe-area-bottom));
   --padding-start: max(var(--sw-space-4), var(--ion-safe-area-left));
 }
+
+ion-alert {
+  --background: #ffffff;
+  --color: #1f2937;
+  --button-color: var(--ion-color-primary);
+}
