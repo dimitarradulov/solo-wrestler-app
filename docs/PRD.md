@@ -180,7 +180,7 @@ The Today screen displays:
 ### Default State Example
 
 **Phase 1: Foundations**
-3 of 12 workouts completed
+3 of 18 workouts completed
 Current: Week 2 · Workout A
 
 Button:
@@ -195,7 +195,7 @@ Equipment:
 
 **Resume Workout**
 Week 2 · Workout A
-4 of 6 drills completed
+4 of 5 drills completed
 
 Button:
 
@@ -223,7 +223,7 @@ The Curriculum screen displays:
 
 - Phase 1: Foundations
 - 6-week structure
-- 2 workouts per week
+- 3 workouts per week (suggested pace)
 - Workout completion status
 - Locked future workouts
 - Future phases as Coming Soon
@@ -231,25 +231,26 @@ The Curriculum screen displays:
 ### Phase 1 Structure
 
 **Phase 1: Foundations**
-6 weeks · 2 workouts/week · 12 total workouts
+6 weeks · 3 workouts/week suggested · 18 total workouts · 60 minutes each
 
 Workout templates:
 
-- Workout A: Mechanics
-- Workout B: Application
+- Workout A: Movement and Entry Mechanics
+- Workout B: Defense and Recovery
+- Workout C: Connected Attacks
 
-The same two workouts repeat weekly for 6 weeks.
+The same three workouts repeat weekly for 6 weeks. Three sessions per week is a suggested pace; missed sessions do not expire.
 
 ### Example Layout
 
-| Week   | Workout A | Workout B |
-| ------ | --------- | --------- |
-| Week 1 | Completed | Completed |
-| Week 2 | Current   | Locked    |
-| Week 3 | Locked    | Locked    |
-| Week 4 | Locked    | Locked    |
-| Week 5 | Locked    | Locked    |
-| Week 6 | Locked    | Locked    |
+| Week   | Workout A | Workout B | Workout C |
+| ------ | --------- | --------- | --------- |
+| Week 1 | Completed | Completed | Completed |
+| Week 2 | Current   | Locked    | Locked    |
+| Week 3 | Locked    | Locked    | Locked    |
+| Week 4 | Locked    | Locked    | Locked    |
+| Week 5 | Locked    | Locked    | Locked    |
+| Week 6 | Locked    | Locked    | Locked    |
 
 ### Future Phase Example
 
@@ -287,7 +288,7 @@ The workout screen displays:
 
 **Phase 1: Foundations**
 Week 1 · Workout A
-**Mechanics**
+**Movement and Entry Mechanics**
 
 Equipment: Mat + wrestling dummy
 
@@ -828,92 +829,51 @@ export interface CompletedWorkout {
 
 ### Phase Description
 
-Phase 1 builds the base for a safe, controlled double-leg takedown: stance, motion, level change, penetration step, double-leg entry, finish, and safe disengagement.
+Freestyle Foundations develops neutral movement, the double-leg Core Attack, and Neutral Defense across six weeks of three one-hour workouts per week. Three sessions per week is a suggested pace, not a calendar deadline.
 
 ### Phase Principle
 
-Enter safely, change levels, keep posture, control both legs, turn the corner, finish on top.
+Move in stance, attack with clean mechanics, defend in layers, and return to position.
 
 ### Structure
 
 - 6 weeks
-- 2 workouts per week
-- 12 total workouts
-- Same two workout templates repeated weekly
+- 3 workouts per week, 18 total Workout Instances
+- Three reusable Workout Templates repeated weekly
+- Each workout is planned for 60 minutes, including warm-up, practice, automatic between-drill Rest, and cooldown
 
 ### Workout A
 
-**Title:** Mechanics
-**Focus:** Stance, motion, level change, penetration step, shadow double leg, dummy finish.
-**Estimated duration:** 35-45 minutes
+**Title:** Movement and Entry Mechanics
+**Focus:** Stance, footwork, level changes, double-leg entries, and returning to neutral defense.
+**Estimated duration:** 60 minutes
 **Equipment:** Mat, wrestling dummy
 
-Drills:
-
-1. Warm-up
-   5 minutes
-   Cue: Move easy. Protect your neck.
-   Details: light bouncing, hip circles, low-impact sprawls, shoulder rolls.
-2. Stance and motion
-   5 minutes
-   Cue: Small steps. Do not cross your feet.
-   Details: move forward, backward, left, and right in stance; small steps; do not cross your feet.
-3. Level change drill
-   3 sets x 10 reps
-   Estimated duration: 5 minutes
-   Cue: Drop your hips. Stay tall.
-4. Penetration step drill
-   5 sets x 10 reps
-   Estimated duration: 10 minutes
-   Cue: Step deep. Stay tall.
-   Details: step, knee touch, trail leg up, posture tall.
-5. Shadow double leg
-   5 rounds x 1 minute with 30 seconds rest between rounds
-   Cue: Level change first. Head up.
-   Details: move around the mat, feint with hands, level change, penetration step, finish by turning the corner.
-6. Dummy finish
-   10 minutes
-   Cue: Land safely on top.
-   Details: start with the dummy already low or leaning, connect shoulder to the dummy, wrap both legs or body, turn the corner, land safely on top.
+Five ordered drills cover a 10-minute warm-up, 15 minutes of movement and defensive posture, 20 minutes of focused entry mechanics, 10 minutes of connected practice, and a 5-minute cooldown. The four automatic two-minute Rest periods occur between these practice blocks and are included once in the 60-minute estimate.
 
 ### Workout B
 
-**Title:** Application
-**Focus:** Boxing-to-shot entry, double leg on dummy, safe finish, self-defense exit.
-**Estimated duration:** 35-45 minutes
+**Title:** Defense and Recovery
+**Focus:** Down-block, sprawl, re-square to safe neutral position, then practice a separate double-leg entry.
+**Estimated duration:** 60 minutes
 **Equipment:** Mat, wrestling dummy
 
-Drills:
+Five ordered drills cover a 10-minute warm-up, 15 minutes of defensive posture and recovery, 20 minutes of focused defense mechanics, 10 minutes connecting recovery to a separate entry, and a 5-minute cooldown. Defense ends in a safe neutral position; a later entry is separate offense.
 
-1. Warm-up
-   5 minutes
-   Cue: Move easy. Protect your neck.
-   Details: light bouncing, hip circles, low-impact sprawls, shoulder rolls.
-2. Stance and entry
-   5 minutes
-   Cue: Level change suddenly.
-   Details: move in stance, then suddenly level change.
-3. Boxing-to-shot entry
-   10 minutes
-   Cue: Enter safely behind your hands.
-   Option instruction: Practice simple entries. Keep the strike as a distraction, not a combination.
-   Options: jab feint -> level change -> double leg; jab-cross cover -> step in -> double leg; hands high shell -> level change -> double leg.
-4. Double leg on dummy
-   20 clean reps
-   Estimated duration: 15 minutes
-   Cue: Quality over speed.
-   Details: head up, hips under you, control both legs or body, turn the corner, finish on top.
-5. Self-defense exit drill
-   10 minutes
-   Cue: Finish safe, then leave or control.
-   Option instruction: Choose one exit and practice that.
-   Options: land on top -> hands posted -> stand up and back away; land on top -> knee on belly or control for 2 seconds -> disengage; land on top -> move to a safe side control position.
+### Workout C
+
+**Title:** Connected Attacks
+**Focus:** Connect a simple wrestling setup, double-leg entry, and controlled finish on a supported dummy.
+**Estimated duration:** 60 minutes
+**Equipment:** Mat, wrestling dummy
+
+Five ordered drills cover the same session budget, emphasizing a controlled setup-entry-finish sequence. Dummy finishes stay low amplitude and controlled.
 
 ### Weekly Progression Focus
 
-- Weeks 1-2: Slow mechanics only. Make every rep clean.
-- Weeks 3-4: Add boxing feints and faster entries. No wild blasting.
-- Weeks 5-6: Start from movement, finish quickly, then disengage.
+- Weeks 1–2: Individual positions and slow mechanics.
+- Weeks 3–4: Connect movements and entries.
+- Weeks 5–6: Practice consistent sequences from movement without automatic volume increases.
 
 ---
 
@@ -1011,7 +971,7 @@ As a user, I want to view completed workouts so that I can see my training histo
 
 - Phase 1 is visible.
 - 6 weeks are visible.
-- Workout A and B are visible for each week.
+- Workout A, B, and C are visible for each week.
 - Completed workouts show completed state.
 - Current workout is unlocked.
 - Future workouts are locked.

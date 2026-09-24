@@ -1,104 +1,127 @@
 import { describe, expect, it } from 'vitest';
 
-import { curriculumPhases } from './curriculum.data';
+import { appWorkoutConfig, curriculumPhases } from './curriculum.data';
 
-describe('Phase 1 neutral defense curriculum', () => {
+describe('freestyle Foundations content contract', () => {
   const phase = curriculumPhases[0]!;
-  const workoutA = phase.workoutTemplates[0]!;
-  const workoutB = phase.workoutTemplates[1]!;
 
-  it('preserves template and workout instance IDs', () => {
-    expect(phase.workoutTemplates.map((workout) => workout.id)).toEqual([
-      'workout-template-a',
-      'workout-template-b',
-    ]);
-    expect(
-      phase.weeks.flatMap((week) => week.workouts.map((workout) => workout.id)),
-    ).toEqual(
-      Array.from({ length: 6 }, (_, index) => index + 1).flatMap((week) => [
-        `phase-1-week-${week}-workout-a`,
-        `phase-1-week-${week}-workout-b`,
-      ]),
+  it('contains six weeks of ordered A, B, and C Workout Instances', () => {
+    expect(phase.weeks).toHaveLength(6);
+    expect(phase.weeks.flatMap((week) => week.workouts)).toHaveLength(18);
+    expect(phase.weeks.map((week) => week.workouts.map((workout) => workout.label))).toEqual(
+      Array.from({ length: 6 }, () => ['Workout A', 'Workout B', 'Workout C']),
     );
-  });
-
-  it('keeps Workout A drills and adds down-block after stance and motion', () => {
-    expect(workoutA.drills.map((drill) => drill.id)).toEqual([
-      'warm-up',
-      'stance-and-motion',
-      'down-block',
-      'level-change-drill',
-      'penetration-step-drill',
-      'shadow-double-leg',
-      'dummy-finish',
+    expect(phase.weeks[0]?.workouts.map((workout) => workout.status)).toEqual([
+      'current',
+      'locked',
+      'locked',
     ]);
-    expect(workoutA.estimatedMinutes).toEqual({ min: 45, max: 45 });
-    expect(workoutA.drills[2]).toMatchObject({
-      type: 'reps',
-      prescription: '3 sets × 10 reps',
-      estimatedDuration: { seconds: 180 },
-      cue: 'Hands first. Hips back. Return to stance.',
-      videoUrl: 'https://www.youtube.com/watch?v=1gk5t5Kqc8w',
-      details: [
-        'Start in stance.',
-        'Block down as you pull your lead leg away.',
-        'Keep your head and chest up.',
-        'Re-square and return to stance.',
-      ],
-      repsConfig: { sets: 3, reps: 10 },
-    });
+    expect(phase.meta).toContain('18 total workouts');
+    expect(phase.meta).toContain('3 workouts/week');
   });
 
-  it('defines the approved five-drill Workout B', () => {
-    expect(workoutB.drills.map((drill) => drill.id)).toEqual([
-      'warm-up',
-      'stance-and-entry',
-      'shadow-double-leg',
-      'double-leg-on-dummy',
-      'sprawl-and-return-to-stance',
+  it('assigns the three requested templates in the same order every week', () => {
+    expect(phase.workoutTemplates.map((template) => template.title)).toEqual([
+      'Movement and Entry Mechanics',
+      'Defense and Recovery',
+      'Connected Attacks',
     ]);
-    expect(workoutB.estimatedMinutes).toEqual({ min: 37, max: 37 });
-    expect(workoutB.drills[2]?.roundsConfig).toEqual(
-      workoutA.drills[5]?.roundsConfig,
-    );
-    expect(workoutB.drills[4]).toMatchObject({
-      type: 'reps',
-      prescription: '3 sets × 5 reps',
-      estimatedDuration: { seconds: 300 },
-      cue: 'Legs back. Hips down. Chest up.',
-      videoUrl: 'https://www.youtube.com/watch?v=pfNtYzw97Ew',
-      details: [
-        'Start in stance.',
-        'Block down and kick both legs back.',
-        'Drive your hips down without landing on your knees.',
-        'Re-square and return to stance.',
-      ],
-      repsConfig: { sets: 3, reps: 5 },
-    });
-  });
-
-  it('uses the approved warm-ups, progression copy, and sprawl video note', () => {
-    for (const workout of [workoutA, workoutB]) {
-      expect(workout.drills[0]?.details).toContain('Bodyweight squats.');
-      expect(workout.drills[0]?.details?.join(' ')).not.toContain(
-        'Low-impact sprawls',
+    for (const week of phase.weeks) {
+      expect(week.workouts.map((workout) => workout.workoutTemplateId)).toEqual(
+        phase.workoutTemplates.map((template) => template.id),
       );
     }
+  });
 
-    expect(phase.weeks.map((week) => week.progressionFocus)).toEqual([
-      'Slow mechanics only. Make every offensive and defensive rep clean.',
-      'Slow mechanics only. Make every offensive and defensive rep clean.',
-      'Start every rep from stance and motion. Connect each movement without rushing.',
-      'Start every rep from stance and motion. Connect each movement without rushing.',
-      'Increase pace with control. Finish each rep in a strong position.',
-      'Increase pace with control. Finish each rep in a strong position.',
-    ]);
-    expect(workoutB.drills[4]?.videoNote).toBe(
-      'Focus on the sprawl mechanics. The video continues into a go-behind, which is outside this phase.',
+  it('plans 60 minutes from timed drill prescriptions and automatic between-drill Rest', () => {
+    for (const template of phase.workoutTemplates) {
+      const timedWorkSeconds = template.drills.reduce(
+        (total, drill) => total + (drill.estimatedDuration?.seconds ?? 0),
+        0,
+      );
+      const automaticRestSeconds =
+        (template.drills.length - 1) * appWorkoutConfig.defaultRestSeconds;
+
+      expect(template.estimatedMinutes).toEqual({ min: 60, max: 60 });
+      expect((timedWorkSeconds + automaticRestSeconds) / 60).toBe(60);
+      expect(template.drills[0]?.estimatedDuration?.seconds).toBe(10 * 60);
+      expect(
+        template.drills[template.drills.length - 1]?.estimatedDuration?.seconds,
+      ).toBe(3 * 60);
+      expect(
+        template.drills.every(
+          (drill) =>
+            drill.type === 'duration' &&
+            drill.durationConfig?.durationSeconds ===
+              drill.estimatedDuration?.seconds,
+        ),
+      ).toBe(true);
+    }
+  });
+
+  it('keeps Defense and Recovery in safe neutral before a separate entry', () => {
+    const defense = phase.workoutTemplates[1]!;
+    const defenseDrill = defense.drills[1]!;
+    const separateEntry = defense.drills[3]!;
+
+    expect(defense.title).toBe('Defense and Recovery');
+    expect(defenseDrill.details?.join(' ')).toMatch(/re-square.*safe neutral position/i);
+    expect(separateEntry.title).toMatch(/separate entry/i);
+    expect(separateEntry.details?.join(' ')).toMatch(/pause in a safe neutral position/i);
+    expect(separateEntry.details?.join(' ')).toMatch(
+      /begin a separate double-leg entry after the pause/i,
+    );
+    expect(separateEntry.details?.join(' ')).toMatch(
+      /do not turn the defensive action into a spin-behind or counterattack/i,
     );
   });
 
-  it('contains no boxing or self-defense curriculum language', () => {
+  it('keeps every template wrestling-specific and includes movement, attack, and defense', () => {
+    for (const template of phase.workoutTemplates) {
+      expect(template.focus).toMatch(/stance|movement/i);
+      expect(template.drills.some((drill) => /double-leg|entry/i.test(drill.title))).toBe(true);
+      expect(
+        template.drills.some((drill) =>
+          /down-block|sprawl|defense/i.test(`${drill.title} ${drill.details?.join(' ')}`),
+        ),
+      ).toBe(true);
+    }
+
     expect(JSON.stringify(phase)).not.toMatch(/boxing|self-defense/i);
+  });
+
+  it('uses the agreed progression bands without increasing prescribed volume', () => {
+    expect(phase.weeks.map((week) => week.progressionFocus)).toEqual([
+      'Weeks 1–2: Practice individual positions and slow mechanics. Keep the templates recognizable and make every repetition controlled.',
+      'Weeks 1–2: Practice individual positions and slow mechanics. Keep the templates recognizable and make every repetition controlled.',
+      'Weeks 3–4: Connect movements and entries smoothly while keeping the same controlled practice volume.',
+      'Weeks 3–4: Connect movements and entries smoothly while keeping the same controlled practice volume.',
+      'Weeks 5–6: Practice consistent sequences from movement without automatically increasing volume.',
+      'Weeks 5–6: Practice consistent sequences from movement without automatically increasing volume.',
+    ]);
+    expect(phase.weeks[0]?.progressionFocus).toMatch(/slow mechanics/i);
+    expect(phase.weeks[2]?.progressionFocus).toMatch(/connect movements and entries/i);
+    expect(phase.weeks[4]?.progressionFocus).toMatch(/without automatically increasing volume/i);
+    expect(
+      new Set(
+        phase.workoutTemplates.map((template) =>
+          template.drills
+            .map((drill) => drill.estimatedDuration?.seconds)
+            .join(','),
+        ),
+      ).size,
+    ).toBe(1);
+  });
+
+  it('provides relevant USA Wrestling Technique Videos with explicit review limits', () => {
+    const videoDrills = phase.workoutTemplates.flatMap((template) => template.drills)
+      .filter((drill) => drill.videoUrl);
+
+    expect(videoDrills.length).toBeGreaterThan(0);
+    for (const drill of videoDrills) {
+      expect(drill.videoUrl).toMatch(/^https:\/\/www\.youtube\.com\//);
+      expect(drill.videoNote).toMatch(/USA Wrestling/i);
+      expect(drill.videoNote).toMatch(/could not be independently viewed/i);
+    }
   });
 });

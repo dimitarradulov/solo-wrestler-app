@@ -61,7 +61,7 @@ describe('CurriculumRevisionService', () => {
 
     expect(service.shouldShowResetNotice()).toBe(false);
     expect(localStorage.getItem('solo-wrestler.curriculum.revision')).toBe(
-      'phase-1-neutral-defense',
+      'freestyle-foundations-18-workout',
     );
   });
 

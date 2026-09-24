@@ -8,7 +8,8 @@ describe('CurriculumStore', () => {
   const storageKey = 'solo-wrestler.curriculum.completed-workout-ids';
   const firstWorkoutId = 'phase-1-week-1-workout-a';
   const secondWorkoutId = 'phase-1-week-1-workout-b';
-  const lastWorkoutId = 'phase-1-week-6-workout-b';
+  const thirdWorkoutId = 'phase-1-week-1-workout-c';
+  const lastWorkoutId = 'phase-1-week-6-workout-c';
 
   const createStorage = (): Storage => {
     const values = new Map<string, string>();
@@ -85,7 +86,7 @@ describe('CurriculumStore', () => {
     expect(getWorkoutStatus(firstWorkoutId)).toBe('completed');
     expect(getWorkoutStatus(secondWorkoutId)).toBe('current');
     expect(store.currentWorkout()?.id).toBe(secondWorkoutId);
-    expect(store.currentWorkoutTemplate()?.title).toBe('Application');
+    expect(store.currentWorkoutTemplate()?.title).toBe('Defense and Recovery');
     expect(storage.getItem(storageKey)).toBe(JSON.stringify([firstWorkoutId]));
   });
 
@@ -114,10 +115,10 @@ describe('CurriculumStore', () => {
   it('tracks total workout count and current sequence number', () => {
     const store = TestBed.inject(CurriculumStore);
 
-    expect(store.totalWorkoutCount()).toBe(12);
+    expect(store.totalWorkoutCount()).toBe(18);
     expect(store.currentWorkoutSequenceNumber()).toBe(1);
     expect(store.getWorkoutSequenceNumber(firstWorkoutId)).toBe(1);
-    expect(store.getWorkoutSequenceNumber(lastWorkoutId)).toBe(12);
+    expect(store.getWorkoutSequenceNumber(lastWorkoutId)).toBe(18);
     expect(store.getWorkoutSequenceNumber('unknown')).toBeNull();
   });
 
@@ -131,6 +132,7 @@ describe('CurriculumStore', () => {
     store.setWorkoutCompleted(secondWorkoutId, true);
 
     expect(store.currentWorkoutSequenceNumber()).toBe(3);
+    expect(store.currentWorkout()?.id).toBe(thirdWorkoutId);
   });
 
   it('has no current sequence number when the curriculum is complete', () => {

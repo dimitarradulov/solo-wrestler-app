@@ -16,7 +16,7 @@
 
 .curriculum-grid {
   display: grid;
-  grid-template-columns: auto 1fr 1fr;
+  grid-template-columns: auto repeat(3, minmax(0, 1fr));
   gap: var(--sw-space-3);
 }
 

@@ -26,9 +26,9 @@ describe('TodayPage', () => {
   const currentWorkoutTemplate: WorkoutTemplate = {
     id: 'workout-template-a',
     label: 'Workout A',
-    title: 'Mechanics',
-    focus: 'Stance, motion, level change, penetration step, shadow double leg, dummy finish.',
-    estimatedMinutes: { min: 35, max: 45 },
+    title: 'Movement and Entry Mechanics',
+    focus: 'Stance, footwork, level changes, and double-leg entries.',
+    estimatedMinutes: { min: 60, max: 60 },
     equipment: ['Mat', 'Wrestling dummy'],
     drills: [
       {
@@ -107,7 +107,7 @@ describe('TodayPage', () => {
     status: 'current',
   };
 
-  const progressionFocus = 'Slow mechanics only. Make every rep clean.';
+  const progressionFocus = 'Weeks 1–2: Practice individual positions and slow mechanics. Keep the templates recognizable and make every repetition controlled.';
 
   const currentPhase: CurriculumPhase = {
     ...curriculumPhases[0]!,
@@ -164,7 +164,7 @@ describe('TodayPage', () => {
       ),
       progressionFocus: signal(progressionFocus),
       phaseTitle: signal('Phase 1: Foundations'),
-      estimatedMinutes: signal('35-45 min'),
+      estimatedMinutes: signal('60 min'),
       canFinishWorkout: signal(
         inProgressWorkout !== null &&
           inProgressWorkout.completedDrillIds.length ===
@@ -239,13 +239,13 @@ describe('TodayPage', () => {
     const text = normalizeText(fixture.nativeElement.textContent);
 
     expect(text).toContain('Today');
-    expect(text).toContain('Week 1 · Workout 1 of 12');
-    expect(text).toContain('Workout A: Mechanics');
-    expect(text).toContain('35-45 min');
+    expect(text).toContain('Week 1 · Workout 1 of 18');
+    expect(text).toContain('Workout A: Movement and Entry Mechanics');
+    expect(text).toContain('60 min');
     expect(text).toContain('6 drills');
     expect(text).toContain('Mat + Wrestling dummy');
     expect(text).toContain('This week');
-    expect(text).toContain('Slow mechanics only. Make every rep clean.');
+    expect(text).toContain('Weeks 1–2: Practice individual positions and slow mechanics.');
     expect(text).toContain('Start Workout');
     expect(text).not.toContain('Resume Workout');
     expect(text).not.toContain('Finish Workout');
@@ -291,10 +291,10 @@ describe('TodayPage', () => {
     const text = normalizeText(fixture.nativeElement.textContent);
 
     expect(text).toContain('Today');
-    expect(text).toContain('Week 1 · Workout 1 of 12');
-    expect(text).toContain('Workout A: Mechanics');
+    expect(text).toContain('Week 1 · Workout 1 of 18');
+    expect(text).toContain('Workout A: Movement and Entry Mechanics');
     expect(text).toContain('1 of 6 completed · Up next: Level change drill');
-    expect(text).not.toContain('35-45 min');
+    expect(text).not.toContain('60 min');
     expect(text).not.toContain('Mat + Wrestling dummy');
     expect(text).toContain('Resume Workout');
     expect(text).not.toContain('Start Workout');
@@ -333,7 +333,7 @@ describe('TodayPage', () => {
     });
     const text = normalizeText(fixture.nativeElement.textContent);
 
-    expect(text).toContain('Workout A: Mechanics');
+    expect(text).toContain('Workout A: Movement and Entry Mechanics');
     expect(text).toContain('6 of 6 drills completed');
     expect(text).toContain('Finish Workout');
     expect(text).not.toContain('Resume Workout');
@@ -356,7 +356,7 @@ describe('TodayPage', () => {
     const text = normalizeText(fixture.nativeElement.textContent);
 
     expect(text).toContain('Phase 1 complete');
-    expect(text).toContain('You completed all 12 workouts.');
+    expect(text).toContain('You completed all 18 workouts.');
     expect(text).toContain('View Progress');
     expect(text).toContain('Review Curriculum');
     expect(text).not.toContain('Start Workout');

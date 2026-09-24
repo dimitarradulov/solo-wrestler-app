@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 const STORAGE_PREFIX = 'solo-wrestler.';
 const REVISION_KEY = `${STORAGE_PREFIX}curriculum.revision`;
 const RESET_NOTICE_KEY = `${STORAGE_PREFIX}curriculum.revision-reset-notice`;
-const CURRENT_REVISION = 'phase-1-neutral-defense';
+const CURRENT_REVISION = 'freestyle-foundations-18-workout';
 const LEGACY_TRAINING_KEYS: string[] = [
   `${STORAGE_PREFIX}curriculum.completed-workout-ids`,
   `${STORAGE_PREFIX}training.completed-workout-log`,
