@@ -27,6 +27,11 @@ export class CompletedWorkoutLogStore {
         COMPLETED_WORKOUT_LOG_KEY,
       ) ?? [];
 
-    return Array.isArray(storedEntries) ? storedEntries : [];
+    return Array.isArray(storedEntries)
+      ? storedEntries.map((entry) => ({
+          ...entry,
+          style: entry.style ?? 'freestyle',
+        }))
+      : [];
   }
 }

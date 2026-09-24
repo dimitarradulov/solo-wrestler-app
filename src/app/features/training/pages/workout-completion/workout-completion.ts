@@ -65,6 +65,7 @@ export class WorkoutCompletionPage {
     }
 
     this.completedWorkoutLogStore.appendEntry({
+      style: session.style,
       workoutId: session.workout.id,
       completedAt: new Date().toISOString(),
       difficulty,
@@ -73,7 +74,11 @@ export class WorkoutCompletionPage {
         .filter((drill) => drill.state === 'completed')
         .map((drill) => drill.drill.id),
     });
-    this.curriculumStore.setWorkoutCompleted(session.workout.id, true);
+    this.curriculumStore.setWorkoutCompleted(
+      session.workout.id,
+      true,
+      session.style,
+    );
     this.workoutSessionStore.cancelWorkout();
     void this.router.navigateByUrl('/tabs/today');
   }

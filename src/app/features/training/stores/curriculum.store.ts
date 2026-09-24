@@ -8,55 +8,59 @@ import {
   WorkoutTemplate,
 } from '../models/curriculum.model';
 import { curriculumPhases } from '../data/curriculum.data';
+import { grecoCurriculumPhases } from '../data/greco-curriculum.data';
+import { WrestlingStyle } from '../models/wrestling-style.model';
+import { WrestlingStyleStore } from './wrestling-style.store';
+import { OnboardingCompletionStore } from '../../../core/first-launch/onboarding-completion-store';
 
-const COMPLETED_WORKOUT_IDS_KEY = 'curriculum.completed-workout-ids';
+const completedWorkoutIdsKey = (style: WrestlingStyle) =>
+  `curriculum.${style}.completed-workout-ids`;
+const LEGACY_COMPLETED_WORKOUT_IDS_KEY = 'curriculum.completed-workout-ids';
+
+export function curriculumPhasesForStyle(
+  style: WrestlingStyle,
+): CurriculumPhase[] {
+  return style === 'freestyle' ? curriculumPhases : grecoCurriculumPhases;
+}
 
 @Injectable({ providedIn: 'root' })
 export class CurriculumStore {
   private readonly localStorage = inject(LocalStorageService);
-  private readonly orderedWorkouts = this.getOrderedWorkouts();
-  private readonly validWorkoutIds = new Set(
-    this.orderedWorkouts.map((workout) => workout.id),
+  private readonly wrestlingStyleStore = inject(WrestlingStyleStore);
+  private readonly onboardingCompletionStore = inject(OnboardingCompletionStore);
+  readonly style = computed(
+    () => this.wrestlingStyleStore.selectedStyle() ?? 'freestyle',
   );
-  private readonly completedWorkoutIds = signal<WorkoutInstanceId[]>(
-    this.readCompletedWorkoutIds(),
-  );
+  private readonly completedWorkoutIds = signal<WorkoutInstanceId[]>([]);
   private readonly completedWorkoutIdSet = computed(
     () => new Set(this.completedWorkoutIds()),
+  );
+  private readonly orderedWorkouts = computed(() =>
+    this.getOrderedWorkouts(this.style()),
   );
   private readonly currentWorkoutId = computed(() => {
     const completedIds = this.completedWorkoutIdSet();
 
     return (
-      this.orderedWorkouts.find((workout) => !completedIds.has(workout.id))
+      this.orderedWorkouts().find((workout) => !completedIds.has(workout.id))
         ?.id ?? null
     );
   });
 
-  readonly totalWorkoutCount = computed(() => this.orderedWorkouts.length);
+  readonly totalWorkoutCount = computed(() => this.orderedWorkouts().length);
   readonly currentWorkoutSequenceNumber = computed(() => {
     const currentWorkoutId = this.currentWorkoutId();
 
-    if (currentWorkoutId === null) {
-      return null;
-    }
-
-    return this.getWorkoutSequenceNumber(currentWorkoutId);
+    return currentWorkoutId === null
+      ? null
+      : this.getWorkoutSequenceNumber(currentWorkoutId);
   });
-
-  getWorkoutSequenceNumber(workoutId: WorkoutInstanceId): number | null {
-    const index = this.orderedWorkouts.findIndex(
-      (workout) => workout.id === workoutId,
-    );
-
-    return index === -1 ? null : index + 1;
-  }
 
   readonly phases = computed<CurriculumPhase[]>(() => {
     const completedIds = this.completedWorkoutIdSet();
     const currentWorkoutId = this.currentWorkoutId();
 
-    return curriculumPhases.map((phase) => ({
+    return curriculumPhasesForStyle(this.style()).map((phase) => ({
       ...phase,
       weeks: phase.weeks.map((week) => ({
         ...week,
@@ -90,41 +94,75 @@ export class CurriculumStore {
   readonly currentWorkoutTemplate = computed<WorkoutTemplate | null>(() => {
     const currentWorkout = this.currentWorkout();
 
-    if (currentWorkout === null) {
-      return null;
-    }
-
-    return this.getWorkoutTemplate(currentWorkout.workoutTemplateId);
+    return currentWorkout === null
+      ? null
+      : this.getWorkoutTemplate(currentWorkout.workoutTemplateId, this.style());
   });
   readonly currentPhase = computed<CurriculumPhase | null>(() => {
     const currentWorkout = this.currentWorkout();
+    const phases = this.phases();
 
-    if (currentWorkout === null) {
-      const phases = this.phases();
-
-      return phases.length > 0 ? phases[phases.length - 1] : null;
-    }
-
-    return (
-      this.phases().find((phase) =>
-        phase.weeks.some((week) =>
-          week.workouts.some((workout) => workout.id === currentWorkout.id),
-        ),
-      ) ?? null
-    );
+    return currentWorkout === null
+      ? phases[phases.length - 1] ?? null
+      : phases.find((phase) =>
+          phase.weeks.some((week) =>
+            week.workouts.some((workout) => workout.id === currentWorkout.id),
+          ),
+        ) ?? null;
   });
 
-  setWorkoutCompleted(workoutId: WorkoutInstanceId, completed: boolean): void {
-    if (!this.validWorkoutIds.has(workoutId)) {
+  constructor() {
+    const selectedStyle = this.wrestlingStyleStore.selectedStyle();
+
+    if (selectedStyle !== null) {
+      this.loadCompletedWorkoutIds(selectedStyle);
+    } else if (this.onboardingCompletionStore.isComplete()) {
+      this.ensureSelectedStyle();
+    }
+  }
+
+  ensureSelectedStyle(): WrestlingStyle {
+    const selectedStyle = this.wrestlingStyleStore.ensureSelectedStyle();
+    this.loadCompletedWorkoutIds(selectedStyle);
+
+    return selectedStyle;
+  }
+
+  setStyle(style: WrestlingStyle): void {
+    this.wrestlingStyleStore.chooseStyle(style);
+    this.loadCompletedWorkoutIds(style);
+  }
+
+  getWorkoutSequenceNumber(workoutId: WorkoutInstanceId): number | null {
+    const index = this.orderedWorkouts().findIndex(
+      (workout) => workout.id === workoutId,
+    );
+
+    return index === -1 ? null : index + 1;
+  }
+
+  setWorkoutCompleted(
+    workoutId: WorkoutInstanceId,
+    completed: boolean,
+    style: WrestlingStyle = this.style(),
+  ): void {
+    const orderedWorkouts = this.getOrderedWorkouts(style);
+    if (!orderedWorkouts.some((workout) => workout.id === workoutId)) {
       return;
     }
 
+    const currentIds =
+      style === this.style()
+        ? this.completedWorkoutIds()
+        : this.readCompletedWorkoutIds(style);
     const nextCompletedIds = completed
-      ? this.addCompletedWorkout(workoutId)
-      : this.removeCompletedWorkoutAndLater(workoutId);
+      ? this.addCompletedWorkout(workoutId, currentIds, style)
+      : this.removeCompletedWorkoutAndLater(workoutId, currentIds, style);
 
-    this.completedWorkoutIds.set(nextCompletedIds);
-    this.localStorage.set(COMPLETED_WORKOUT_IDS_KEY, nextCompletedIds);
+    if (style === this.style()) {
+      this.completedWorkoutIds.set(nextCompletedIds);
+    }
+    this.localStorage.set(completedWorkoutIdsKey(style), nextCompletedIds);
   }
 
   private withDerivedStatus(
@@ -136,31 +174,35 @@ export class CurriculumStore {
       return { ...workout, status: 'completed' };
     }
 
-    if (workout.id === currentWorkoutId) {
-      return { ...workout, status: 'current' };
-    }
-
-    return { ...workout, status: 'locked' };
+    return {
+      ...workout,
+      status: workout.id === currentWorkoutId ? 'current' : 'locked',
+    };
   }
 
   private addCompletedWorkout(
     workoutId: WorkoutInstanceId,
+    currentIds: WorkoutInstanceId[],
+    style: WrestlingStyle,
   ): WorkoutInstanceId[] {
-    const completedIds = new Set(this.completedWorkoutIds());
+    const completedIds = new Set(currentIds);
     completedIds.add(workoutId);
 
-    return this.sequentialCompletedWorkoutIds(completedIds);
+    return this.sequentialCompletedWorkoutIds(completedIds, style);
   }
 
   private removeCompletedWorkoutAndLater(
     workoutId: WorkoutInstanceId,
+    currentIds: WorkoutInstanceId[],
+    style: WrestlingStyle,
   ): WorkoutInstanceId[] {
-    const workoutIndex = this.orderedWorkouts.findIndex(
+    const orderedWorkouts = this.getOrderedWorkouts(style);
+    const workoutIndex = orderedWorkouts.findIndex(
       (workout) => workout.id === workoutId,
     );
 
-    return this.completedWorkoutIds().filter((completedWorkoutId) => {
-      const completedWorkoutIndex = this.orderedWorkouts.findIndex(
+    return currentIds.filter((completedWorkoutId) => {
+      const completedWorkoutIndex = orderedWorkouts.findIndex(
         (workout) => workout.id === completedWorkoutId,
       );
 
@@ -168,24 +210,38 @@ export class CurriculumStore {
     });
   }
 
-  private readCompletedWorkoutIds(): WorkoutInstanceId[] {
-    const storedWorkoutIds =
-      this.localStorage.get<WorkoutInstanceId[]>(COMPLETED_WORKOUT_IDS_KEY) ??
-      [];
+  private loadCompletedWorkoutIds(style: WrestlingStyle): void {
+    this.completedWorkoutIds.set(this.readCompletedWorkoutIds(style));
+  }
 
-    if (!Array.isArray(storedWorkoutIds)) {
-      return [];
+  private readCompletedWorkoutIds(style: WrestlingStyle): WorkoutInstanceId[] {
+    const styleKey = completedWorkoutIdsKey(style);
+    let storedWorkoutIds = this.localStorage.get<WorkoutInstanceId[]>(styleKey);
+
+    if (storedWorkoutIds === null && style === 'freestyle') {
+      storedWorkoutIds = this.localStorage.get<WorkoutInstanceId[]>(
+        LEGACY_COMPLETED_WORKOUT_IDS_KEY,
+      );
     }
 
-    return this.sequentialCompletedWorkoutIds(new Set(storedWorkoutIds));
+    const completedWorkoutIds = Array.isArray(storedWorkoutIds)
+      ? this.sequentialCompletedWorkoutIds(new Set(storedWorkoutIds), style)
+      : [];
+
+    if (this.localStorage.get<WorkoutInstanceId[]>(styleKey) === null && completedWorkoutIds.length > 0) {
+      this.localStorage.set(styleKey, completedWorkoutIds);
+    }
+
+    return completedWorkoutIds;
   }
 
   private sequentialCompletedWorkoutIds(
     completedIds: Set<WorkoutInstanceId>,
+    style: WrestlingStyle,
   ): WorkoutInstanceId[] {
     const sequentialWorkoutIds: WorkoutInstanceId[] = [];
 
-    for (const workout of this.orderedWorkouts) {
+    for (const workout of this.getOrderedWorkouts(style)) {
       if (!completedIds.has(workout.id)) {
         return sequentialWorkoutIds;
       }
@@ -196,10 +252,10 @@ export class CurriculumStore {
     return sequentialWorkoutIds;
   }
 
-  private getOrderedWorkouts(): WorkoutInstance[] {
+  private getOrderedWorkouts(style: WrestlingStyle): WorkoutInstance[] {
     const workouts: WorkoutInstance[] = [];
 
-    for (const phase of curriculumPhases) {
+    for (const phase of curriculumPhasesForStyle(style)) {
       for (const week of phase.weeks) {
         workouts.push(...week.workouts);
       }
@@ -210,8 +266,9 @@ export class CurriculumStore {
 
   private getWorkoutTemplate(
     workoutTemplateId: string,
+    style: WrestlingStyle,
   ): WorkoutTemplate | null {
-    for (const phase of curriculumPhases) {
+    for (const phase of curriculumPhasesForStyle(style)) {
       const workoutTemplate =
         phase.workoutTemplates.find(
           (template) => template.id === workoutTemplateId,

@@ -19,7 +19,7 @@ export const workoutRoutes: Routes = [
       ),
   },
   {
-    path: 'completed-workouts/:workoutId',
+    path: 'completed-workouts/:style/:workoutId',
     loadComponent: () =>
       import('./pages/completed-workout-detail/completed-workout-detail').then(
         (m) => m.CompletedWorkoutDetailPage,

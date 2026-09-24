@@ -1,0 +1,35 @@
+<ion-content class="choose-style-content">
+  <main class="choose-style-shell">
+    <p class="choose-style-eyebrow">Choose your curriculum</p>
+    <h1>Which wrestling style do you train?</h1>
+    <p class="choose-style-copy">
+      Your choice sets the training path shown in Today, Curriculum, and Progress.
+      You can change it later when no workout is in progress.
+    </p>
+
+    <div class="choose-style-options" aria-label="Wrestling style">
+      <ion-button
+        expand="block"
+        [disabled]="hasInProgressWorkout()"
+        routerLink="/safety-disclaimer"
+        routerDirection="forward"
+        [queryParams]="freestyleChoice"
+      >
+        Freestyle
+      </ion-button>
+      <ion-button
+        expand="block"
+        fill="outline"
+        [disabled]="hasInProgressWorkout()"
+        routerLink="/safety-disclaimer"
+        routerDirection="forward"
+        [queryParams]="grecoRomanChoice"
+      >
+        Greco-Roman
+      </ion-button>
+    </div>
+    @if (hasInProgressWorkout()) {
+      <p role="status">Complete or cancel your In-progress Workout before switching styles.</p>
+    }
+  </main>
+</ion-content>

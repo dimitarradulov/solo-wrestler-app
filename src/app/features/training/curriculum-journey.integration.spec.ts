@@ -11,8 +11,9 @@ import { WorkoutCompletionPage } from './pages/workout-completion/workout-comple
 import { CompletedWorkoutLogStore } from './stores/completed-workout-log.store';
 import { CurriculumStore } from './stores/curriculum.store';
 import { WorkoutSessionStore } from './stores/workout-session.store';
+import { WrestlingStyleStore } from './stores/wrestling-style.store';
 
-describe('freestyle Foundations routed journey', () => {
+describe('wrestling curricula routed journeys', () => {
   const createStorage = (): Storage => {
     const values = new Map<string, string>();
 
@@ -125,12 +126,144 @@ describe('freestyle Foundations routed journey', () => {
       'Movement and Entry Mechanics',
     );
     await harness.navigateByUrl(
-      `/completed-workouts/${workoutId}`,
+      `/completed-workouts/freestyle/${workoutId}`,
       CompletedWorkoutDetailPage,
     );
     expect(harness.routeNativeElement?.textContent).toContain(
       'Controlled pace felt right.',
     );
     expect(harness.routeNativeElement?.textContent).toContain('Cooldown');
+  });
+
+  it('onboards Greco, blocks switching for every unfinished state, and restores style-owned progress and history', async () => {
+    let harness = await RouterTestingHarness.create('/intro');
+    const continueButton = harness.routeNativeElement?.querySelector('ion-button');
+    continueButton?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.textContent).toContain('Choose your curriculum');
+    expect(harness.routeNativeElement?.textContent).toContain('Freestyle');
+    expect(harness.routeNativeElement?.textContent).toContain('Greco-Roman');
+    const freestyleButton = Array.from(
+      harness.routeNativeElement?.querySelectorAll('ion-button') ?? [],
+    ).find((button) => button.textContent?.includes('Freestyle'));
+    freestyleButton?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await harness.fixture.whenStable();
+    expect(TestBed.inject(WrestlingStyleStore).selectedStyle()).toBe('freestyle');
+    await harness.navigateByUrl('/choose-style');
+    const grecoButton = Array.from(
+      harness.routeNativeElement?.querySelectorAll('ion-button') ?? [],
+    ).find((button) => button.textContent?.includes('Greco-Roman'));
+    grecoButton?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await harness.fixture.whenStable();
+    expect(harness.routeNativeElement?.textContent).toContain('Safety');
+
+    const acknowledgeButton = harness.routeNativeElement?.querySelector('ion-button');
+    acknowledgeButton?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await harness.fixture.whenStable();
+    await harness.navigateByUrl('/tabs/today');
+    expect(harness.routeNativeElement?.textContent).toContain('Position and Movement');
+    expect(harness.routeNativeElement?.textContent).toContain('1 of 1');
+
+    let workoutSessionStore = TestBed.inject(WorkoutSessionStore);
+    let curriculumStore = TestBed.inject(CurriculumStore);
+    let logStore = TestBed.inject(CompletedWorkoutLogStore);
+    workoutSessionStore.startOrResumeCurrentWorkout();
+    workoutSessionStore.performCurrentDrillAction();
+    expect(workoutSessionStore.switchStyle('freestyle')).toBe(false);
+    workoutSessionStore.pauseTimer();
+    expect(workoutSessionStore.switchStyle('freestyle')).toBe(false);
+    expect(workoutSessionStore.hasInProgressWorkout()).toBe(true);
+
+    await harness.navigateByUrl('/tabs/curriculum');
+    const styleButtons = harness.routeNativeElement?.querySelectorAll('.curriculum-style ion-button');
+    expect(Array.from(styleButtons ?? []).every((button) => (button as HTMLButtonElement).disabled)).toBe(true);
+    expect(harness.routeNativeElement?.textContent).toContain('Complete or cancel');
+    expect(workoutSessionStore.switchStyle('freestyle')).toBe(false);
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        provideIonicAngular({}),
+        provideRouter(routes),
+        provideNgxLocalstorage({ prefix: 'solo-wrestler', delimiter: '.' }),
+        { provide: TimerEndAlertService, useValue: { playTimerEndAlert: async () => undefined } },
+      ],
+    });
+    harness = await RouterTestingHarness.create('/tabs/today');
+    workoutSessionStore = TestBed.inject(WorkoutSessionStore);
+    curriculumStore = TestBed.inject(CurriculumStore);
+    logStore = TestBed.inject(CompletedWorkoutLogStore);
+    expect(harness.routeNativeElement?.textContent).toContain('Position and Movement');
+    expect(workoutSessionStore.hasInProgressWorkout()).toBe(true);
+    expect(workoutSessionStore.switchStyle('freestyle')).toBe(false);
+
+    workoutSessionStore.cancelWorkout();
+    expect(workoutSessionStore.switchStyle('freestyle')).toBe(true);
+    expect(curriculumStore.currentWorkout()?.id).toBe('phase-1-week-1-workout-a');
+    expect(logStore.entries()).toHaveLength(0);
+    await harness.navigateByUrl('/tabs/curriculum');
+    expect(harness.routeNativeElement?.textContent).toContain('Movement and Entry Mechanics');
+    const switchToGreco = Array.from(
+      harness.routeNativeElement?.querySelectorAll('.curriculum-style ion-button') ?? [],
+    ).find((button) => button.textContent?.includes('Greco-Roman'));
+    switchToGreco?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await harness.fixture.whenStable();
+    expect(curriculumStore.currentWorkout()?.id).toBe('greco-phase-1-week-1-workout-a');
+    await harness.navigateByUrl('/tabs/today');
+    expect(harness.routeNativeElement?.textContent).toContain('Position and Movement');
+
+    workoutSessionStore.startOrResumeCurrentWorkout();
+    let iterations = 0;
+    while (!workoutSessionStore.canFinishWorkout()) {
+      if (iterations++ > 10000) {
+        throw new Error('Greco workout did not reach completion.');
+      }
+
+      const session = workoutSessionStore.session();
+      if (session === null) {
+        throw new Error('Greco workout session disappeared during training.');
+      }
+
+      if (session.timer.phase === 'drill-rest') {
+        workoutSessionStore.skipRest();
+      } else if (session.action !== null) {
+        workoutSessionStore.performCurrentDrillAction();
+      } else if (session.timer.phase === 'work') {
+        workoutSessionStore.tick();
+      } else {
+        throw new Error(`Unexpected Greco timer state: ${session.timer.phase}`);
+      }
+    }
+
+    const completionPage = await harness.navigateByUrl(
+      '/workout-completion',
+      WorkoutCompletionPage,
+    );
+    completionPage.selectDifficulty('good');
+    completionPage.saveWorkout();
+    expect(logStore.entries()[0]).toMatchObject({
+      style: 'greco-roman',
+      workoutId: 'greco-phase-1-week-1-workout-a',
+    });
+    expect(curriculumStore.currentWorkout()).toBeNull();
+    await harness.navigateByUrl('/tabs/today');
+    expect(harness.routeNativeElement?.textContent).toContain('Position and Movement complete');
+    expect(harness.routeNativeElement?.textContent).toContain('Weeks 2–6 and workouts B/C are not available yet');
+    expect(workoutSessionStore.switchStyle('freestyle')).toBe(true);
+    expect(curriculumStore.currentWorkout()?.id).toBe('phase-1-week-1-workout-a');
+
+    await harness.navigateByUrl('/tabs/progress');
+    expect(harness.routeNativeElement?.textContent).toContain('No completed workouts yet');
+    expect(workoutSessionStore.switchStyle('greco-roman')).toBe(true);
+    await harness.navigateByUrl('/tabs/progress');
+    expect(harness.routeNativeElement?.textContent).toContain('Position and Movement');
+
+    const grecoWorkoutId = 'greco-phase-1-week-1-workout-a';
+    await harness.navigateByUrl(
+      `/completed-workouts/greco-roman/${grecoWorkoutId}`,
+      CompletedWorkoutDetailPage,
+    );
+    expect(harness.routeNativeElement?.textContent).toContain('Contact and grip preparation');
   });
 });

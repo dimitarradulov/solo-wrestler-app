@@ -5,6 +5,7 @@ import { provideIonicAngular } from '@ionic/angular/standalone';
 
 import { CompletedWorkoutLogEntry } from '../../models/training-session.model';
 import { CompletedWorkoutLogStore } from '../../stores/completed-workout-log.store';
+import { CurriculumStore } from '../../stores/curriculum.store';
 import { ProgressPage } from './progress';
 
 describe('ProgressPage', () => {
@@ -12,7 +13,10 @@ describe('ProgressPage', () => {
     entries: signal(entries),
   });
 
-  const setup = async (entries: CompletedWorkoutLogEntry[] = []) => {
+  const setup = async (
+    entries: CompletedWorkoutLogEntry[] = [],
+    style: 'freestyle' | 'greco-roman' = 'freestyle',
+  ) => {
     await TestBed.configureTestingModule({
       imports: [ProgressPage],
       providers: [
@@ -21,6 +25,10 @@ describe('ProgressPage', () => {
         {
           provide: CompletedWorkoutLogStore,
           useValue: createStore(entries),
+        },
+        {
+          provide: CurriculumStore,
+          useValue: { style: signal(style) },
         },
       ],
     }).compileComponents();
@@ -68,7 +76,7 @@ describe('ProgressPage', () => {
     expect(entries[0].textContent).toContain('Good');
     expect(entries[0].textContent).toContain(expectedDate);
     expect(entries[0].getAttribute('href')).toContain(
-      '/completed-workouts/phase-1-week-1-workout-b',
+      '/completed-workouts/freestyle/phase-1-week-1-workout-b',
     );
     expect(entries[1].textContent).toContain('Mechanics');
     expect(entries[1].textContent).toContain('Hard');
@@ -91,5 +99,36 @@ describe('ProgressPage', () => {
 
     expect(emptyMessage?.textContent).toContain('No completed workouts yet');
     expect(action?.textContent).toContain('Go to Today');
+  });
+
+  it('shows only the selected style and gives its detail link a style-qualified identity', async () => {
+    const fixture = await setup(
+      [
+        {
+          style: 'freestyle',
+          workoutId: 'phase-1-week-1-workout-a',
+          completedAt: '2026-06-26T08:30:00.000Z',
+          difficulty: 'good',
+          note: null,
+          completedDrillIds: [],
+        },
+        {
+          style: 'greco-roman',
+          workoutId: 'greco-phase-1-week-1-workout-a',
+          completedAt: '2026-06-27T08:30:00.000Z',
+          difficulty: 'good',
+          note: null,
+          completedDrillIds: [],
+        },
+      ],
+      'greco-roman',
+    );
+    const entries = fixture.nativeElement.querySelectorAll('.progress-entry');
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0].textContent).toContain('Position and Movement');
+    expect(entries[0].getAttribute('href')).toContain(
+      '/completed-workouts/greco-roman/greco-phase-1-week-1-workout-a',
+    );
   });
 });

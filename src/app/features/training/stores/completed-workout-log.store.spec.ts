@@ -77,4 +77,12 @@ describe('CompletedWorkoutLogStore', () => {
 
     expect(store.entries()).toEqual([]);
   });
+
+  it('treats history saved before style ownership as Freestyle', () => {
+    storage.setItem(storageKey, JSON.stringify([firstEntry]));
+
+    const store = TestBed.inject(CompletedWorkoutLogStore);
+
+    expect(store.entries()[0]?.style).toBe('freestyle');
+  });
 });

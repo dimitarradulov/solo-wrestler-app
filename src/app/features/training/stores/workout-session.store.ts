@@ -10,7 +10,7 @@ import {
   ActiveWorkoutRestPanelView,
   WorkoutSession,
 } from '../models/workout-session.model';
-import { CurriculumStore } from './curriculum.store';
+import { CurriculumStore, curriculumPhasesForStyle } from './curriculum.store';
 import {
   CurriculumPhase,
   Drill,
@@ -19,6 +19,7 @@ import {
 } from '../models/curriculum.model';
 import { TimerEndAlertService } from '../../../core/timers/timer-end-alert.service';
 import { appWorkoutConfig } from '../data/curriculum.data';
+import { WrestlingStyle } from '../models/wrestling-style.model';
 import {
   coreTechnique,
   drillActionIcon,
@@ -38,9 +39,11 @@ export class WorkoutSessionStore {
   private readonly curriculumStore = inject(CurriculumStore);
   private readonly localStorage = inject(LocalStorageService);
   private readonly timerEndAlertService = inject(TimerEndAlertService);
-  private readonly phases = this.curriculumStore.phases;
   private readonly inProgressWorkout = signal<InProgressWorkout | null>(
     this.readStoredWorkout(),
+  );
+  readonly hasInProgressWorkout = computed(
+    () => this.inProgressWorkout() !== null,
   );
 
   readonly session = computed<WorkoutSession | null>(() => {
@@ -50,8 +53,12 @@ export class WorkoutSessionStore {
       return null;
     }
 
-    const workout = this.findWorkout(inProgressWorkout.workoutId);
+    const workout = this.findWorkout(
+      inProgressWorkout.style ?? 'freestyle',
+      inProgressWorkout.workoutId,
+    );
     const workoutTemplate = this.findWorkoutTemplate(
+      inProgressWorkout.style ?? 'freestyle',
       inProgressWorkout.workoutTemplateId,
     );
 
@@ -63,7 +70,10 @@ export class WorkoutSessionStore {
       inProgressWorkout.completedDrillIds,
     );
     const currentDrill = workoutTemplate.drills[inProgressWorkout.currentDrillIndex] ?? null;
-    const phase = this.findPhaseForWorkout(workout.id);
+    const phase = this.findPhaseForWorkout(
+      inProgressWorkout.style ?? 'freestyle',
+      workout.id,
+    );
     const drills = workoutTemplate.drills.map((drill, drillIndex) => ({
       drill,
       drillIndex,
@@ -77,6 +87,7 @@ export class WorkoutSessionStore {
     }));
 
     return {
+      style: inProgressWorkout.style ?? 'freestyle',
       workout,
       workoutTemplate,
       phaseTitle: phase?.title ?? null,
@@ -162,6 +173,7 @@ export class WorkoutSessionStore {
   readonly phaseTitle = computed(() => this.session()?.phaseTitle ?? null);
 
   startOrResumeCurrentWorkout(): void {
+    this.curriculumStore.ensureSelectedStyle();
     const currentWorkout = this.curriculumStore.currentWorkout();
     const currentWorkoutTemplate =
       this.curriculumStore.currentWorkoutTemplate();
@@ -402,6 +414,15 @@ export class WorkoutSessionStore {
     this.localStorage.remove(IN_PROGRESS_WORKOUT_KEY);
   }
 
+  switchStyle(style: WrestlingStyle): boolean {
+    if (this.inProgressWorkout() !== null) {
+      return false;
+    }
+
+    this.curriculumStore.setStyle(style);
+    return true;
+  }
+
   private resolveActionLabel(drill: Drill, drillIndex: number): string {
     const session = this.session();
 
@@ -531,8 +552,8 @@ export class WorkoutSessionStore {
     return remainingSeconds === null ? '0:00' : formatClock(remainingSeconds);
   }
 
-  private findWorkout(workoutId: string): WorkoutInstance | null {
-    for (const phase of this.phases()) {
+  private findWorkout(style: WrestlingStyle, workoutId: string): WorkoutInstance | null {
+    for (const phase of curriculumPhasesForStyle(style)) {
       for (const week of phase.weeks) {
         const workout = week.workouts.find((item) => item.id === workoutId);
 
@@ -546,9 +567,10 @@ export class WorkoutSessionStore {
   }
 
   private findWorkoutTemplate(
+    style: WrestlingStyle,
     workoutTemplateId: string,
   ): WorkoutTemplate | null {
-    for (const phase of this.phases()) {
+    for (const phase of curriculumPhasesForStyle(style)) {
       const workoutTemplate =
         phase.workoutTemplates.find((item) => item.id === workoutTemplateId) ??
         null;
@@ -561,9 +583,9 @@ export class WorkoutSessionStore {
     return null;
   }
 
-  private findPhaseForWorkout(workoutId: string): CurriculumPhase | null {
+  private findPhaseForWorkout(style: WrestlingStyle, workoutId: string): CurriculumPhase | null {
     return (
-      this.phases().find((phase) =>
+      curriculumPhasesForStyle(style).find((phase) =>
         phase.weeks.some((week) =>
           week.workouts.some((workout) => workout.id === workoutId),
         ),
@@ -652,6 +674,7 @@ export class WorkoutSessionStore {
     const firstDrill = workoutTemplate.drills[0] ?? null;
 
     return {
+      style: this.curriculumStore.style(),
       workoutId: workout.id,
       workoutTemplateId: workoutTemplate.id,
       workoutLabel: workout.label,
@@ -698,7 +721,19 @@ export class WorkoutSessionStore {
   private readStoredWorkout(): InProgressWorkout | null {
     const storedWorkout = this.localStorage.get<unknown>(IN_PROGRESS_WORKOUT_KEY);
 
-    return this.isInProgressWorkout(storedWorkout) ? storedWorkout : null;
+    if (!this.isInProgressWorkout(storedWorkout)) {
+      return null;
+    }
+
+    const normalizedWorkout = {
+      ...storedWorkout,
+      style: storedWorkout.style ?? 'freestyle',
+    };
+    if (storedWorkout.style === undefined) {
+      this.localStorage.set(IN_PROGRESS_WORKOUT_KEY, normalizedWorkout);
+    }
+
+    return normalizedWorkout;
   }
 
   private persist(inProgressWorkout: InProgressWorkout): void {
@@ -722,6 +757,7 @@ export class WorkoutSessionStore {
 
     return (
       typeof candidate.workoutId === 'string' &&
+      (candidate.style === undefined || candidate.style === 'freestyle' || candidate.style === 'greco-roman') &&
       typeof candidate.workoutTemplateId === 'string' &&
       typeof candidate.workoutLabel === 'string' &&
       typeof candidate.workoutTitle === 'string' &&

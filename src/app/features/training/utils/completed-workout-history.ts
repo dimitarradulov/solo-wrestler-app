@@ -1,11 +1,13 @@
-import { curriculumPhases } from '../data/curriculum.data';
 import { CompletedWorkoutContext } from '../models/completed-workout-history.model';
 import { WorkoutDifficulty } from '../models/training-session.model';
+import { WrestlingStyle } from '../models/wrestling-style.model';
+import { curriculumPhasesForStyle } from '../stores/curriculum.store';
 
 export function resolveCompletedWorkout(
+  style: WrestlingStyle,
   workoutId: string,
 ): CompletedWorkoutContext | null {
-  for (const phase of curriculumPhases) {
+  for (const phase of curriculumPhasesForStyle(style)) {
     for (const week of phase.weeks) {
       const workout = week.workouts.find((candidate) => candidate.id === workoutId);
 

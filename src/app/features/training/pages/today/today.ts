@@ -88,6 +88,10 @@ export class TodayPage {
   );
 
   readonly completionHeading = computed(() => {
+    if (this.curriculumStore.style() === 'greco-roman') {
+      return 'Position and Movement complete';
+    }
+
     const currentPhase = this.curriculumStore.currentPhase();
 
     if (currentPhase === null) {
@@ -98,6 +102,11 @@ export class TodayPage {
 
     return shortName === '' ? `${currentPhase.title} complete` : `${shortName} complete`;
   });
+  readonly completionMessage = computed(() =>
+    this.curriculumStore.style() === 'greco-roman'
+      ? 'You completed the available Greco workout. Weeks 2–6 and workouts B/C are not available yet.'
+      : `You completed all ${this.totalWorkoutCount()} workouts.`,
+  );
 
   readonly positionLabel = computed(() => {
     const workout = this.workout();

@@ -5,3 +5,21 @@
 .curriculum-future-phase {
   margin-top: var(--sw-space-5);
 }
+
+.curriculum-style {
+  margin-block: var(--sw-space-3) var(--sw-space-5);
+}
+
+.curriculum-style > p {
+  margin: 0 0 var(--sw-space-1);
+}
+
+.curriculum-style__options {
+  display: flex;
+  gap: var(--sw-space-1);
+}
+
+.curriculum-style__notice {
+  color: var(--sw-color-text-muted);
+  font-size: 0.875rem;
+}

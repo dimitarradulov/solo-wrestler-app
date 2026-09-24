@@ -8,7 +8,7 @@
         role="list"
         aria-label="Completed workouts"
       >
-        @for (workout of completedWorkouts(); track workout.workoutId) {
+        @for (workout of completedWorkouts(); track workout.style + ':' + workout.workoutId) {
           <a
             class="progress-entry"
             [routerLink]="workout.detailLink"

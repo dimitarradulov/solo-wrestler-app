@@ -5,7 +5,7 @@ import { CurriculumStore } from './curriculum.store';
 import { WorkoutInstance } from '../models/curriculum.model';
 
 describe('CurriculumStore', () => {
-  const storageKey = 'solo-wrestler.curriculum.completed-workout-ids';
+  const storageKey = 'solo-wrestler.curriculum.freestyle.completed-workout-ids';
   const firstWorkoutId = 'phase-1-week-1-workout-a';
   const secondWorkoutId = 'phase-1-week-1-workout-b';
   const thirdWorkoutId = 'phase-1-week-1-workout-c';
@@ -74,8 +74,21 @@ describe('CurriculumStore', () => {
   };
 
   it('uses the first incomplete workout as current by default', () => {
+    expect(TestBed.inject(CurriculumStore).style()).toBe('freestyle');
     expect(getWorkoutStatus(firstWorkoutId)).toBe('current');
     expect(getWorkoutStatus(secondWorkoutId)).toBe('locked');
+  });
+
+  it('adopts post-reset single-curriculum progress into Freestyle without deleting it', () => {
+    const legacyKey = 'solo-wrestler.curriculum.completed-workout-ids';
+    storage.setItem('solo-wrestler.onboarding-complete', 'true');
+    storage.setItem(legacyKey, JSON.stringify([firstWorkoutId]));
+
+    const store = TestBed.inject(CurriculumStore);
+
+    expect(store.currentWorkout()?.id).toBe(secondWorkoutId);
+    expect(storage.getItem(storageKey)).toBe(JSON.stringify([firstWorkoutId]));
+    expect(storage.getItem(legacyKey)).toBe(JSON.stringify([firstWorkoutId]));
   });
 
   it('marks the next workout current after completing the current workout', () => {
@@ -158,5 +171,25 @@ describe('CurriculumStore', () => {
     expect(getWorkouts().some((workout) => workout.status === 'current')).toBe(
       false,
     );
+  });
+
+  it('preserves independent progress while switching between styles', () => {
+    const store = TestBed.inject(CurriculumStore);
+    const grecoWorkoutId = 'greco-phase-1-week-1-workout-a';
+
+    store.setWorkoutCompleted(firstWorkoutId, true);
+    store.setStyle('greco-roman');
+
+    expect(store.totalWorkoutCount()).toBe(1);
+    expect(store.currentWorkout()?.id).toBe(grecoWorkoutId);
+    store.setWorkoutCompleted(grecoWorkoutId, true);
+    expect(store.currentWorkout()).toBeNull();
+
+    store.setStyle('freestyle');
+
+    expect(store.currentWorkout()?.id).toBe(secondWorkoutId);
+    expect(storage.getItem(storageKey)).toBe(JSON.stringify([firstWorkoutId]));
+    expect(storage.getItem('solo-wrestler.curriculum.greco-roman.completed-workout-ids'))
+      .toBe(JSON.stringify([grecoWorkoutId]));
   });
 });

@@ -7,6 +7,7 @@ import { chevronForwardOutline } from 'ionicons/icons';
 
 import { CompletedWorkoutCardView } from '../../models/completed-workout-history.model';
 import { CompletedWorkoutLogStore } from '../../stores/completed-workout-log.store';
+import { CurriculumStore } from '../../stores/curriculum.store';
 import {
   formatWorkoutDifficulty,
   resolveCompletedWorkout,
@@ -21,31 +22,36 @@ import {
 })
 export class ProgressPage {
   private readonly completedWorkoutLogStore = inject(CompletedWorkoutLogStore);
+  private readonly curriculumStore = inject(CurriculumStore);
 
   constructor() {
     addIcons({ chevronForwardOutline });
   }
 
   readonly completedWorkouts = computed<CompletedWorkoutCardView[]>(() => {
-    const entries = [...this.completedWorkoutLogStore.entries()].sort((a, b) =>
+    const style = this.curriculumStore.style();
+    const entries = this.completedWorkoutLogStore.entries()
+      .filter((entry) => (entry.style ?? 'freestyle') === style)
+      .sort((a, b) =>
       b.completedAt.localeCompare(a.completedAt),
     );
     const completedWorkouts: CompletedWorkoutCardView[] = [];
 
     for (const entry of entries) {
-      const resolvedWorkout = resolveCompletedWorkout(entry.workoutId);
+      const resolvedWorkout = resolveCompletedWorkout(style, entry.workoutId);
 
       if (resolvedWorkout === null) {
         continue;
       }
 
       completedWorkouts.push({
+        style,
         workoutId: entry.workoutId,
         workoutTitle: resolvedWorkout.workout.title,
         workoutMeta: `${resolvedWorkout.phase.title} · Week ${resolvedWorkout.week.number} · ${resolvedWorkout.workout.label}`,
         completedAt: entry.completedAt,
         difficultyLabel: formatWorkoutDifficulty(entry.difficulty),
-        detailLink: `/completed-workouts/${entry.workoutId}`,
+        detailLink: `/completed-workouts/${style}/${entry.workoutId}`,
       });
     }
 

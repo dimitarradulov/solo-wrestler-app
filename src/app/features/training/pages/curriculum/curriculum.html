@@ -1,6 +1,36 @@
 <ion-content class="curriculum-content sw-safe-area-content">
   <h1>Curriculum</h1>
 
+  <section class="curriculum-style" aria-label="Wrestling style">
+    <p>Wrestling style</p>
+    <div class="curriculum-style__options">
+      <ion-button
+        size="small"
+        [fill]="selectedStyle() === 'freestyle' ? 'solid' : 'outline'"
+        [disabled]="hasInProgressWorkout()"
+        routerLink="/tabs/curriculum"
+        [queryParams]="freestyleChoice"
+      >Freestyle</ion-button>
+      <ion-button
+        size="small"
+        [fill]="selectedStyle() === 'greco-roman' ? 'solid' : 'outline'"
+        [disabled]="hasInProgressWorkout()"
+        routerLink="/tabs/curriculum"
+        [queryParams]="grecoRomanChoice"
+      >Greco-Roman</ion-button>
+    </div>
+    @if (hasInProgressWorkout()) {
+      <p class="curriculum-style__notice" role="status">
+        Complete or cancel your In-progress Workout before switching styles.
+      </p>
+    }
+    @if (selectedStyle() === 'greco-roman') {
+      <p class="curriculum-style__notice">
+        Greco A is the only available workout in this staged preview. Weeks 2–6 and workouts B/C are not authored yet.
+      </p>
+    }
+  </section>
+
   @for (phase of phases(); track phase.id) {
     <app-curriculum-phase
       [headingId]="phase.id + '-heading'"

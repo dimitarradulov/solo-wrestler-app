@@ -32,7 +32,7 @@ describe('IntroPage', () => {
       'Follow a real wrestling curriculum, adapted for solo training.',
     );
     expect(text).toContain(
-      'Build wrestling fundamentals step by step using a curriculum based on USA Wrestling and adapted for solo practice and self-defense.',
+      'Build wrestling fundamentals step by step using a curriculum based on USA Wrestling and adapted for solo practice.',
     );
 
     const continueButton = fixture.nativeElement.querySelector('ion-button');
@@ -67,7 +67,7 @@ describe('IntroPage', () => {
     );
   });
 
-  it('navigates to /safety-disclaimer when Continue is pressed', async () => {
+  it('navigates to /choose-style when Continue is pressed', async () => {
     const { fixture, router } = await setup();
 
     await router.navigateByUrl('/intro');
@@ -88,6 +88,6 @@ describe('IntroPage', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(router.url).toBe('/safety-disclaimer');
+    expect(router.url).toBe('/choose-style');
   });
 });

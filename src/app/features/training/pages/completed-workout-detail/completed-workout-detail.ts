@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
 
@@ -12,6 +13,7 @@ import {
   resolveCompletedWorkout,
 } from '../../utils/completed-workout-history';
 import { formatDrillMeta } from '../../utils/workout-session.formatters';
+import { isWrestlingStyle } from '../../models/wrestling-style.model';
 
 @Component({
   selector: 'app-completed-workout-detail',
@@ -23,23 +25,32 @@ import { formatDrillMeta } from '../../utils/workout-session.formatters';
 export class CompletedWorkoutDetailPage {
   private readonly route = inject(ActivatedRoute);
   private readonly completedWorkoutLogStore = inject(CompletedWorkoutLogStore);
-  private readonly workoutId = this.route.snapshot.paramMap.get('workoutId');
+  private readonly routeParams = toSignal(this.route.paramMap, {
+    initialValue: this.route.snapshot.paramMap,
+  });
 
   readonly completedWorkout = computed<CompletedWorkoutDetailView | null>(() => {
-    if (this.workoutId === null) {
+    const workoutId = this.routeParams().get('workoutId');
+    const style = this.routeParams().get('style');
+
+    if (workoutId === null || !isWrestlingStyle(style)) {
       return null;
     }
 
     const completedWorkoutEntry =
       this.completedWorkoutLogStore
         .entries()
-        .find((entry) => entry.workoutId === this.workoutId) ?? null;
+        .find(
+          (entry) =>
+            entry.workoutId === workoutId &&
+            (entry.style ?? 'freestyle') === style,
+        ) ?? null;
 
     if (completedWorkoutEntry === null) {
       return null;
     }
 
-    const resolvedWorkout = resolveCompletedWorkout(this.workoutId);
+    const resolvedWorkout = resolveCompletedWorkout(style, workoutId);
 
     if (resolvedWorkout === null) {
       return null;

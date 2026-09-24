@@ -4,6 +4,7 @@ import {
   WorkoutInstance,
   WorkoutTemplate,
 } from './curriculum.model';
+import { WrestlingStyle } from './wrestling-style.model';
 
 export interface CompletedWorkoutContext {
   phase: CurriculumPhase;
@@ -13,6 +14,7 @@ export interface CompletedWorkoutContext {
 }
 
 export interface CompletedWorkoutCardView {
+  style: WrestlingStyle;
   workoutId: string;
   workoutTitle: string;
   workoutMeta: string;

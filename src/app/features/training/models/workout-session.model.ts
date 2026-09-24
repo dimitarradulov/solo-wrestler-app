@@ -3,6 +3,7 @@ import {
   DrillSequenceState,
   InProgressWorkoutTimer,
 } from './training-session.model';
+import { WrestlingStyle } from './wrestling-style.model';
 
 export type WorkoutSessionAction = 'start' | 'mark-complete' | null;
 
@@ -13,6 +14,7 @@ export interface WorkoutSessionDrill {
 }
 
 export interface WorkoutSession {
+  style: WrestlingStyle;
   workout: WorkoutInstance;
   workoutTemplate: WorkoutTemplate;
   phaseTitle: string | null;
