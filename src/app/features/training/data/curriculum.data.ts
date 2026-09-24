@@ -24,7 +24,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'warm-up',
         title: 'Warm-up and movement preparation',
         type: 'duration',
-        prescription: '10 minutes at an easy pace',
+        prescription: '10-minute warm-up block at an easy pace',
         cue: 'Warm up gradually and keep your head up.',
         details: [
           'Move lightly around the mat.',
@@ -38,7 +38,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'stance-footwork-and-defense',
         title: 'Stance, footwork, and defensive posture',
         type: 'duration',
-        prescription: '13 minutes: forward, backward, lateral, down-block, sprawl, re-square',
+        prescription: '15-minute block: 13 minutes of movement practice plus the 2-minute Rest after warm-up',
         cue: 'Keep a balanced base and return to stance after each defense.',
         videoUrl: 'https://www.youtube.com/watch?v=mM_WEslbOWE',
         videoNote:
@@ -56,7 +56,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'double-leg-entry-mechanics',
         title: 'Double-leg entry mechanics',
         type: 'duration',
-        prescription: '18 minutes of slow, controlled entries with brief self-paced recovery',
+        prescription: '20-minute block: 18 minutes of slow entries plus the 2-minute Rest after movement practice',
         cue: 'Change levels before stepping in; keep your head and chest up.',
         videoUrl: 'https://www.youtube.com/watch?v=4A2OiHUSbsA',
         videoNote:
@@ -75,7 +75,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'movement-to-double-leg-entry',
         title: 'Movement to separate double-leg entry',
         type: 'duration',
-        prescription: '8 minutes of controlled movement-to-entry sequences',
+        prescription: '10-minute block: 8 minutes of connected practice plus the 2-minute Rest after focused technique',
         cue: 'Finish the defensive action in stance before starting a new entry.',
         details: [
           'Move in stance for several steps.',
@@ -90,7 +90,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'cooldown',
         title: 'Cooldown',
         type: 'duration',
-        prescription: '3 minutes of easy walking and relaxed breathing',
+        prescription: '5-minute block: 3 minutes of cooldown plus the 2-minute Rest after connected practice',
         cue: 'Slow down gradually and leave your neck relaxed.',
         details: ['Walk easily around the mat.', 'Breathe slowly and comfortably.'],
         estimatedDuration: { seconds: 180 },
@@ -111,7 +111,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'warm-up',
         title: 'Warm-up and movement preparation',
         type: 'duration',
-        prescription: '10 minutes at an easy pace',
+        prescription: '10-minute warm-up block at an easy pace',
         cue: 'Warm up gradually and keep your head up.',
         details: [
           'Move lightly around the mat.',
@@ -125,7 +125,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'neutral-defense-and-recovery',
         title: 'Down-block, sprawl, and re-square',
         type: 'duration',
-        prescription: '13 minutes of slow defensive repetitions',
+        prescription: '15-minute block: 13 minutes of defensive posture practice plus the 2-minute Rest after warm-up',
         cue: 'End each defense balanced in a safe neutral stance.',
         videoUrl: 'https://www.youtube.com/embed/_7XrXzfOCeQ',
         videoNote:
@@ -143,7 +143,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'defensive-position-mechanics',
         title: 'Defensive position mechanics',
         type: 'duration',
-        prescription: '18 minutes alternating down-block, sprawl, and stance recovery',
+        prescription: '20-minute block: 18 minutes alternating down-block, sprawl, and stance recovery plus the 2-minute Rest after defensive posture',
         cue: 'Move your feet back, keep your chest lifted, and recover under control.',
         details: [
           'Alternate a down-block with a separate sprawl repetition.',
@@ -158,7 +158,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'recovery-to-separate-entry',
         title: 'Recovery followed by separate entry',
         type: 'duration',
-        prescription: '8 minutes of deliberate defense-to-neutral-to-entry sequences',
+        prescription: '10-minute block: 8 minutes of defense-to-neutral-to-entry practice plus the 2-minute Rest after focused defense',
         cue: 'Complete the defense, settle in stance, then start offense as a new action.',
         details: [
           'Practice one down-block or sprawl and recover to stance.',
@@ -173,7 +173,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'cooldown',
         title: 'Cooldown',
         type: 'duration',
-        prescription: '3 minutes of easy walking and relaxed breathing',
+        prescription: '5-minute block: 3 minutes of cooldown plus the 2-minute Rest after connected practice',
         cue: 'Slow down gradually and leave your neck relaxed.',
         details: ['Walk easily around the mat.', 'Breathe slowly and comfortably.'],
         estimatedDuration: { seconds: 180 },
@@ -194,7 +194,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'warm-up',
         title: 'Warm-up and movement preparation',
         type: 'duration',
-        prescription: '10 minutes at an easy pace',
+        prescription: '10-minute warm-up block at an easy pace',
         cue: 'Warm up gradually and keep your head up.',
         details: [
           'Move lightly around the mat.',
@@ -208,7 +208,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'stance-defense-and-setup',
         title: 'Stance, defense, and setup',
         type: 'duration',
-        prescription: '13 minutes of stance movement, defense, and hand-position feints',
+        prescription: '15-minute block: 13 minutes of movement and defensive posture practice plus the 2-minute Rest after warm-up',
         cue: 'Stay in wrestling stance; use a simple hand feint as the setup.',
         details: [
           'Move forward, backward, and laterally in stance.',
@@ -223,7 +223,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'setup-and-double-leg-entry',
         title: 'Setup and double-leg entry',
         type: 'duration',
-        prescription: '18 minutes of slow setup-to-entry practice',
+        prescription: '20-minute block: 18 minutes of slow setup-to-entry practice plus the 2-minute Rest after movement practice',
         cue: 'Use a wrestling setup, change levels, and enter with control.',
         videoUrl: 'https://www.youtube.com/watch?v=4A2OiHUSbsA',
         videoNote:
@@ -242,7 +242,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'connected-double-leg-finish',
         title: 'Connected entry and controlled dummy finish',
         type: 'duration',
-        prescription: '8 minutes of controlled setup-entry-finish sequences',
+        prescription: '10-minute block: 8 minutes of controlled setup-entry-finish practice plus the 2-minute Rest after focused technique',
         cue: 'Keep the dummy supported; turn the corner and finish without lifting or throwing.',
         details: [
           'Set the dummy securely on the mat before starting.',
@@ -258,7 +258,7 @@ const phaseOneWorkoutTemplates: WorkoutTemplate[] = [
         id: 'cooldown',
         title: 'Cooldown',
         type: 'duration',
-        prescription: '3 minutes of easy walking and relaxed breathing',
+        prescription: '5-minute block: 3 minutes of cooldown plus the 2-minute Rest after connected practice',
         cue: 'Slow down gradually and leave your neck relaxed.',
         details: ['Walk easily around the mat.', 'Breathe slowly and comfortably.'],
         estimatedDuration: { seconds: 180 },

@@ -14,7 +14,7 @@ All templates include movement, attack, and defense with different emphases. Neu
 
 ## Session budget
 
-Each template has five ordered timed drills: 10 minutes of warm-up, 13 minutes of movement/defensive posture, 18 minutes of focused technique, 8 minutes of connected practice, and 3 minutes of cooldown. The four existing two-minute automatic Rest periods between drills bring the complete Estimated Duration to 60 minutes. Rest is counted once. No elapsed-time completion gate is added.
+Each template has five ordered practice blocks budgeted at 10 minutes of warm-up, 15 minutes of movement/defensive posture, 20 minutes of focused technique, 10 minutes of connected practice, and 5 minutes of cooldown. The timed Work portions are 10, 13, 18, 8, and 3 minutes. The four existing two-minute automatic Rest periods start the following block, so each prescription shows the block budget and the Rest allocation once. The complete Estimated Duration is 60 minutes; no elapsed-time completion gate is added.
 
 The focused drills use slow, controlled practice with self-paced recovery inside the timed interval. The same prescriptions repeat across all six weeks; progression changes the focus, not the automatic volume.
 

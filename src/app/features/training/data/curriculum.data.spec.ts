@@ -44,6 +44,11 @@ describe('freestyle Foundations content contract', () => {
 
       expect(template.estimatedMinutes).toEqual({ min: 60, max: 60 });
       expect((timedWorkSeconds + automaticRestSeconds) / 60).toBe(60);
+      expect(
+        template.drills.map((drill) =>
+          drill.prescription?.match(/^\d+(?=-minute)/)?.[0],
+        ),
+      ).toEqual(['10', '15', '20', '10', '5']);
       expect(template.drills[0]?.estimatedDuration?.seconds).toBe(10 * 60);
       expect(
         template.drills[template.drills.length - 1]?.estimatedDuration?.seconds,
