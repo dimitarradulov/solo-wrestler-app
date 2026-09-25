@@ -147,7 +147,9 @@ describe('CompletedWorkoutDetailPage', () => {
     );
 
     expect(fixture.nativeElement.textContent).toContain('Position and Movement');
-    expect(fixture.nativeElement.textContent).toContain('Contact and grip preparation');
+    expect(fixture.nativeElement.textContent).toContain(
+      'Supported dummy contact position',
+    );
   });
 
   it('refreshes a cached detail view when style-qualified route parameters change', async () => {

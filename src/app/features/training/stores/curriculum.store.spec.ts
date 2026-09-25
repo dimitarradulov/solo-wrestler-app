@@ -176,14 +176,15 @@ describe('CurriculumStore', () => {
   it('preserves independent progress while switching between styles', () => {
     const store = TestBed.inject(CurriculumStore);
     const grecoWorkoutId = 'greco-phase-1-week-1-workout-a';
+    const nextGrecoWorkoutId = 'greco-phase-1-week-1-workout-b';
 
     store.setWorkoutCompleted(firstWorkoutId, true);
     store.setStyle('greco-roman');
 
-    expect(store.totalWorkoutCount()).toBe(1);
+    expect(store.totalWorkoutCount()).toBe(18);
     expect(store.currentWorkout()?.id).toBe(grecoWorkoutId);
     store.setWorkoutCompleted(grecoWorkoutId, true);
-    expect(store.currentWorkout()).toBeNull();
+    expect(store.currentWorkout()?.id).toBe(nextGrecoWorkoutId);
 
     store.setStyle('freestyle');
 
