@@ -16,6 +16,8 @@ export class AppComponent {
 
   readonly shouldShowCurriculumResetNotice =
     this.curriculumRevisionService.shouldShowResetNotice;
+  readonly curriculumResetNoticeMessage =
+    this.curriculumRevisionService.resetNoticeMessage;
 
   dismissCurriculumResetNotice(): void {
     this.curriculumRevisionService.dismissResetNotice();

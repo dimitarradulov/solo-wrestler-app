@@ -3,7 +3,7 @@
   <app-install-prompt />
   <ion-alert
     header="Curriculum updated"
-    message="Freestyle Foundations now has 18 workouts planned for at least one hour each. Your previous progress, workout history and notes, and any unfinished workout were reset for this curriculum."
+    [message]="curriculumResetNoticeMessage()"
     [isOpen]="shouldShowCurriculumResetNotice()"
     [buttons]="['Dismiss']"
     (didDismiss)="dismissCurriculumResetNotice()"
