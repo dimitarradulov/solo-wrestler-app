@@ -62,12 +62,10 @@ describe('CompletedWorkoutDetailPage', () => {
         note: null,
         completedDrillIds: [
           'warm-up',
-          'stance-and-motion',
-          'down-block',
-          'level-change-drill',
-          'penetration-step-drill',
-          'shadow-double-leg',
-          'dummy-finish',
+          'stance-footwork-and-defense',
+          'double-leg-entry-mechanics',
+          'movement-to-double-leg-entry',
+          'cooldown',
         ],
       },
     ]);
@@ -91,13 +89,11 @@ describe('CompletedWorkoutDetailPage', () => {
     expect(fixture.nativeElement.textContent).toContain('Good');
     expect(fixture.nativeElement.textContent).toContain('No notes added.');
     expect(drillTitles).toEqual([
-      'Warm-up',
-      'Stance and motion',
-      'Down-block',
-      'Level change drill',
-      'Penetration step drill',
-      'Shadow double leg',
-      'Dummy finish',
+      'Warm-up and movement preparation',
+      'Stance, footwork, and defensive posture',
+      'Double-leg entry mechanics',
+      'Movement to separate double-leg entry',
+      'Cooldown',
     ]);
   });
 

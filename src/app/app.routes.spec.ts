@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { provideNgxLocalstorage } from 'ngx-localstorage';
 import { routes } from './app.routes';
+import { CurriculumStore } from './features/training/stores/curriculum.store';
 import { WrestlingStyleStore } from './features/training/stores/wrestling-style.store';
 
 describe('app routes', () => {
@@ -69,6 +70,7 @@ describe('app routes', () => {
     await router.navigateByUrl('/');
 
     expect(router.url).toBe('/tabs/today');
+    TestBed.inject(CurriculumStore);
     expect(TestBed.inject(WrestlingStyleStore).selectedStyle()).toBe('freestyle');
   });
 });

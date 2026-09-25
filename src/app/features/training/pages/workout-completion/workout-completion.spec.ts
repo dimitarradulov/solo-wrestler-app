@@ -12,6 +12,7 @@ import { WorkoutCompletionPage } from './workout-completion';
 
 describe('WorkoutCompletionPage', () => {
   const completedWorkout: InProgressWorkout = {
+    style: 'freestyle',
     workoutId: 'phase-1-week-1-workout-a',
     workoutTemplateId: 'workout-template-a',
     workoutLabel: 'Workout A',
@@ -40,7 +41,8 @@ describe('WorkoutCompletionPage', () => {
     const session = signal(
       inProgressWorkout() === null
         ? null
-        : {
+          : {
+            style: inProgressWorkout()!.style,
             workout: {
               id: inProgressWorkout()!.workoutId,
               weekNumber: inProgressWorkout()!.weekNumber,
@@ -213,6 +215,7 @@ describe('WorkoutCompletionPage', () => {
     expect(setWorkoutCompleted).toHaveBeenCalledWith(
       'phase-1-week-1-workout-a',
       true,
+      'freestyle',
     );
     expect(cancelWorkout).toHaveBeenCalledTimes(1);
     expect(navigateByUrl).toHaveBeenCalledWith('/tabs/today');

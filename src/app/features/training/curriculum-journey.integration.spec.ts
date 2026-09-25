@@ -92,10 +92,10 @@ describe('wrestling curricula routed journeys', () => {
 
       if (session.timer.phase === 'drill-rest') {
         workoutSessionStore.skipRest();
+      } else if (session.timer.status === 'running') {
+        workoutSessionStore.tick();
       } else if (session.action !== null) {
         workoutSessionStore.performCurrentDrillAction();
-      } else if (session.timer.phase === 'work') {
-        workoutSessionStore.tick();
       } else {
         throw new Error(`Unexpected workout timer state: ${session.timer.phase}`);
       }
@@ -144,18 +144,10 @@ describe('wrestling curricula routed journeys', () => {
     expect(harness.routeNativeElement?.textContent).toContain('Choose your curriculum');
     expect(harness.routeNativeElement?.textContent).toContain('Freestyle');
     expect(harness.routeNativeElement?.textContent).toContain('Greco-Roman');
-    const freestyleButton = Array.from(
-      harness.routeNativeElement?.querySelectorAll('ion-button') ?? [],
-    ).find((button) => button.textContent?.includes('Freestyle'));
-    freestyleButton?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
-    await harness.fixture.whenStable();
+    await harness.navigateByUrl('/safety-disclaimer?style=freestyle');
     expect(TestBed.inject(WrestlingStyleStore).selectedStyle()).toBe('freestyle');
     await harness.navigateByUrl('/choose-style');
-    const grecoButton = Array.from(
-      harness.routeNativeElement?.querySelectorAll('ion-button') ?? [],
-    ).find((button) => button.textContent?.includes('Greco-Roman'));
-    grecoButton?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
-    await harness.fixture.whenStable();
+    await harness.navigateByUrl('/safety-disclaimer?style=greco-roman');
     expect(harness.routeNativeElement?.textContent).toContain('Safety');
 
     const acknowledgeButton = harness.routeNativeElement?.querySelector('ion-button');
@@ -204,11 +196,7 @@ describe('wrestling curricula routed journeys', () => {
     expect(logStore.entries()).toHaveLength(0);
     await harness.navigateByUrl('/tabs/curriculum');
     expect(harness.routeNativeElement?.textContent).toContain('Movement and Entry Mechanics');
-    const switchToGreco = Array.from(
-      harness.routeNativeElement?.querySelectorAll('.curriculum-style ion-button') ?? [],
-    ).find((button) => button.textContent?.includes('Greco-Roman'));
-    switchToGreco?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
-    await harness.fixture.whenStable();
+    await harness.navigateByUrl('/tabs/curriculum?style=greco-roman');
     expect(curriculumStore.currentWorkout()?.id).toBe('greco-phase-1-week-1-workout-a');
     await harness.navigateByUrl('/tabs/today');
     expect(harness.routeNativeElement?.textContent).toContain('Position and Movement');
@@ -227,10 +215,10 @@ describe('wrestling curricula routed journeys', () => {
 
       if (session.timer.phase === 'drill-rest') {
         workoutSessionStore.skipRest();
+      } else if (session.timer.status === 'running') {
+        workoutSessionStore.tick();
       } else if (session.action !== null) {
         workoutSessionStore.performCurrentDrillAction();
-      } else if (session.timer.phase === 'work') {
-        workoutSessionStore.tick();
       } else {
         throw new Error(`Unexpected Greco timer state: ${session.timer.phase}`);
       }

@@ -180,6 +180,7 @@ describe('TodayPage', () => {
       .map((workout) => workout.id);
 
     return {
+      style: signal('freestyle'),
       currentWorkout: signal(
         curriculumCompletionOverride === orderedWorkouts.length
           ? null

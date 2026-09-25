@@ -69,7 +69,7 @@ describe('ProgressPage', () => {
     );
 
     expect(entries.length).toBe(2);
-    expect(entries[0].textContent).toContain('Application');
+    expect(entries[0].textContent).toContain('Defense and Recovery');
     expect(entries[0].textContent).toContain(
       'Phase 1: Foundations · Week 1 · Workout B',
     );

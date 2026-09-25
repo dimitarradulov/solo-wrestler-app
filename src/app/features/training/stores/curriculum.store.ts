@@ -133,6 +133,10 @@ export class CurriculumStore {
     this.loadCompletedWorkoutIds(style);
   }
 
+  phasesForStyle(style: WrestlingStyle): CurriculumPhase[] {
+    return curriculumPhasesForStyle(style);
+  }
+
   getWorkoutSequenceNumber(workoutId: WorkoutInstanceId): number | null {
     const index = this.orderedWorkouts().findIndex(
       (workout) => workout.id === workoutId,

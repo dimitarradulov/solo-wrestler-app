@@ -10,7 +10,7 @@ import {
   ActiveWorkoutRestPanelView,
   WorkoutSession,
 } from '../models/workout-session.model';
-import { CurriculumStore, curriculumPhasesForStyle } from './curriculum.store';
+import { CurriculumStore } from './curriculum.store';
 import {
   CurriculumPhase,
   Drill,
@@ -553,7 +553,7 @@ export class WorkoutSessionStore {
   }
 
   private findWorkout(style: WrestlingStyle, workoutId: string): WorkoutInstance | null {
-    for (const phase of curriculumPhasesForStyle(style)) {
+    for (const phase of this.curriculumStore.phasesForStyle(style)) {
       for (const week of phase.weeks) {
         const workout = week.workouts.find((item) => item.id === workoutId);
 
@@ -570,7 +570,7 @@ export class WorkoutSessionStore {
     style: WrestlingStyle,
     workoutTemplateId: string,
   ): WorkoutTemplate | null {
-    for (const phase of curriculumPhasesForStyle(style)) {
+    for (const phase of this.curriculumStore.phasesForStyle(style)) {
       const workoutTemplate =
         phase.workoutTemplates.find((item) => item.id === workoutTemplateId) ??
         null;
@@ -585,7 +585,7 @@ export class WorkoutSessionStore {
 
   private findPhaseForWorkout(style: WrestlingStyle, workoutId: string): CurriculumPhase | null {
     return (
-      curriculumPhasesForStyle(style).find((phase) =>
+      this.curriculumStore.phasesForStyle(style).find((phase) =>
         phase.weeks.some((week) =>
           week.workouts.some((workout) => workout.id === workoutId),
         ),

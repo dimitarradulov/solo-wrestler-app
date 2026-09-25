@@ -125,6 +125,9 @@ describe('WorkoutSessionStore', () => {
         {
           provide: CurriculumStore,
           useValue: {
+            style: vi.fn(() => 'freestyle'),
+            ensureSelectedStyle: vi.fn(() => 'freestyle'),
+            phasesForStyle: vi.fn(() => [phase]),
             currentWorkout: vi.fn(() => workout),
             currentWorkoutTemplate: vi.fn(() => workoutTemplate),
             currentPhase: vi.fn(() => phase),
