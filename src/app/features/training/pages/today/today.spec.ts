@@ -188,6 +188,7 @@ describe('TodayPage', () => {
       ),
       currentWorkoutTemplate: signal(currentWorkoutTemplate),
       totalWorkoutCount: signal(orderedWorkouts.length),
+      currentProgressionFocus: signal(progressionFocus),
       currentWorkoutSequenceNumber: signal(
         (curriculumCompletionOverride ?? 0) + 1,
       ),

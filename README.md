@@ -125,14 +125,18 @@ docs/                      # Product, design, and architecture documentation
 
 ## Current scope
 
-Solo Wrestler is an MVP focused on one local, guided curriculum. It does not
+Solo Wrestler is an MVP with separate local, guided Freestyle and Greco-Roman
+curricula. Each Foundations path contains 18 ordered workouts planned for 60
+minutes; three sessions per week is a suggested pace. It does not
 currently include accounts, cloud sync, custom workouts, AI coaching, social
 features, or background notifications. Technique videos require an internet
 connection; training progress remains on the device where it was recorded.
 
 ## Attribution
 
-The curriculum is based on the
+The curricula adapt material from the
 [USA Wrestling Core Curriculum](https://www.usawmembership.com/usa_wrestling_core_curriculum)
-and adapted for solo practice and self-defense. Technique videos and curriculum
-inspiration come from USA Wrestling's publicly available resources.
+for solo practice. UWW rules inform the Greco-Roman content. Dummy drills are
+preparation and positional rehearsal; they do not replace coached partner
+practice or teach live resistance. Solo adaptations are not federation-approved
+programs.

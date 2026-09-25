@@ -89,7 +89,7 @@ export class TodayPage {
 
   readonly completionHeading = computed(() => {
     if (this.curriculumStore.style() === 'greco-roman') {
-      return 'Position and Movement complete';
+      return 'Greco-Roman Foundations complete';
     }
 
     const currentPhase = this.curriculumStore.currentPhase();
@@ -102,11 +102,13 @@ export class TodayPage {
 
     return shortName === '' ? `${currentPhase.title} complete` : `${shortName} complete`;
   });
-  readonly completionMessage = computed(() =>
-    this.curriculumStore.style() === 'greco-roman'
-      ? 'You completed the available Greco workout. Weeks 2–6 and workouts B/C are not available yet.'
-      : `You completed all ${this.totalWorkoutCount()} workouts.`,
-  );
+  readonly completionMessage = computed(() => {
+    if (this.curriculumStore.style() === 'greco-roman') {
+      return `You completed all ${this.totalWorkoutCount()} Greco Foundations workouts. Later phases are outlined and unavailable.`;
+    }
+
+    return `You completed all ${this.totalWorkoutCount()} workouts.`;
+  });
 
   readonly positionLabel = computed(() => {
     const workout = this.workout();
@@ -171,7 +173,11 @@ export class TodayPage {
     return template.equipment.join(' + ');
   });
 
-  readonly progressionFocus = this.workoutSessionStore.progressionFocus;
+  readonly progressionFocus = computed(
+    () =>
+      this.session()?.progressionFocus ??
+      this.curriculumStore.currentProgressionFocus(),
+  );
 
   readonly progressLabel = computed(() => {
     const session = this.session();

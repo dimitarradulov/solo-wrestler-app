@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
@@ -6,6 +12,7 @@ import { IonButton, IonContent } from '@ionic/angular/standalone';
 import { CurriculumNodeComponent } from './components/curriculum-node';
 import { CurriculumPhaseComponent } from './components/curriculum-phase';
 import { futureCurriculumPhases } from '../../data/curriculum.data';
+import { grecoFutureCurriculumPhases } from '../../data/greco-curriculum.data';
 import { CurriculumStore } from '../../stores/curriculum.store';
 import { WorkoutSessionStore } from '../../stores/workout-session.store';
 import { isWrestlingStyle } from '../../models/wrestling-style.model';
@@ -26,8 +33,12 @@ export class CurriculumPage {
   });
 
   readonly phases = this.curriculumStore.phases;
-  readonly futurePhases = futureCurriculumPhases;
   readonly selectedStyle = this.curriculumStore.style;
+  readonly futurePhases = computed(() =>
+    this.selectedStyle() === 'greco-roman'
+      ? grecoFutureCurriculumPhases
+      : futureCurriculumPhases,
+  );
   readonly hasInProgressWorkout = this.workoutSessionStore.hasInProgressWorkout;
 
   readonly freestyleChoice = { style: 'freestyle' };

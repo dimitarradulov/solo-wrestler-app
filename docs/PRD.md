@@ -5,9 +5,9 @@
 **Product name:** Solo Wrestler
 **Tagline:** Follow a real wrestling curriculum, adapted for solo training.
 
-Solo Wrestler is a personal mobile app built with Ionic, Capacitor, and Angular. The app helps the user follow a locked, phase-based solo wrestling curriculum based on the USA Wrestling Core Curriculum and adapted for self-defense.
+Solo Wrestler is a personal mobile app built with Ionic, Capacitor, and Angular. It helps the user follow one of two locked, phase-based wrestling curricula: Freestyle or Greco-Roman. The curricula adapt USA Wrestling material for solo practice, with UWW rules informing the distinction between styles.
 
-The MVP focuses on one curriculum path, starting with **Phase 1: Foundations**. The user completes workouts in order, follows drill cards, watches embedded technique videos, uses timers where needed, marks drills complete, and logs workout difficulty and optional notes.
+Both paths start with **Phase 1: Foundations**, containing six Weeks of three sequential Workout Instances. The user completes workouts in order, follows drill cards, watches selected Technique Videos, uses timers where needed, marks drills complete, and logs workout difficulty and optional notes. Each workout is planned for at least 60 minutes including warm-up, practice, Rest, and cooldown; three sessions per week is a suggested pace, not a calendar deadline.
 
 ---
 
@@ -32,7 +32,7 @@ A beginner wrestling learner training alone with minimal equipment.
 - Wants to learn wrestling fundamentals
 - Trains at home or alone
 - Has a mat and wrestling dummy
-- Main goal: self-defense
+- Main goal: learn the fundamentals of the selected wrestling style through structured solo practice
 - Does not want a complicated wrestling encyclopedia
 - Wants a structured path to follow
 
@@ -67,6 +67,7 @@ A beginner wrestling learner training alone with minimal equipment.
 ### Included in MVP
 
 - Ionic + Capacitor + Angular app
+- Separate Freestyle and Greco-Roman curricula with style-owned progress
 - Bottom tab navigation
 - First launch intro screen
 - One-time safety disclaimer
@@ -89,9 +90,9 @@ A beginner wrestling learner training alone with minimal equipment.
 - Workout completion screen
 - Whole-workout difficulty rating
 - Optional workout note
-- USA Wrestling attribution and link
+- USA Wrestling attribution and link, with UWW rules as a Greco-Roman reference
 - Equipment information
-- Future phases shown as Coming Soon
+- Later phases shown as outlined and unavailable for the selected style
 
 ### Excluded from MVP
 
@@ -109,7 +110,7 @@ A beginner wrestling learner training alone with minimal equipment.
 - Background notifications
 - Public sharing
 - Social features
-- Multiple curriculum tracks
+- Additional wrestling styles beyond Freestyle and Greco-Roman
 
 ---
 
@@ -135,17 +136,18 @@ Introduce the app and show the safety disclaimer once.
 1. User opens the app for the first time.
 2. Intro screen appears.
 3. User sees product name and tagline.
-4. User continues to safety disclaimer.
-5. User taps **I Understand**.
-6. App opens the Today screen.
-7. Future app launches open directly to Today.
+4. User chooses Freestyle or Greco-Roman.
+5. User reads the safety disclaimer.
+6. User taps **I Understand**.
+7. App opens the Today screen for the selected style.
+8. Future app launches open directly to Today with that style selected.
 
 ### Intro Screen Copy
 
 **Solo Wrestler**
 Follow a real wrestling curriculum, adapted for solo training.
 
-Build wrestling fundamentals step by step using a curriculum based on USA Wrestling and adapted for solo practice and self-defense.
+Build wrestling fundamentals step by step with separate Freestyle and Greco-Roman curricula adapted for solo practice.
 
 Button:
 
@@ -219,27 +221,29 @@ Show the full curriculum structure and locked progression.
 
 ### Content
 
-The Curriculum screen displays:
+The Curriculum screen displays the selected style's:
 
 - Phase 1: Foundations
 - 6-week structure
 - 3 workouts per week (suggested pace)
 - Workout completion status
 - Locked future workouts
-- Future phases as Coming Soon
+- Later phases outlined and unavailable for the selected style
 
 ### Phase 1 Structure
 
 **Phase 1: Foundations**
 6 weeks · 3 workouts/week suggested · 18 total workouts · 60 minutes each
 
-Workout templates:
+Freestyle templates:
 
 - Workout A: Movement and Entry Mechanics
 - Workout B: Defense and Recovery
 - Workout C: Connected Attacks
 
-The same three workouts repeat weekly for 6 weeks. Three sessions per week is a suggested pace; missed sessions do not expire.
+Freestyle's three templates repeat weekly for 6 weeks. Greco-Roman has its own three templates. Three sessions per week is a suggested pace; missed sessions do not expire. Each Week shows its Progression Focus and its A/B/C Current, Locked, or Completed Workout Instances.
+
+Greco-Roman templates are **Position and Movement**, **Contact and Control**, and **Connected Entries**.
 
 ### Example Layout
 
@@ -255,7 +259,7 @@ The same three workouts repeat weekly for 6 weeks. Three sessions per week is a 
 ### Future Phase Example
 
 **Phase 2**
-Coming Soon
+Outlined and unavailable for the selected style
 
 ### Locking Rules
 
@@ -581,15 +585,15 @@ When opened, a completed workout shows:
 
 ### Purpose
 
-Explain what the app is, credit USA Wrestling, show equipment, and include safety guidance.
+Explain what the app is, credit USA Wrestling and UWW sources, show equipment, and include safety guidance.
 
 ### About Copy
 
-Solo Wrestler is a personal wrestling curriculum app based on the USA Wrestling Core Curriculum and adapted for solo training with minimal equipment.
+Solo Wrestler offers separate Freestyle and Greco-Roman curricula, based on USA Wrestling resources and adapted for solo practice.
 
-The goal is to build wrestling fundamentals step by step, with a focus on self-defense.
+Each Foundations path has 18 ordered workouts. Three sessions per week is a suggested pace, and each workout is planned for 60 minutes including warm-up, practice, Rest, and cooldown.
 
-Technique videos and curriculum inspiration come from USA Wrestling’s public curriculum resources.
+Solo drills are preparation and positional rehearsal. They do not replace coached partner practice or teach live resistance. USA Wrestling coaching materials and UWW rules inform the curricula; the solo adaptations are not federation-approved programs.
 
 Button:
 
@@ -609,6 +613,8 @@ Required equipment:
 Optional equipment:
 
 - Knee pads
+
+Greco-Roman Foundations is designed around a Suples Power dummy, 30 kg with arms. Lay it flat on the mat so its shoulders and hips are supported during contact and entry drills. The exact legs or stump variant is not specified, and drills do not assume an unsupported standing dummy or partner resistance.
 
 ### Safety Note
 
@@ -871,9 +877,27 @@ Five ordered drills cover the same session budget, emphasizing a controlled setu
 
 ### Weekly Progression Focus
 
+This progression applies to both styles.
+
 - Weeks 1–2: Individual positions and slow mechanics.
 - Weeks 3–4: Connect movements and entries.
 - Weeks 5–6: Practice consistent sequences from movement without automatic volume increases.
+
+### Greco-Roman Foundations
+
+Greco-Roman Foundations adapts selected USA Wrestling stance, underhook, and slide-by source material to solo practice. Under UWW rules, Greco-Roman prohibits holds below the belt, trips, and active use of the legs against an opponent. Solo dummy work is preparation and positional rehearsal, not a replacement for live hand-fighting, partner defense, or coached practice.
+
+The three Workout Templates repeat in each of six Weeks:
+
+- **Workout A — Position and Movement:** balanced Greco stance, footwork, defensive posture, and light contact with a supported dummy.
+- **Workout B — Contact and Control:** grip placement and upper-body positioning, including a static underhook position on a grounded dummy.
+- **Workout C — Connected Entries:** movement into underhook positioning, a controlled slide-by entry path, and a stop at rear-control alignment.
+
+Each Greco workout uses the same 10/15/20/10/5-minute session budget as Freestyle. Rest is included once in the practice blocks through the app's four two-minute between-drill Rest periods. Keep the dummy flat on the mat with its shoulders and hips supported; do not lift or throw it. No loaded neck bridges, reverse lifts, back-arch throws, or high-amplitude finishes are included.
+
+The exact Suples Power legs or stump variant is not confirmed. The selected USA Wrestling Technique Videos link to Greco-Roman Stance, Single Underhook, and Slide by. The video player could not be independently reviewed for this implementation; each Video Note limits which source portion applies and identifies the drill as a solo adaptation. The written federation syllabus is not a solo prescription or evidence of mastery.
+
+Primary references: [USA Wrestling Olympic Styles Level 1](https://www.usawmembership.com/usa_wrestling_core_curriculum/4), [USA Wrestling Greco-Roman Level 2](https://www.usawmembership.com/usa_wrestling_core_curriculum/6), and the [UWW International Wrestling Rules (January 2026)](https://cdn.uww.org/2026-01/wrestling_rules.pdf). The equipment assumption follows the user's reported 30 kg Suples Power dummy with arms; manufacturer pages describe both [Power (Legs)](https://suples.com/page/41/Suples-Dummy-%2APower-%28Legs%29.html) and [Power (Stump)](https://suples.com/page/40/Suples-Dummy-%2APower-%28Stump%29.html) variants.
 
 ---
 
@@ -969,13 +993,14 @@ As a user, I want to view completed workouts so that I can see my training histo
 
 ### Curriculum Screen
 
-- Phase 1 is visible.
-- 6 weeks are visible.
+- The selected style's Phase 1 is visible.
+- 6 weeks and 18 Workout Instances are visible for each style.
 - Workout A, B, and C are visible for each week.
+- Each Week shows its Progression Focus.
 - Completed workouts show completed state.
 - Current workout is unlocked.
 - Future workouts are locked.
-- Phase 2 appears as Coming Soon.
+- Later phases are outlined and unavailable for the selected style.
 
 ### Active Workout
 
@@ -1056,7 +1081,7 @@ Not part of MVP, but possible later:
 - AI coaching summaries
 - Form review
 - Public release version
-- Multiple curriculum tracks
+- Additional wrestling styles beyond Freestyle and Greco-Roman
 
 ---
 

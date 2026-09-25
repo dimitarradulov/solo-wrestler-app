@@ -110,6 +110,25 @@ export class CurriculumStore {
           ),
         ) ?? null;
   });
+  readonly currentProgressionFocus = computed(() => {
+    const currentWorkout = this.currentWorkout();
+
+    if (currentWorkout === null) {
+      return null;
+    }
+
+    for (const phase of this.phases()) {
+      const week = phase.weeks.find((candidate) =>
+        candidate.workouts.some((workout) => workout.id === currentWorkout.id),
+      );
+
+      if (week) {
+        return week.progressionFocus;
+      }
+    }
+
+    return null;
+  });
 
   constructor() {
     const selectedStyle = this.wrestlingStyleStore.selectedStyle();

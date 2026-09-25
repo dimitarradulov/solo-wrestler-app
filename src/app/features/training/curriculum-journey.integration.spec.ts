@@ -155,7 +155,8 @@ describe('wrestling curricula routed journeys', () => {
     await harness.fixture.whenStable();
     await harness.navigateByUrl('/tabs/today');
     expect(harness.routeNativeElement?.textContent).toContain('Position and Movement');
-    expect(harness.routeNativeElement?.textContent).toContain('1 of 1');
+    expect(harness.routeNativeElement?.textContent).toContain('1 of 18');
+    expect(harness.routeNativeElement?.textContent).toContain('Weeks 1–2: Practice individual positions and slow mechanics');
 
     let workoutSessionStore = TestBed.inject(WorkoutSessionStore);
     let curriculumStore = TestBed.inject(CurriculumStore);
@@ -172,6 +173,13 @@ describe('wrestling curricula routed journeys', () => {
     expect(Array.from(styleButtons ?? []).every((button) => (button as HTMLButtonElement).disabled)).toBe(true);
     expect(harness.routeNativeElement?.textContent).toContain('Complete or cancel');
     expect(workoutSessionStore.switchStyle('freestyle')).toBe(false);
+    expect(harness.routeNativeElement?.textContent).toContain('18 total workouts');
+    expect(harness.routeNativeElement?.textContent).toContain('Contact and Control');
+    expect(harness.routeNativeElement?.textContent).toContain('Connected Entries');
+    expect(harness.routeNativeElement?.textContent).toContain('Progression Focus');
+    expect(harness.routeNativeElement?.textContent).toContain('Weeks 1–2: Practice individual positions and slow mechanics');
+    expect(harness.routeNativeElement?.textContent).toContain('Phase 2: Standing Control and Entries');
+    expect(harness.routeNativeElement?.textContent).toContain('Outlined · not available');
 
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
@@ -201,43 +209,129 @@ describe('wrestling curricula routed journeys', () => {
     await harness.navigateByUrl('/tabs/today');
     expect(harness.routeNativeElement?.textContent).toContain('Position and Movement');
 
-    workoutSessionStore.startOrResumeCurrentWorkout();
-    let iterations = 0;
-    while (!workoutSessionStore.canFinishWorkout()) {
-      if (iterations++ > 10000) {
-        throw new Error('Greco workout did not reach completion.');
+    const completeCurrentWorkout = async (note?: string): Promise<string> => {
+      const workoutId = curriculumStore.currentWorkout()?.id;
+      if (workoutId === undefined) {
+        throw new Error('The current Greco workout was not available to complete.');
       }
 
-      const session = workoutSessionStore.session();
-      if (session === null) {
-        throw new Error('Greco workout session disappeared during training.');
+      workoutSessionStore.startOrResumeCurrentWorkout();
+      await harness.navigateByUrl('/active-workout');
+      let iterations = 0;
+      while (!workoutSessionStore.canFinishWorkout()) {
+        if (iterations++ > 10000) {
+          throw new Error('Greco workout did not reach completion.');
+        }
+
+        const session = workoutSessionStore.session();
+        if (session === null) {
+          throw new Error('Greco workout session disappeared during training.');
+        }
+
+        if (session.timer.phase === 'drill-rest') {
+          workoutSessionStore.skipRest();
+        } else if (session.timer.status === 'running') {
+          workoutSessionStore.tick();
+        } else if (session.action !== null) {
+          workoutSessionStore.performCurrentDrillAction();
+        } else {
+          throw new Error(`Unexpected Greco timer state: ${session.timer.phase}`);
+        }
       }
 
-      if (session.timer.phase === 'drill-rest') {
-        workoutSessionStore.skipRest();
-      } else if (session.timer.status === 'running') {
-        workoutSessionStore.tick();
-      } else if (session.action !== null) {
-        workoutSessionStore.performCurrentDrillAction();
+      const completionPage = await harness.navigateByUrl(
+        '/workout-completion',
+        WorkoutCompletionPage,
+      );
+      completionPage.selectDifficulty('good');
+      if (note !== undefined) {
+        completionPage.updateNote(note);
+      }
+      completionPage.saveWorkout();
+      await harness.fixture.whenStable();
+
+      return workoutId;
+    };
+
+    await harness.navigateByUrl('/tabs/curriculum');
+    const initialCurriculum = harness.routeNativeElement;
+    expect(initialCurriculum?.querySelectorAll('.curriculum-grid .curriculum-node--current')).toHaveLength(1);
+    expect(initialCurriculum?.querySelectorAll('.curriculum-grid .curriculum-node--locked')).toHaveLength(17);
+    expect(initialCurriculum?.querySelectorAll('.curriculum-grid .curriculum-node--completed')).toHaveLength(0);
+
+    const workoutLabels = ['Workout A', 'Workout B', 'Workout C'];
+    for (let sequence = 1; sequence <= 18; sequence++) {
+      const weekNumber = Math.ceil(sequence / 3);
+      const workoutLetter = String.fromCharCode(97 + ((sequence - 1) % 3));
+      const expectedWorkoutId =
+        `greco-phase-1-week-${weekNumber}-workout-${workoutLetter}`;
+      const currentWorkout = curriculumStore.currentWorkout();
+
+      expect(currentWorkout?.id).toBe(expectedWorkoutId);
+      expect(currentWorkout?.label).toBe(workoutLabels[(sequence - 1) % 3]);
+      await harness.navigateByUrl('/tabs/today');
+      expect(harness.routeNativeElement?.textContent).toContain(`${sequence} of 18`);
+      expect(harness.routeNativeElement?.textContent).toContain(currentWorkout?.title);
+      if (weekNumber <= 2) {
+        expect(harness.routeNativeElement?.textContent).toContain('Weeks 1–2: Practice individual positions and slow mechanics');
+      } else if (weekNumber <= 4) {
+        expect(harness.routeNativeElement?.textContent).toContain('Weeks 3–4: Connect movements and entries');
       } else {
-        throw new Error(`Unexpected Greco timer state: ${session.timer.phase}`);
+        expect(harness.routeNativeElement?.textContent).toContain('Weeks 5–6: Practice consistent sequences from movement');
+      }
+
+      const workoutId = await completeCurrentWorkout(
+        sequence === 1
+          ? 'Controlled contact felt right.'
+          : sequence === 18
+            ? 'Week 6 sequence stayed balanced.'
+            : undefined,
+      );
+      expect(workoutId).toBe(expectedWorkoutId);
+      expect(logStore.entries()).toHaveLength(sequence);
+      expect(logStore.entries().every((entry) => entry.style === 'greco-roman')).toBe(true);
+
+      if (sequence === 1) {
+        await harness.navigateByUrl('/tabs/curriculum');
+        const workoutGrid = harness.routeNativeElement;
+        expect(workoutGrid?.querySelectorAll('.curriculum-grid .curriculum-node--completed')).toHaveLength(1);
+        expect(workoutGrid?.querySelectorAll('.curriculum-grid .curriculum-node--current')).toHaveLength(1);
+        expect(workoutGrid?.querySelectorAll('.curriculum-grid .curriculum-node--locked')).toHaveLength(16);
+      }
+
+      if (sequence === 3 || sequence === 6 || sequence === 9 || sequence === 12 || sequence === 15) {
+        const nextWeek = Math.ceil((sequence + 1) / 3);
+        const nextId = `greco-phase-1-week-${nextWeek}-workout-a`;
+        expect(curriculumStore.currentWorkout()?.id).toBe(nextId);
+      }
+      if (sequence === 17) {
+        expect(curriculumStore.currentWorkout()?.id).toBe('greco-phase-1-week-6-workout-c');
       }
     }
 
-    const completionPage = await harness.navigateByUrl(
-      '/workout-completion',
-      WorkoutCompletionPage,
-    );
-    completionPage.selectDifficulty('good');
-    completionPage.saveWorkout();
-    expect(logStore.entries()[0]).toMatchObject({
-      style: 'greco-roman',
-      workoutId: 'greco-phase-1-week-1-workout-a',
-    });
     expect(curriculumStore.currentWorkout()).toBeNull();
+    const firstEntry = logStore.entries().find((entry) => entry.workoutId === 'greco-phase-1-week-1-workout-a');
+    const finalEntry = logStore.entries().find((entry) => entry.workoutId === 'greco-phase-1-week-6-workout-c');
+    expect(firstEntry).toMatchObject({
+      style: 'greco-roman',
+      difficulty: 'good',
+      note: 'Controlled contact felt right.',
+    });
+    expect(finalEntry).toMatchObject({
+      style: 'greco-roman',
+      difficulty: 'good',
+      note: 'Week 6 sequence stayed balanced.',
+    });
+
     await harness.navigateByUrl('/tabs/today');
-    expect(harness.routeNativeElement?.textContent).toContain('Position and Movement complete');
-    expect(harness.routeNativeElement?.textContent).toContain('Weeks 2–6 and workouts B/C are not available yet');
+    expect(harness.routeNativeElement?.textContent).toContain('Greco-Roman Foundations complete');
+    expect(harness.routeNativeElement?.textContent).toContain('You completed all 18 Greco Foundations workouts');
+    expect(harness.routeNativeElement?.textContent).toContain('Later phases are outlined and unavailable');
+    expect(harness.routeNativeElement?.textContent).not.toContain('Start Workout');
+    await harness.navigateByUrl('/tabs/curriculum');
+    expect(harness.routeNativeElement?.querySelectorAll('.curriculum-grid .curriculum-node--completed')).toHaveLength(18);
+    expect(harness.routeNativeElement?.querySelectorAll('.curriculum-grid .curriculum-node--current')).toHaveLength(0);
+    expect(harness.routeNativeElement?.querySelectorAll('.curriculum-grid .curriculum-node--locked')).toHaveLength(0);
     expect(workoutSessionStore.switchStyle('freestyle')).toBe(true);
     expect(curriculumStore.currentWorkout()?.id).toBe('phase-1-week-1-workout-a');
 
@@ -245,13 +339,15 @@ describe('wrestling curricula routed journeys', () => {
     expect(harness.routeNativeElement?.textContent).toContain('No completed workouts yet');
     expect(workoutSessionStore.switchStyle('greco-roman')).toBe(true);
     await harness.navigateByUrl('/tabs/progress');
-    expect(harness.routeNativeElement?.textContent).toContain('Position and Movement');
+    expect(harness.routeNativeElement?.textContent).toContain('Connected Entries');
+    expect(harness.routeNativeElement?.textContent).toContain('Workout C');
 
-    const grecoWorkoutId = 'greco-phase-1-week-1-workout-a';
+    const grecoWorkoutId = 'greco-phase-1-week-6-workout-c';
     await harness.navigateByUrl(
       `/completed-workouts/greco-roman/${grecoWorkoutId}`,
       CompletedWorkoutDetailPage,
     );
-    expect(harness.routeNativeElement?.textContent).toContain('Contact and grip preparation');
+    expect(harness.routeNativeElement?.textContent).toContain('Underhook to slide-by and rear-control rehearsal');
+    expect(harness.routeNativeElement?.textContent).toContain('Week 6 sequence stayed balanced.');
   });
 });

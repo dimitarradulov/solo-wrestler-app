@@ -49,3 +49,19 @@
   padding: 0 var(--sw-space-3);
   text-transform: uppercase;
 }
+
+.curriculum-week__focus {
+  color: var(--sw-color-text-muted);
+  font-family: var(--sw-font-body);
+  font-size: var(--sw-text-body);
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0 var(--sw-space-3) var(--sw-space-2);
+}
+
+.curriculum-week__focus span {
+  color: var(--sw-color-text-medium);
+  font-weight: 600;
+  letter-spacing: var(--sw-tracking-action);
+  text-transform: uppercase;
+}

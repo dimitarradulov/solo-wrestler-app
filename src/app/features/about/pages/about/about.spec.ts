@@ -27,17 +27,23 @@ describe('AboutPage', () => {
 
     expect(text).toContain('About');
     expect(text).toContain(
-      'Solo Wrestler is a personal wrestling curriculum app based on the USA Wrestling Core Curriculum and adapted for solo training with minimal equipment.',
+      'Solo Wrestler offers separate Freestyle and Greco-Roman curricula, based on USA Wrestling resources and adapted for solo practice.',
     );
     expect(text).toContain(
-      'The goal is to build wrestling fundamentals step by step, with a focus on self-defense.',
+      'Each Foundations path has 18 ordered workouts. Three sessions per week is a suggested pace, and each workout is planned for 60 minutes including warm-up, practice, Rest, and cooldown.',
     );
     expect(text).toContain(
-      'Technique videos and curriculum inspiration come from USA Wrestling’s public curriculum resources.',
+      'Solo drills are preparation and positional rehearsal. They do not replace coached partner practice or teach live resistance.',
+    );
+    expect(text).toContain(
+      'USA Wrestling coaching materials and UWW rules inform the curricula; the solo adaptations are not federation-approved programs.',
     );
     expect(text).toContain('Required');
     expect(text).toContain('Wrestling/grappling mat');
     expect(text).toContain('Wrestling dummy');
+    expect(text).toContain('Suples Power dummy, 30 kg with arms');
+    expect(text).toContain('Lay it flat on the mat so its shoulders and hips are supported');
+    expect(text).toContain('The exact legs or stump variant is not specified');
     expect(text).toContain('Optional');
     expect(text).toContain('Knee pads');
     expect(text).toContain(
